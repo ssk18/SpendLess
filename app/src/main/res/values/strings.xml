@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">SpendLess</string>
+    <string name="welcome_to_spendless">Welcome to SpendLess!\nHow can we address you</string>
+    <string name="create_unique_username">Create unique username</string>
+</resources>
