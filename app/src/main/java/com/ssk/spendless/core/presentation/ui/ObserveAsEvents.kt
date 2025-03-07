@@ -1,4 +1,4 @@
-package com.plcoding.core.presentation.ui
+package com.ssk.spendless.core.presentation.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect

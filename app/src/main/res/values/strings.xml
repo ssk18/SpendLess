@@ -2,4 +2,14 @@
     <string name="app_name">SpendLess</string>
     <string name="welcome_to_spendless">Welcome to SpendLess!\nHow can we address you</string>
     <string name="create_unique_username">Create unique username</string>
+    <string name="already_have_an_account">Already have an account?</string>
+    <string name="username">username</string>
+    <string name="next">Next</string>
+    <string name="at_least_x_characters">At least %d characters</string>
+    <string name="at_max_x_characters">At max %d characters</string>
+    <string name="has_no_space">Should not contain space</string>
+    <string name="username_cannot_be_empty">Username cannot be empty</string>
+    <string name="username_must_be_at_least_characters_long">Username must be at least %1$s characters long</string>
+    <string name="username_must_be_at_max_characters_long">Username must be at max %1$s characters long</string>
+    <string name="username_can_contain_only_letters_numbers_and_underscores">Username can only contain letters, numbers, and underscores</string>
 </resources>

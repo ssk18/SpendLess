@@ -1,11 +1,31 @@
 package com.ssk.spendless.core.presentation.designsystem.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.TextFieldLineLimits
+import androidx.compose.foundation.text.input.TextFieldState
+import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssk.spendless.core.presentation.designsystem.theme.SpendLessAppTheme
@@ -13,18 +33,68 @@ import com.ssk.spendless.core.presentation.designsystem.theme.SpendLessAppTheme
 @Composable
 fun SpendLessTextField(
     modifier: Modifier = Modifier,
-    userName: String,
-    onValueChange: (String) -> Unit,
+    userName: TextFieldState,
+    hint: String? = null,
+    keyboardType: KeyboardType,
 ) {
-    OutlinedTextField(
-        value = userName,
-        onValueChange = {
-            onValueChange(it)
-        },
-        singleLine = true,
-        shape = RoundedCornerShape(5.dp),
-        modifier = modifier
-            .minimumInteractiveComponentSize(),
+    var isFocused by remember { mutableStateOf(false) }
+    BasicTextField(
+        state = userName,
+        textStyle = LocalTextStyle.current.copy(
+            color = MaterialTheme.colorScheme.onBackground
+        ),
+        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
+        lineLimits = TextFieldLineLimits.SingleLine,
+        cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
+        modifier = modifier.fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .background(
+                if (isFocused) {
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
+                } else {
+                    MaterialTheme.colorScheme.surface
+                }
+            )
+            .border(
+                width = 1.dp,
+                color = if (isFocused) {
+                    MaterialTheme.colorScheme.primary
+                } else {
+                    MaterialTheme.colorScheme.primary
+                },
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(12.dp)
+            .onFocusChanged {
+                isFocused = it.isFocused
+            },
+        decorator = { innerBox ->
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .weight(1f)
+                ) {
+                    if (userName.text.isEmpty() && !isFocused) {
+                        hint?.let {
+                            Text(
+                                text = hint,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                textAlign = TextAlign.Center,
+                                modifier = Modifier
+                                    .padding(horizontal = 16.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
+                    }
+                    innerBox()
+                }
+            }
+        }
     )
 }
 
@@ -33,8 +103,9 @@ fun SpendLessTextField(
 fun SpendLessTextFieldPreview() {
     SpendLessAppTheme {
         SpendLessTextField(
-            userName = "",
-            onValueChange = {},
+            userName = TextFieldState(),
+            hint = "Username",
+            keyboardType = KeyboardType.Email
         )
     }
 }

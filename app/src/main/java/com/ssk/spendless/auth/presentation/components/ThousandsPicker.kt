@@ -1,4 +1,4 @@
-package com.ssk.spendless.auth.components
+package com.ssk.spendless.auth.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
