@@ -25,9 +25,6 @@ class UserDataValidator {
         else -> UsernameValidationResult(isValid = true)
     }
 
-    fun isValidUsername(username: String): Boolean {
-        return validateUsername(username).isValid
-    }
     companion object {
         const val MIN_USERNAME_LENGTH = 3
         const val MAX_USERNAME_LENGTH = 14

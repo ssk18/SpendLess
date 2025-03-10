@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.ui.Modifier
-import com.ssk.spendless.auth.presentation.RegisterScreenRoot
+import com.ssk.spendless.auth.presentation.registerscreen.RegisterScreenRoot
 import com.ssk.spendless.core.presentation.designsystem.theme.SpendLessAppTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +23,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     RegisterScreenRoot(
                         modifier = Modifier.padding(innerPadding),
+                        onNextClick = {}
                     )
                 }
             }

@@ -1,4 +1,4 @@
-package com.ssk.spendless.auth.presentation
+package com.ssk.spendless.auth.presentation.registerscreen
 
 interface RegisterAction {
     data object OnNextClick: RegisterAction

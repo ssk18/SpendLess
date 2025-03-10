@@ -1,4 +1,4 @@
-package com.ssk.spendless.auth.presentation
+package com.ssk.spendless.auth.presentation.registerscreen
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Immutable
@@ -10,5 +10,7 @@ data class RegisterState(
     val userNameValidationState: Boolean = false,
     val isButtonEnabled: Boolean = false,
     val isUsernameTaken: Boolean = false,
-    val userNameValidationError: UiText? = null
+    val userNameValidationError: UiText? = null,
+    val isRegistering: Boolean = false,
+    val canRegister: Boolean = false
 )
