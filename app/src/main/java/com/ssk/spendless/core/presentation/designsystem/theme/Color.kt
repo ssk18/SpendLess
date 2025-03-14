@@ -13,6 +13,7 @@ val SpendLessDarkGray = Color(0xFF232624)
 val SpendLessWhite = Color(0xFFFAFAFA)
 val SpendLessDarkRed = Color(0xFFBB3D3D)
 val SpendLessDarkRed5 = Color(0x0DBB3D3D)
+val SpendLessContainer = Color(0xFFEADDDF)
 
 val primaryLight = Color(0xFF5E5791)
 val onPrimaryLight = Color(0xFFFFFFFF)

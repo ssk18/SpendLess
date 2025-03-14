@@ -1,6 +1,7 @@
 package com.ssk.spendless.auth.data.repository
 
 import com.ssk.spendless.auth.data.local.UserDao
+import com.ssk.spendless.auth.data.mappers.toDomainModel
 import com.ssk.spendless.auth.data.mappers.toUserEntity
 import com.ssk.spendless.auth.domain.IUserRepository
 import com.ssk.spendless.auth.domain.UserDataValidator
@@ -16,6 +17,12 @@ class UserRepository @Inject constructor(
     override suspend fun insertUser(user: User): Long {
         return withContext(Dispatchers.IO) {
             userDao.upsertUser(user.toUserEntity())
+        }
+    }
+
+    override suspend fun getUserByUsername(username: String): User? {
+        return withContext(Dispatchers.IO) {
+            userDao.getUserByUsername(username)?.toDomainModel()
         }
     }
 }

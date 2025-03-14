@@ -6,26 +6,29 @@ junit = "4.13.2"
 junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
-activityCompose = "1.10.0"
-composeBom = "2025.01.01"
-ksp = "2.0.21-1.0.25"
+activityCompose = "1.10.1"
+composeBom = "2025.02.00"
+ksp = "2.0.21-1.0.28"
 room = "2.6.1"
-hilt = "2.51.1"
+hilt = "2.52"
 hiltNavCompose = "1.2.0"
-navigation-compose = "2.8.6"
+navigation-compose = "2.8.8"
 splashscreen = "1.0.1"
-coil = "3.0.4"
-icons-extended = "1.7.7"
+coil = "3.1.0"
+icons-extended = "1.7.8"
 gson = "2.11.0"
 glanceAppwidget = "1.1.1"
 groq = "0.1.1"
-ktor = "3.0.2"
+ktor = "3.1.1"
 google-fonts = "1.7.8"
 accompanist-insets = "0.30.1"
 jetbrainsKotlinJvm = "2.0.21"
 appcompat = "1.7.0"
 material = "1.12.0"
 coroutines = "1.10.1"
+kotlinx-serialization = "1.8.0"
+sqlcipher = "4.5.4"
+sqlite = "2.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -71,6 +74,10 @@ groq = { module = "io.github.vyfor:groq-kt", version.ref = "groq"}
 google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "google-fonts" }
 androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+serialization = { module="org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
+
+sqlcipher = { group = "net.zetetic", name = "android-database-sqlcipher", version.ref = "sqlcipher" }
+sqlite = { group = "androidx.sqlite", name = "sqlite", version.ref = "sqlite" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

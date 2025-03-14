@@ -5,13 +5,15 @@ import com.ssk.spendless.auth.domain.model.User
 
 fun User.toUserEntity(): UserEntity {
     return UserEntity(
+        id = 0,
         username = username,
-        id = 0
+        pinCode = pinCode.toString()
     )
 }
 
 fun UserEntity.toDomainModel(): User {
     return User(
-        username = this.username
+        username = this.username,
+        pinCode = this.pinCode.toInt(),
     )
 }

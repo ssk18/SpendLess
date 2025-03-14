@@ -14,4 +14,11 @@
     <string name="username_must_be_at_max_characters_long">Username must be at max %1$s characters long</string>
     <string name="username_can_contain_only_letters_numbers_and_underscores">Username can only contain letters, numbers, and underscores</string>
     <string name="registration_successful">Username is valid</string>
+    <string name="create_pin">Create PIN</string>
+    <string name="repeat_your_pin">Repeat Your PIN</string>
+    <string name="use_pin_to_login_to_your_account">Use PIN to login to your account</string>
+    <string name="enter_your_pin_to_login">Enter your PIN to login</string>
+    <string name="pins_do_not_match">Pins do not match</string>
+    <string name="pin_created_successfully">Pin created successfully</string>
+    <string name="this_username_has_already_been_taken">This username has already been taken</string>
 </resources>

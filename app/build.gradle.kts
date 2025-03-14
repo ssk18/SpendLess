@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
     alias(libs.plugins.hilt)
+    kotlin("plugin.serialization") version libs.versions.kotlin
 }
 
 android {
@@ -64,6 +65,10 @@ dependencies {
     implementation(libs.room.core)
     ksp(libs.room.compiler)
 
+    // Sqlcipher
+    implementation(libs.sqlcipher)
+    implementation(libs.sqlite)
+
     // google fonts
     implementation(libs.google.fonts)
 
@@ -89,6 +94,9 @@ dependencies {
 
     // Gson
     implementation(libs.gson)
+
+    // Serialization
+    implementation(libs.serialization)
 
     // Glance
     implementation(libs.androidx.glance.material3)

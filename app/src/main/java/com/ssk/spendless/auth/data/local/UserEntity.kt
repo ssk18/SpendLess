@@ -8,4 +8,5 @@ import androidx.room.PrimaryKey
 data class UserEntity(
     @PrimaryKey (autoGenerate = true) val id: Int,
     @ColumnInfo(name = "username") val username: String,
+    @ColumnInfo(name = "pin_code") val pinCode: String
 )
