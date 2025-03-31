@@ -10,7 +10,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import net.sqlcipher.database.SupportFactory
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.security.MessageDigest
@@ -47,7 +46,7 @@ object DatabaseModule {
             AuthDatabase::class.java,
             "auth_database"
         )
-            .openHelperFactory(SupportFactory(encryptedKey))
+          //  .openHelperFactory(SupportFactory(encryptedKey))
             .build()
     }
 
