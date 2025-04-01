@@ -34,7 +34,7 @@ internal fun Project.configureKotlinJvm() {
 }
 
 internal fun Project.configureKotlin() {
-    pluginManager.apply("org.jetbrains.kotlin.jvm")
+    pluginManager.apply("org.jetbrains.kotlin.plugin.serialization")
     tasks.withType<KotlinCompile>().configureEach {
         compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
     }

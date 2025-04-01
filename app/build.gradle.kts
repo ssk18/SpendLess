@@ -62,7 +62,7 @@ dependencies {
 
     // Room components
     implementation(libs.room.runtime)
-    implementation(libs.room.core)
+    implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
     // Sqlcipher

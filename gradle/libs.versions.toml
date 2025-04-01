@@ -96,7 +96,7 @@ koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compos
 
 # Room
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
-room-core = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 
 # Timber
@@ -120,6 +120,14 @@ android-library = { id = "com.android.library", version.ref = "agp" }
 androidDynamicFeature = { id = "com.android.dynamic-feature", version.ref = "agp" }
 room = { id = "androidx.room", version.ref = "room" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+
+spendless-android-application = { id = "spendless.android.application", version = "unspecified"}
+spendless-android-application-compose = { id = "spendless.android.application.compose", version = "unspecified"}
+spendless-android-library = { id = "spendless.android.library", version = "unspecified"}
+spendless-android-library-compose = { id = "spendless.android.library.compose", version = "unspecified"}
+spendless-android-feature-ui = { id = "spendless.android.feature.ui", version = "unspecified"}
+spendless-android-room = { id = "spendless.android.room", version = "unspecified"}
+spendless-jvm-library = { id = "spendless.jvm.library", version = "unspecified"}
 
 [bundles]
 compose = [
