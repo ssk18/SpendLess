@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.ssk.spendless.auth.presentation.pinentryscreen.PinEntryScreenRoot
-import com.ssk.spendless.auth.presentation.registerscreen.RegisterScreenRoot
+import com.ssk.auth.presentation.pinentryscreen.PinEntryScreenRoot
+import com.ssk.auth.presentation.registerscreen.RegisterScreenRoot
 
 @Composable
 fun SpendLessNavigation(

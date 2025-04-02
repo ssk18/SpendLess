@@ -11,15 +11,17 @@ import org.koin.dsl.module
 val databaseModule = module {
     single {
         val dbName = "spendless_database.db"
-        val passphrase = DatabaseSecurity.getDatabasePassphrase(androidApplication())
-        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
         val builder = Room.databaseBuilder(
             androidApplication(),
             SpendLessDatabase::class.java,
             dbName
         )
-            .openHelperFactory(factory)
 
-        builder.build()
+        val passphrase = DatabaseSecurity.getDatabasePassphrase(androidApplication())
+        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
+        builder
+           // .openHelperFactory(factory)
+            .build()
     }
+    single { get<SpendLessDatabase>().userDao }
 }

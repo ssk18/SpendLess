@@ -7,11 +7,9 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
-import com.ssk.spendless.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.spendless.navigation.SpendLessNavigation
-import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {

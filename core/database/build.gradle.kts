@@ -5,6 +5,13 @@ plugins {
 
 android {
     namespace = "com.ssk.core.database"
+    defaultConfig {
+        // ...
+        ndk {
+            abiFilters.addAll(listOf("arm64-v8a", "armeabi-v7a", "x86", "x86_64"))
+        }
+    }
+
 }
 
 dependencies {
