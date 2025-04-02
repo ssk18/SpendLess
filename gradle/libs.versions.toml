@@ -31,7 +31,10 @@ sqlcipher = "4.5.4"
 sqlite = "2.4.0"
 koin = "4.1.0-Beta5"
 timber = "5.0.1"
-androidTools = "31.9.0"
+androidTools = "31.9.1"
+securityCrypto = "1.1.0-alpha06"
+datastorePreferences = "1.1.4"
+androidx-datastore = "1.1.4"
 
 # Project versions
 projectApplicationId = "com.ssk.spendless"
@@ -94,10 +97,15 @@ koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = 
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
 
+# Datastore
+androidx-datastore-preference = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
+androidx-datastore-core = { group = "androidx.datastore", name = "datastore-core", version.ref = "androidx-datastore" }
+
 # Room
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 
 # Timber
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }

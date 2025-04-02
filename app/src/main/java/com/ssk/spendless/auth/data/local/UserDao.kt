@@ -3,6 +3,7 @@ package com.ssk.spendless.auth.data.local
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
+import com.ssk.core.database.entity.UserEntity
 
 
 @Dao

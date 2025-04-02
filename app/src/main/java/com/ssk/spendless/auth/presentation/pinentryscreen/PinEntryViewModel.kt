@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.spendless.R
-import com.ssk.spendless.auth.domain.IUserRepository
-import com.ssk.spendless.auth.domain.model.User
+import com.ssk.core.domain.repository.IUserRepository
+import com.ssk.core.domain.model.User
 import com.ssk.spendless.core.presentation.ui.UiText
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

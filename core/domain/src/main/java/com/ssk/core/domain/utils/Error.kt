@@ -1,3 +1,3 @@
-package com.hrishi.core.domain.utils
+package com.ssk.core.domain.utils
 
 interface Error

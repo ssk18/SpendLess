@@ -1,7 +1,7 @@
 package com.ssk.spendless.auth.data.di
 
 import com.ssk.spendless.auth.data.repository.UserRepository
-import com.ssk.spendless.auth.domain.IUserRepository
+import com.ssk.core.domain.repository.IUserRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

@@ -1,4 +1,4 @@
-package com.hrishi.core.domain.utils
+package com.ssk.core.domain.utils
 
 sealed interface DataError : Error {
 

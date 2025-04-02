@@ -6,7 +6,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.spendless.R
-import com.ssk.spendless.auth.domain.IUserRepository
+import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.spendless.auth.domain.UserDataValidator
 import com.ssk.spendless.core.presentation.ui.UiText
 import com.ssk.spendless.core.presentation.ui.textAsFlow
