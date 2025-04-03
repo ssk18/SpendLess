@@ -1,5 +1,6 @@
 package com.ssk.auth.presentation.components
 
+import SpendLessWhite
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateIntAsState
@@ -39,7 +40,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
-import com.ssk.core.presentation.designsystem.theme.SpendLessWhite
 
 @Composable
 fun ThousandsSeparatorExample(

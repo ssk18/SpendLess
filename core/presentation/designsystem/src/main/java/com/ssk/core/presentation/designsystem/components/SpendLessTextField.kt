@@ -58,11 +58,7 @@ fun SpendLessTextField(
             .fillMaxWidth()
             .clip(RoundedCornerShape(16.dp))
             .background(
-                if (isFocused) {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.05f)
-                } else {
-                    MaterialTheme.colorScheme.surface
-                }
+                MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
             )
             .border(
                 width = 1.dp,
@@ -93,7 +89,9 @@ fun SpendLessTextField(
                         hint?.let {
                             Text(
                                 text = hint,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = MaterialTheme.colorScheme.onSurface.copy(
+                                    alpha = 0.38f
+                                ),
                                 textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)

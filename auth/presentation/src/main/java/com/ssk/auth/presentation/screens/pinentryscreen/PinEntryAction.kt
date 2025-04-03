@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.pinentryscreen
+package com.ssk.auth.presentation.screens.pinentryscreen
 
 sealed interface PinEntryAction {
     data object OnBackClick : PinEntryAction

@@ -1,5 +1,8 @@
-package com.ssk.auth.presentation.registerscreen
+package com.ssk.auth.presentation.screens.registerscreen
 
+import SpendLessGreen
+import SpendLessPurple
+import SpendLessRed
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,14 +41,11 @@ import com.ssk.auth.presentation.R
 import com.ssk.core.presentation.designsystem.components.GlobalSnackBar
 import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
 import com.ssk.core.presentation.designsystem.components.SpendLessTextField
+import com.ssk.core.presentation.designsystem.theme.ArrowForward
 import com.ssk.core.presentation.designsystem.theme.CheckIcon
 import com.ssk.core.presentation.designsystem.theme.CrossIcon
 import com.ssk.core.presentation.designsystem.theme.RegisterIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
-import com.ssk.core.presentation.designsystem.theme.SpendLessDarkRed
-import com.ssk.core.presentation.designsystem.theme.SpendLessGreen
-import com.ssk.core.presentation.designsystem.theme.SpendLessPurple
-import com.ssk.core.presentation.designsystem.theme.displayFontFamily
 import com.ssk.core.presentation.ui.ObserveAsEvents
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
@@ -55,6 +55,7 @@ fun RegisterScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: RegisterViewModel = koinViewModel<RegisterViewModel>(),
     onNextClick: (String) -> Unit,
+    onLogInClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle(context = Dispatchers.Main.immediate)
     val snackbarHostState = remember { SnackbarHostState() }
@@ -84,10 +85,7 @@ fun RegisterScreenRoot(
             ) {
                 GlobalSnackBar(
                     hostState = snackbarHostState,
-                    snackbarColor = { snackbarData ->
-                        MaterialTheme.colorScheme.error
-                    },
-                    contentColor = MaterialTheme.colorScheme.onError,
+                    snackbarType = state.snackbarType,
                     modifier = Modifier
                         .fillMaxWidth()
                         .imePadding()
@@ -99,7 +97,12 @@ fun RegisterScreenRoot(
     ) {
         RegisterScreen(
             state = state,
-            onAction = viewModel::onAction,
+            onAction = { action ->
+                when (action) {
+                    is RegisterAction.OnLoginCLick -> onLogInClick
+                }
+                viewModel.onAction(action)
+            },
             modifier = Modifier
                 .padding(it)
         )
@@ -116,7 +119,7 @@ fun RegisterScreen(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .fillMaxSize()
-            .padding(20.dp)
+            .padding(horizontal = 26.dp)
             .padding(top = 68.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -129,18 +132,13 @@ fun RegisterScreen(
         Spacer(modifier = Modifier.height(12.dp))
         Text(
             text = stringResource(R.string.welcome_to_spendless),
-            style = MaterialTheme.typography.titleLarge,
-            fontFamily = displayFontFamily,
-            fontWeight = FontWeight.SemiBold,
+            style = MaterialTheme.typography.headlineMedium,
             textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = stringResource(R.string.create_unique_username),
-            style = MaterialTheme.typography.bodySmall,
-            fontFamily = displayFontFamily,
+            style = MaterialTheme.typography.bodyMedium,
             fontWeight = FontWeight.Light
         )
         Spacer(modifier = Modifier.height(36.dp))
@@ -156,7 +154,7 @@ fun RegisterScreen(
             endIconTint = if (state.userNameValidationState) {
                 SpendLessGreen
             } else {
-                SpendLessDarkRed
+                SpendLessRed
             },
             hint = stringResource(R.string.username),
             keyboardType = KeyboardType.Text,
@@ -167,13 +165,13 @@ fun RegisterScreen(
             enabled = state.isButtonEnabled,
             onClick = {
                 onAction(RegisterAction.OnNextClick(state.username.text.toString()))
-            }
+            },
+            icon = ArrowForward
         )
         Spacer(modifier = Modifier.height(30.dp))
         BasicText(
             text = stringResource(R.string.already_have_an_account),
             style = TextStyle(
-                fontFamily = displayFontFamily,
                 fontWeight = FontWeight.Light,
                 color = SpendLessPurple,
                 fontSize = MaterialTheme.typography.bodySmall.fontSize
@@ -181,7 +179,7 @@ fun RegisterScreen(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .clickable {
-                    onAction(RegisterAction.OnNextClick(state.username.toString()))
+                    onAction(RegisterAction.OnLoginCLick)
                 }
         )
     }

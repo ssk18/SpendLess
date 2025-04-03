@@ -7,8 +7,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.ssk.auth.presentation.pinentryscreen.PinEntryScreenRoot
-import com.ssk.auth.presentation.registerscreen.RegisterScreenRoot
+import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryScreenRoot
+import com.ssk.auth.presentation.screens.registerscreen.RegisterScreenRoot
 
 @Composable
 fun SpendLessNavigation(
@@ -39,6 +39,7 @@ private fun NavGraphBuilder.homeRootGraph(
                 onNextClick = {
                     navController.navigate(NavRoute.PinEntry(it))
                 },
+                onLogInClick = {},
                 modifier = modifier
             )
         }

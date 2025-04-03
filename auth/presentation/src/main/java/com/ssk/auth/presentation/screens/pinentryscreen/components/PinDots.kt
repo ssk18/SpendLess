@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.pinentryscreen.components
+package com.ssk.auth.presentation.screens.pinentryscreen.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.tween

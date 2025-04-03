@@ -1,6 +1,6 @@
 @file:OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
 
-package com.ssk.auth.presentation.registerscreen
+package com.ssk.auth.presentation.screens.registerscreen
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
@@ -9,6 +9,7 @@ import com.ssk.auth.domain.IUserDataValidator
 import com.ssk.auth.presentation.R
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.domain.utils.Result
+import com.ssk.core.presentation.designsystem.components.SnackbarType
 import com.ssk.core.presentation.ui.UiText
 import com.ssk.core.presentation.ui.textAsFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -87,7 +88,10 @@ class RegisterViewModel(
                             )
                         )
                         _state.update {
-                            it.copy(userNameValidationState = false)
+                            it.copy(
+                                userNameValidationState = false,
+                                snackbarType = SnackbarType.Error
+                            )
                         }
                     } else {
                         _duplicateUserNameValidation.update { null }
@@ -108,6 +112,8 @@ class RegisterViewModel(
                     }
                 }
             }
+
+            else -> {}
         }
     }
 }

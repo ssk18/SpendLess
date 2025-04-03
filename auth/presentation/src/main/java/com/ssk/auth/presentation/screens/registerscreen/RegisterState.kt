@@ -1,7 +1,8 @@
-package com.ssk.auth.presentation.registerscreen
+package com.ssk.auth.presentation.screens.registerscreen
 
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.runtime.Immutable
+import com.ssk.core.presentation.designsystem.components.SnackbarType
 import com.ssk.core.presentation.ui.UiText
 
 @Immutable
@@ -12,5 +13,6 @@ data class RegisterState(
     val isUsernameTaken: Boolean = false,
     val userNameValidationError: UiText? = null,
     val isRegistering: Boolean = false,
-    val canRegister: Boolean = false
+    val canRegister: Boolean = false,
+    val snackbarType: SnackbarType = SnackbarType.Info
 )

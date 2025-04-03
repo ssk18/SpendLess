@@ -17,3 +17,7 @@ val CheckIcon: ImageVector
 val CrossIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.cross)
+
+val ArrowForward: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.arrow_right)

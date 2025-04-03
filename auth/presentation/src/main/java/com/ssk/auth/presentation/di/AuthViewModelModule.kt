@@ -1,7 +1,7 @@
 package com.ssk.auth.presentation.di
 
-import com.ssk.auth.presentation.pinentryscreen.PinEntryViewModel
-import com.ssk.auth.presentation.registerscreen.RegisterViewModel
+import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryViewModel
+import com.ssk.auth.presentation.screens.registerscreen.RegisterViewModel
 import org.koin.core.module.dsl.viewModelOf
 import org.koin.dsl.module
 

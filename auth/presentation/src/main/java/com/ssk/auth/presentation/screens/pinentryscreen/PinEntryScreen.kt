@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.pinentryscreen
+package com.ssk.auth.presentation.screens.pinentryscreen
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.keyframes
@@ -36,8 +36,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.auth.presentation.R
-import com.ssk.auth.presentation.pinentryscreen.components.PinDots
-import com.ssk.auth.presentation.pinentryscreen.components.PinEntry
+import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryState.PinEntryMode
+import com.ssk.auth.presentation.screens.pinentryscreen.components.PinDots
+import com.ssk.auth.presentation.screens.pinentryscreen.components.PinEntry
 import com.ssk.core.presentation.designsystem.components.GlobalSnackBar
 import com.ssk.core.presentation.designsystem.theme.RegisterIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
@@ -57,9 +58,6 @@ fun PinEntryScreenRoot(
     val snackbarHostState = remember { SnackbarHostState() }
     var showShakeAnimation by remember { mutableStateOf(false) }
     val context = LocalContext.current
-    var currentSnackbarType by remember {
-        mutableStateOf(SnackbarType.Info)
-    }
 
     ObserveAsEvents(viewModel.uiEvents) { events ->
         when (events) {
@@ -78,7 +76,6 @@ fun PinEntryScreenRoot(
             }
 
             is PinEntryEvents.ShowSnackbar -> {
-                currentSnackbarType = events.type
                 snackbarHostState.showSnackbar(
                     message = events.message.asString(context),
                     duration = SnackbarDuration.Short,
@@ -91,18 +88,7 @@ fun PinEntryScreenRoot(
         snackbarHost = {
             GlobalSnackBar(
                 hostState = snackbarHostState,
-                snackbarColor = { snackbarData ->
-                    when (currentSnackbarType) {
-                        SnackbarType.Success -> MaterialTheme.colorScheme.primary
-                        SnackbarType.Error -> MaterialTheme.colorScheme.error
-                        SnackbarType.Info -> MaterialTheme.colorScheme.background
-                    }
-                },
-                contentColor = when (currentSnackbarType) {
-                    SnackbarType.Success -> MaterialTheme.colorScheme.onPrimary
-                    SnackbarType.Error -> MaterialTheme.colorScheme.onError
-                    SnackbarType.Info -> MaterialTheme.colorScheme.onBackground
-                },
+                snackbarType = state.snackbarType,
             )
         },
         topBar = {

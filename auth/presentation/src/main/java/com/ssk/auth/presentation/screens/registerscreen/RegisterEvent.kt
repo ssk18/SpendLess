@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.registerscreen
+package com.ssk.auth.presentation.screens.registerscreen
 
 import com.ssk.core.presentation.ui.UiText
 

@@ -1,11 +1,13 @@
-package com.ssk.auth.presentation.pinentryscreen
+package com.ssk.auth.presentation.screens.pinentryscreen
 
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.auth.presentation.R
+import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryState.PinEntryMode
 import com.ssk.core.domain.model.User
 import com.ssk.core.domain.repository.IUserRepository
+import com.ssk.core.presentation.designsystem.components.SnackbarType
 import com.ssk.core.presentation.ui.UiText
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -95,6 +97,13 @@ class PinEntryViewModel(
                                     pinCode = currentState.pin.toString()
                                 )
                             )
+                            _state.update {
+                                it.copy(
+                                    isLoading = false,
+                                    error = null,
+                                    snackbarType = SnackbarType.Success
+                                )
+                            }
                             _uiEvents.send(
                                 PinEntryEvents.ShowSnackbar(
                                     message = UiText.StringResource(R.string.pin_created_successfully),
@@ -106,7 +115,8 @@ class PinEntryViewModel(
                             _state.update { pinEntryState ->
                                 pinEntryState.copy(
                                     isLoading = false,
-                                    error = UiText.DynamicString(e.message ?: "Unknown Error")
+                                    error = UiText.DynamicString(e.message ?: "Unknown Error"),
+                                    snackbarType = SnackbarType.Error
                                 )
                             }
                             _uiEvents.send(
@@ -122,7 +132,8 @@ class PinEntryViewModel(
                         _state.update {
                             it.copy(
                                 error = UiText.StringResource(R.string.pins_do_not_match),
-                                pin = ""
+                                pin = "",
+                                snackbarType = SnackbarType.Error
                             )
                         }
                         _uiEvents.send(PinEntryEvents.ShowPinShakeAnimation)

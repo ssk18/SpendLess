@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.pinentryscreen.components
+package com.ssk.auth.presentation.screens.pinentryscreen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
-import com.ssk.core.presentation.designsystem.theme.SpendLessContainer
-import com.ssk.core.presentation.designsystem.theme.SpendLessPurple
+import com.ssk.core.presentation.designsystem.theme.onPrimaryFixed
+import com.ssk.core.presentation.designsystem.theme.primaryFixed
 
 @Composable
 fun PinEntryItem(
@@ -39,7 +39,7 @@ fun PinEntryItem(
             .size(108.dp)
             .padding(2.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(SpendLessContainer)
+            .background(primaryFixed)
             .clickable {
                 onClick()
             },
@@ -48,7 +48,7 @@ fun PinEntryItem(
         Text(
             text = pin,
             style = MaterialTheme.typography.titleMedium,
-            color = SpendLessPurple,
+            color = onPrimaryFixed,
             textAlign = TextAlign.Center,
             fontSize = 24.sp
         )
@@ -65,7 +65,7 @@ fun DeleteButton(
             .size(108.dp)
             .padding(2.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(SpendLessContainer.copy(0.3f))
+            .background(primaryFixed.copy(0.3f))
             .clickable {
                 onDeleteClick()
             },

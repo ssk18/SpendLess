@@ -1,49 +1,108 @@
 package com.ssk.core.presentation.designsystem.theme
 
+import SpendLessBlack
+import SpendLessDarkGrey
 import androidx.compose.material3.Typography
+import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
+import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.unit.sp
 import com.ssk.core.presentation.designsystem.R
 
-val provider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage = "com.google.android.gms",
-    certificates = R.array.com_google_android_gms_fonts_certs
-)
-
-val bodyFontFamily = FontFamily(
-    Font(
-        googleFont = GoogleFont("Roboto"),
-        fontProvider = provider,
+@OptIn(ExperimentalTextApi::class)
+val FigtreeRegular = FontFamily(
+    androidx.compose.ui.text.font.Font(
+        R.font.figtree_variablefont_weight,
+        variationSettings = FontVariation.Settings(
+            FontVariation.weight(400)
+        )
     )
 )
 
-val displayFontFamily = FontFamily(
-    Font(
-        googleFont = GoogleFont("Inter"),
-        fontProvider = provider,
+@OptIn(ExperimentalTextApi::class)
+val FigtreeMedium = FontFamily(
+    androidx.compose.ui.text.font.Font(
+        R.font.figtree_variablefont_weight,
+        variationSettings = FontVariation.Settings(
+            FontVariation.weight(500)
+        )
     )
 )
 
-// Default Material 3 typography values
-val baseline = Typography()
-
-val AppTypography = Typography(
-    displayLarge = baseline.displayLarge.copy(fontFamily = displayFontFamily),
-    displayMedium = baseline.displayMedium.copy(fontFamily = displayFontFamily),
-    displaySmall = baseline.displaySmall.copy(fontFamily = displayFontFamily),
-    headlineLarge = baseline.headlineLarge.copy(fontFamily = displayFontFamily),
-    headlineMedium = baseline.headlineMedium.copy(fontFamily = displayFontFamily),
-    headlineSmall = baseline.headlineSmall.copy(fontFamily = displayFontFamily),
-    titleLarge = baseline.titleLarge.copy(fontFamily = displayFontFamily),
-    titleMedium = baseline.titleMedium.copy(fontFamily = displayFontFamily),
-    titleSmall = baseline.titleSmall.copy(fontFamily = displayFontFamily),
-    bodyLarge = baseline.bodyLarge.copy(fontFamily = bodyFontFamily),
-    bodyMedium = baseline.bodyMedium.copy(fontFamily = bodyFontFamily),
-    bodySmall = baseline.bodySmall.copy(fontFamily = bodyFontFamily),
-    labelLarge = baseline.labelLarge.copy(fontFamily = bodyFontFamily),
-    labelMedium = baseline.labelMedium.copy(fontFamily = bodyFontFamily),
-    labelSmall = baseline.labelSmall.copy(fontFamily = bodyFontFamily),
+@OptIn(ExperimentalTextApi::class)
+val FigtreeSemiBold = FontFamily(
+    androidx.compose.ui.text.font.Font(
+        R.font.figtree_variablefont_weight,
+        variationSettings = FontVariation.Settings(
+            FontVariation.weight(600)
+        )
+    )
 )
 
+val Typography = Typography(
+    displayLarge = TextStyle(
+        fontFamily = FigtreeSemiBold,
+        fontSize = 45.sp,
+        lineHeight = 52.sp
+    ),
+    displayMedium = TextStyle(
+        fontFamily = FigtreeSemiBold,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        color = SpendLessBlack
+    ),
+
+    headlineLarge = TextStyle(
+        fontFamily = FigtreeSemiBold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp
+    ),
+    headlineMedium = TextStyle(
+        fontFamily = FigtreeSemiBold,
+        fontSize = 28.sp,
+        lineHeight = 34.sp
+    ),
+
+    titleLarge = TextStyle(
+        fontFamily = FigtreeSemiBold,
+        fontSize = 20.sp,
+        lineHeight = 26.sp
+    ),
+    titleMedium = TextStyle(
+        fontFamily = FigtreeSemiBold,
+        fontSize = 16.sp,
+        lineHeight = 24.sp
+    ),
+    titleSmall = TextStyle(
+        fontFamily = FigtreeMedium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        color = SpendLessBlack
+    ),
+
+    labelMedium = TextStyle(
+        fontFamily = FigtreeMedium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        color = SpendLessBlack
+    ),
+    labelSmall = TextStyle(
+        fontFamily = FigtreeMedium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp
+    ),
+
+    bodyMedium = TextStyle(
+        fontFamily = FigtreeRegular,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        color = SpendLessDarkGrey
+    ),
+    bodySmall = TextStyle(
+        fontFamily = FigtreeRegular,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        color = SpendLessDarkGrey
+    )
+)
