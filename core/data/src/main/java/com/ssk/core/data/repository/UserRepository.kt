@@ -14,7 +14,6 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.withContext
 
 class UserRepository(
     private val userDao: UserDao
@@ -22,10 +21,7 @@ class UserRepository(
 
     override suspend fun registerUser(user: User): Result<Long, DataError> {
         return try {
-            val userId = withContext(Dispatchers.IO) {
-                userDao.insertUser(user.toUserEntity())
-            }
-
+            val userId = userDao.insertUser(user.toUserEntity())
             when {
                 userId > 0 -> Result.Success(userId)
                 userId == -1L -> Result.Error(DataError.Local.INSERT_USER_ERROR)
@@ -37,6 +33,33 @@ class UserRepository(
             if (e is CancellationException) {
                 throw e
             }
+            Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+        }
+    }
+
+    override suspend fun verifyPin(
+        userName: String,
+        pin: String
+    ): Result<Boolean, DataError> {
+        return try {
+            val userResult = getUser(userName)
+
+            when (userResult) {
+                is Result.Success -> {
+                    val user = userResult.data
+                    val isPinValid = user.pinCode == pin
+                    if (!isPinValid) {
+                        return Result.Error(DataError.Local.INVALID_CREDENTIALS)
+                    } else {
+                        Result.Success(isPinValid)
+                    }
+                }
+                is Result.Error -> {
+                    Result.Error(userResult.error)
+                }
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
             Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
         }
     }

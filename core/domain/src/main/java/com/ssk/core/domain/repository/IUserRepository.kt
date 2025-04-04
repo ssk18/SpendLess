@@ -9,6 +9,8 @@ interface IUserRepository {
 
     suspend fun registerUser(user: User): Result<Long, DataError>
 
+    suspend fun verifyPin(userName: String, pin: String): Result<Boolean, DataError>
+
     suspend fun getUser(userName: String): Result<User, DataError>
 
     fun getAllUsers(): Flow<Result<List<User>, DataError>>

@@ -19,12 +19,12 @@ import androidx.compose.foundation.text.BasicText
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,13 +40,15 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.auth.presentation.R
 import com.ssk.core.presentation.designsystem.components.GlobalSnackBar
 import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
-import com.ssk.core.presentation.designsystem.components.SpendLessTextField
+import com.ssk.core.presentation.designsystem.components.SpendLessRegisterTextField
+import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.ArrowForward
 import com.ssk.core.presentation.designsystem.theme.CheckIcon
 import com.ssk.core.presentation.designsystem.theme.CrossIcon
 import com.ssk.core.presentation.designsystem.theme.RegisterIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.ui.ObserveAsEvents
+import com.ssk.core.presentation.ui.showTimedSnackBar
 import kotlinx.coroutines.Dispatchers
 import org.koin.androidx.compose.koinViewModel
 
@@ -60,23 +62,29 @@ fun RegisterScreenRoot(
     val state by viewModel.state.collectAsStateWithLifecycle(context = Dispatchers.Main.immediate)
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
+    val scope = rememberCoroutineScope()
 
     ObserveAsEvents(viewModel.events) { events ->
         when (events) {
             is RegisterEvent.ShowSnackbar -> {
-                snackbarHostState.showSnackbar(
+                scope.showTimedSnackBar(
+                    snackbarHostState = snackbarHostState,
                     message = events.message.asString(context)
                 )
             }
 
-            is RegisterEvent.Error -> TODO()
             is RegisterEvent.UsernameValid -> {
                 onNextClick(events.username)
+            }
+
+            RegisterEvent.NavigateToLoginScreen -> {
+                onLogInClick()
             }
         }
     }
 
-    Scaffold(
+    SpendLessScaffold(
+        modifier = modifier,
         bottomBar = {
             Box(
                 modifier = Modifier
@@ -92,17 +100,11 @@ fun RegisterScreenRoot(
                         .navigationBarsPadding()
                 )
             }
-        },
-        modifier = modifier
+        }
     ) {
         RegisterScreen(
             state = state,
-            onAction = { action ->
-                when (action) {
-                    is RegisterAction.OnLoginCLick -> onLogInClick
-                }
-                viewModel.onAction(action)
-            },
+            onAction = viewModel::onAction,
             modifier = Modifier
                 .padding(it)
         )
@@ -142,7 +144,7 @@ fun RegisterScreen(
             fontWeight = FontWeight.Light
         )
         Spacer(modifier = Modifier.height(36.dp))
-        SpendLessTextField(
+        SpendLessRegisterTextField(
             userName = state.username,
             endIcon = if (state.username.text.isNotBlank()) {
                 if (state.userNameValidationState) {
@@ -179,7 +181,7 @@ fun RegisterScreen(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .clickable {
-                    onAction(RegisterAction.OnLoginCLick)
+                    onAction(RegisterAction.OnAlreadyHaveAnAccountClicked)
                 }
         )
     }

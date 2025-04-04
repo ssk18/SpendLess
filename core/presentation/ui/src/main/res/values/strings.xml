@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="failed_to_save_the_item_because_your_disk_is_full">Failed to save the item because your disk is full.</string>
+    <string name="username_or_pin_is_incorrect">Username or PIN is incorrect</string>
+    <string name="insert_user_error">Error while inserting user in a database</string>
+    <string name="user_already_exists">This username has already been taken</string>
+    <string name="user_fetch_error">Error while fetching user from a database</string>
+    <string name="insert_preference_error">Error while inserting preference in a database</string>
+    <string name="preference_fetch_error">Error while fetching preference from a database</string>
+    <string name="unknown_database_error">Unknown database error</string>
+    <string name="transaction_fetch_error">Transaction failed\n</string>
+    <string name="export_failed">export failed</string>
+</resources>

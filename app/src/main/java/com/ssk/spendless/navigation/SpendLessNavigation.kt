@@ -2,13 +2,10 @@ package com.ssk.spendless.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
-import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryScreenRoot
-import com.ssk.auth.presentation.screens.registerscreen.RegisterScreenRoot
+import com.ssk.spendless.navigation.graphs.authGraph
+import com.ssk.spendless.navigation.routes.NavRoute
 
 @Composable
 fun SpendLessNavigation(
@@ -17,43 +14,13 @@ fun SpendLessNavigation(
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.HomeRoot,
+        startDestination = NavRoute.AuthRoot,
         modifier = modifier
     ) {
-        homeRootGraph(
+        authGraph(
             navController,
             modifier
         )
     }
 }
 
-private fun NavGraphBuilder.homeRootGraph(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
-) {
-    navigation<NavRoute.HomeRoot>(
-        startDestination = NavRoute.Register
-    ) {
-        composable<NavRoute.Register> {
-            RegisterScreenRoot(
-                onNextClick = {
-                    navController.navigate(NavRoute.PinEntry(it))
-                },
-                onLogInClick = {},
-                modifier = modifier
-            )
-        }
-
-        composable<NavRoute.PinEntry> {
-            PinEntryScreenRoot(
-                onNavigateBack = {
-                    navController.navigateUp()
-                },
-                onNavigateToHome = {
-                    navController.navigate(NavRoute.Register)
-                },
-                modifier = modifier
-            )
-        }
-    }
-}

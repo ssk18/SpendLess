@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 
 @Composable
-fun SpendLessTextField(
+fun SpendLessRegisterTextField(
     modifier: Modifier = Modifier,
     userName: TextFieldState,
     hint: String? = null,
@@ -51,14 +51,15 @@ fun SpendLessTextField(
     BasicTextField(
         state = userName,
         textStyle = LocalTextStyle.current.copy(
-            color = MaterialTheme.colorScheme.onBackground
+            color = MaterialTheme.colorScheme.onBackground,
+            textAlign = TextAlign.Center
         ),
         keyboardOptions = KeyboardOptions(keyboardType = keyboardType, imeAction = imeAction),
         lineLimits = TextFieldLineLimits.SingleLine,
         cursorBrush = SolidColor(MaterialTheme.colorScheme.onBackground),
         modifier = modifier
             .fillMaxWidth()
-            .defaultMinSize(minHeight = 48.dp)
+            .defaultMinSize(minHeight = 64.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(
                 MaterialTheme.colorScheme.onBackground.copy(alpha = 0.08f)
@@ -86,7 +87,7 @@ fun SpendLessTextField(
                 Box(
                     modifier = Modifier
                         .weight(1f),
-                    contentAlignment = Alignment.TopStart
+                    contentAlignment = Alignment.Center
                 ) {
                     if (userName.text.isEmpty() && !isFocused) {
                         hint?.let {
@@ -95,7 +96,7 @@ fun SpendLessTextField(
                                 color = MaterialTheme.colorScheme.onSurface.copy(
                                     alpha = 0.38f
                                 ),
-                                textAlign = TextAlign.Start,
+                                textAlign = TextAlign.Center,
                                 modifier = Modifier
                                     .padding(horizontal = 16.dp)
                                     .fillMaxWidth()
@@ -121,7 +122,7 @@ fun SpendLessTextField(
 
 @Preview(showBackground = true)
 @Composable
-fun SpendLessTextFieldPreview() {
+fun SpendLessRegisterTextFieldPreview() {
     SpendLessAppTheme {
         SpendLessRegisterTextField(
             userName = TextFieldState(),

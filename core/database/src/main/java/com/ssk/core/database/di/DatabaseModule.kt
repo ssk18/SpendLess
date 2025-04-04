@@ -3,8 +3,6 @@ package com.ssk.core.database.di
 import androidx.room.Room
 import com.ssk.core.database.database.SpendLessDatabase
 import com.ssk.core.database.security.DatabaseSecurity
-import net.sqlcipher.database.SQLiteDatabase
-import net.sqlcipher.database.SupportFactory
 import org.koin.android.ext.koin.androidApplication
 import org.koin.dsl.module
 
@@ -18,7 +16,7 @@ val databaseModule = module {
         )
 
         val passphrase = DatabaseSecurity.getDatabasePassphrase(androidApplication())
-        val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
+        //val factory = SupportFactory(SQLiteDatabase.getBytes(passphrase.toCharArray()))
         builder
            // .openHelperFactory(factory)
             .build()
