@@ -1,5 +1,6 @@
 package com.ssk.auth.presentation.components
 
+import SpendLessBlack
 import SpendLessWhite
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -40,6 +41,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.designsystem.theme.onPrimaryFixed
+import com.ssk.core.presentation.designsystem.theme.primaryFixed
 
 @Composable
 fun ThousandsSeparatorExample(
@@ -80,7 +83,7 @@ fun ThousandsSeparator(
             .fillMaxWidth()
             .height(48.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(MaterialTheme.colorScheme.tertiaryContainer)
+            .background(primaryFixed)
     ) {
         val totalWidth = constraints.maxWidth
         val segmentWidth = totalWidth / segmentedOptions.size
@@ -95,7 +98,6 @@ fun ThousandsSeparator(
             )
         )
 
-
         Row(
             modifier = Modifier
                 .fillMaxSize(),
@@ -109,7 +111,7 @@ fun ThousandsSeparator(
                         .clickable { onOptionSelected(option) },
                     contentAlignment = Alignment.Center
                 ) {
-                    option.label()
+                    option.label(index == selectedIndex)
                 }
             }
         }
@@ -151,16 +153,17 @@ fun Modifier.expandWidth(totalWidth: Int, itemCount: Int, padding: Dp = 8.dp): M
         }
     )
 
-enum class ThousandsSeparator(val label: @Composable () -> Unit, val separator: String) {
-    POINT(label = { OptionText(text = "1.000") }, separator = "."),
-    COMMA(label = { OptionText(text = "1,000") }, separator = ","),
-    SPACE(label = { OptionText(text = "1 000") }, separator = " ")
+enum class ThousandsSeparator(val label: @Composable (isSelected: Boolean) -> Unit, val separator: String) {
+    POINT(label = { OptionText(text = "1.000", isSelected = it) }, separator = "."),
+    COMMA(label = { OptionText(text = "1,000", isSelected = it) }, separator = ","),
+    SPACE(label = { OptionText(text = "1 000", isSelected = it) }, separator = " ");
 }
 
 @Composable
 fun OptionText(
     modifier: Modifier = Modifier,
     text: String,
+    isSelected: Boolean = false,
     leadingIcon: @Composable (() -> Unit)? = null,
 ) {
     Row(
@@ -173,7 +176,7 @@ fun OptionText(
         Text(
             text = text,
             style = MaterialTheme.typography.titleMedium,
-            color = MaterialTheme.colorScheme.onTertiaryContainer
+            color = if (isSelected) SpendLessBlack else onPrimaryFixed
         )
     }
 }
