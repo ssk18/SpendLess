@@ -17,11 +17,13 @@ import com.ssk.core.presentation.ui.textAsFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -33,82 +35,41 @@ class RegisterViewModel(
     private val _events = Channel<RegisterEvent>()
     val events = _events.receiveAsFlow()
 
-    private val _duplicateUserNameValidation = MutableStateFlow<Boolean?>(null)
-
     private val _state = MutableStateFlow(RegisterState())
-    val state = _state.asStateFlow()
-
-    init {
-        _state.value.username.textAsFlow()
-            .onEach { userName ->
-                val enteredUserName =
-                    userDataValidator.validateUsername(userName.toString())
-
-                if (enteredUserName.isValid) {
-                    _state.update {
-                        it.copy(
-                            isButtonEnabled = true,
-                            userNameValidationState = true
-                        )
-                    }
-                } else {
-                    _state.update {
-                        it.copy(
-                            isButtonEnabled = false,
-                            snackbarType = SnackbarType.Error,
-                            userNameValidationState = false
-                        )
-                    }
-                }
-            }
-            .launchIn(viewModelScope)
+    val state = _state.flatMapLatest { registerState ->
+        checkUsernameValidity(registerState)
     }
-
-/*
-    val state: StateFlow<RegisterState> = _state
-        .flatMapLatest { baseState ->
-            baseState.username.textAsFlow()
-                .map { textFieldValue ->
-                    val text = textFieldValue.toString()
-
-                    // Clear validation override on text change
-                    _duplicateUserNameValidation.tryEmit(null)
-
-                    // Normal validation result
-                    val isValid = userDataValidator.validateUsername(text).isValid
-
-                    // Return updated state
-                    baseState.copy(
-                        userNameValidationState = isValid,
-                        isButtonEnabled = isValid
-                    )
-                }
-                .onStart { emit(baseState) }
-        }
-        // Apply validation override if present
-        .combine(_duplicateUserNameValidation) { currentState, override ->
-            if (override != null) {
-                currentState.copy(
-                    userNameValidationState = override,
-                    isButtonEnabled = override
-                )
-            } else {
-                currentState
-            }
-        }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = RegisterState()
         )
-*/
+
+    private fun checkUsernameValidity(state: RegisterState): Flow<RegisterState> {
+        return state.username.textAsFlow()
+            .map { userName ->
+                val isUserNameValid =
+                    userDataValidator.validateUsername(userName.toString()).isValid
+                if (isUserNameValid) {
+                    state.copy(
+                        isButtonEnabled = true,
+                        userNameValidationState = true
+                    )
+                } else {
+                    state.copy(
+                        isButtonEnabled = false,
+                        snackbarType = SnackbarType.Error,
+                        userNameValidationState = false
+                    )
+                }
+            }
+    }
 
     fun onAction(action: RegisterAction) {
         when (action) {
             is RegisterAction.OnNextClick -> {
                 viewModelScope.launch {
                     if (userRepository.getUser(action.username) is Result.Success) {
-                        _duplicateUserNameValidation.update { false }
                         _events.send(
                             ShowSnackbar(
                                 message = StringResource(R.string.this_username_has_already_been_taken)
@@ -121,7 +82,6 @@ class RegisterViewModel(
                             )
                         }
                     } else {
-                        _duplicateUserNameValidation.update { null }
                         _events.send(UsernameValid(action.username))
                     }
                 }
