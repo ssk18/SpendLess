@@ -27,4 +27,7 @@
     <string name="new_to_spendless">New to SpendLess?</string>
     <string name="log_in">Log in</string>
     <string name="login_successful">Login Successful</string>
+    <string name="set_spendless_to_your_preferences">Set SpendLess\nto your preferences</string>
+    <string name="onboarding_preferences_sub_headline">You can change it at any time in Settings</string>
+    <string name="spend_this_month">spend this month</string>
 </resources>

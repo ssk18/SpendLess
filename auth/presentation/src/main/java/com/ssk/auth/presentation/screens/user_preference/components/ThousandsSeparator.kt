@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.components
+package com.ssk.auth.presentation.screens.user_preference.components
 
 import SpendLessBlack
 import SpendLessWhite
@@ -120,7 +120,7 @@ fun ThousandsSeparator(
             modifier = Modifier
                 .padding(4.dp)
                 .expandWidth(totalWidth, segmentedOptions.size)
-                .fillMaxHeight()
+                 .fillMaxHeight()
                 .offset { IntOffset(x = animatedPosition, y = 0) }
                 .clip(RoundedCornerShape(12.dp))
                 .background(SpendLessWhite)
