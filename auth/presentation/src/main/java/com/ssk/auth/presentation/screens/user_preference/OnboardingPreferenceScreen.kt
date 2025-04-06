@@ -18,6 +18,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.user_preference.components.UserPreferenceFormat
+import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
+import com.ssk.core.presentation.designsystem.components.dropdown.FakeCurrency
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 
 @Composable
@@ -67,6 +69,13 @@ fun OnboardingPreferenceScreenContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
+        DropDownSelector(
+            options = listOf<FakeCurrency>(),
+            selectedOption = FakeCurrency.INR,
+            currencyCodeShow = { it.symbol },
+            currencyNameShow = { it.title },
+            onOptionSelected = {  }
+        )
 
     }
 }
