@@ -70,7 +70,7 @@ fun OnboardingPreferenceScreenContent(
         Spacer(modifier = Modifier.height(20.dp))
 
         DropDownSelector(
-            options = listOf<FakeCurrency>(),
+            options = FakeCurrency.entries,
             selectedOption = FakeCurrency.INR,
             currencyCodeShow = { it.symbol },
             currencyNameShow = { it.title },

@@ -2,12 +2,18 @@
 
 package com.ssk.core.presentation.designsystem.components.dropdown
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +37,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,55 +49,113 @@ import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 @Composable
 fun <T> DropDownSelector(
     modifier: Modifier = Modifier,
+    title: String? = null,
     options: List<T>,
     currencyCodeShow: (T) -> String,
     currencyNameShow: (T) -> String,
     selectedOption: T,
-    fontStyle: TextStyle =  MaterialTheme.typography.bodyMedium,
+    fontStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     onOptionSelected: (T) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-    ExposedDropdownMenuBox(
-        expanded = expanded,
-        onExpandedChange = {
-            expanded = it
+    val density = LocalDensity.current
+
+    var dropDownHeight by remember {
+        mutableStateOf(0.dp)
+    }
+
+    val animateDropDownHeight by animateDpAsState(
+        targetValue = if (expanded) {
+            dropDownHeight
+        } else {
+            0.dp
         },
+        animationSpec = tween(
+            durationMillis = 800,
+            easing = FastOutSlowInEasing,
+        ),
+        label = "DropDownHeight"
+    )
+
+    val animateContentAlpha by animateFloatAsState(
+        targetValue = if (expanded) {
+            1f
+        } else {
+            0f
+        },
+        animationSpec = tween(
+            durationMillis = 800,
+            easing = FastOutSlowInEasing,
+        ),
+        label = "ContentAlpha"
+    )
+
+    Column(
         modifier = modifier
     ) {
-        CurrencyTextField(
+        title?.let {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelSmall
+            )
+        }
+        Spacer(Modifier.height(8.dp))
+        ExposedDropdownMenuBox(
             expanded = expanded,
-            fontStyle = fontStyle,
-            currencyCodeShow = currencyCodeShow,
-            currencyNameShow = currencyNameShow,
             onExpandedChange = {
                 expanded = it
             },
-            selectedOption = selectedOption,
-        )
-
-        ExposedDropdownMenu(
-            expanded = expanded,
-            onDismissRequest = {
-                expanded = false
-            },
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
         ) {
-            options.forEach { option ->
-                DropdownMenuItem(
-                    modifier = Modifier.height(48.dp),
-                    text = {
-                        CurrencyRow(
-                            fontStyle = fontStyle,
-                            currencyCode = currencyCodeShow(option),
-                            currencyName = currencyNameShow(option)
-                        )
-                    },
-                    onClick = {
-                        onOptionSelected(option)
-                        expanded = false
+            CurrencyTextField(
+                expanded = expanded,
+                fontStyle = fontStyle,
+                currencyCodeShow = currencyCodeShow,
+                currencyNameShow = currencyNameShow,
+                onExpandedChange = {
+                    expanded = it
+                },
+                selectedOption = selectedOption,
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                },
+                modifier = Modifier
+                    .background(color = MaterialTheme.colorScheme.surfaceContainerLowest)
+                    .onGloballyPositioned {coordinates ->
+                        with(density) {
+                            dropDownHeight = coordinates.size.height.toDp()
+                        }
                     }
-                )
+                    .graphicsLayer {
+                        translationY = if (expanded) 0f else -animateDropDownHeight.toPx()
+                        alpha = animateContentAlpha
+                        clip = true
+                        shape = RoundedCornerShape(16.dp)
+                    }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        modifier = Modifier.height(48.dp),
+                        text = {
+                            CurrencyRow(
+                                fontStyle = fontStyle,
+                                currencyCode = currencyCodeShow(option),
+                                currencyName = currencyNameShow(option)
+                            )
+                        },
+                        onClick = {
+                            onOptionSelected(option)
+                            expanded = false
+                        },
+                        contentPadding = PaddingValues(
+                            vertical = 0.dp,
+                            horizontal = 0.dp
+                        )
+                    )
+                }
             }
         }
     }
@@ -158,6 +225,7 @@ private fun CurrencyRow(
         Text(
             text = currencyCode,
             style = MaterialTheme.typography.labelMedium,
+            modifier = Modifier.padding(start = 16.dp),
         )
         Text(
             modifier = Modifier.padding(start = 8.dp),
@@ -184,7 +252,8 @@ fun DropDownSelectorPreview() {
         ) {
             Column {
                 DropDownSelector(
-                    options = listOf<FakeCurrency>(),
+                    title = "Currency",
+                    options = FakeCurrency.entries,
                     onOptionSelected = {},
                     modifier = Modifier
                         .fillMaxWidth()
