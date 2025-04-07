@@ -1,6 +1,7 @@
 package com.ssk.core.presentation.designsystem.components
 
 import SpendLessPrimaryContainer
+import SpendLessWhite
 import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
@@ -72,7 +73,7 @@ fun SpendLessSegmentSelector(
                     )
                 }
                 .clip(RoundedCornerShape(12.dp))
-                .background(MaterialTheme.colorScheme.onPrimary)
+                .background(SpendLessWhite)
                 .fillMaxHeight()
                 .width(selectedOptionWidth)
         )

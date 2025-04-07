@@ -11,35 +11,43 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.user_preference.components.UserPreferenceFormat
+import com.ssk.core.domain.model.Currency
 import com.ssk.core.presentation.designsystem.components.SpendLessSegmentSelector
 import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
-import com.ssk.core.presentation.designsystem.components.dropdown.FakeCurrency
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.ui.components.DecimalSeparator
 import com.ssk.core.presentation.ui.components.SettingItem
 import com.ssk.core.presentation.ui.components.ThousandsSeparator
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OnboardingPreferenceScreenRoot(
     modifier: Modifier = Modifier,
+    viewModel: UserPreferencesViewModel = koinViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     OnboardingPreferenceScreenContent(
         modifier = modifier,
-        state = UserPreferenceState()
+        state = state ,
+        onAction = viewModel::onAction
     )
 }
 
 @Composable
 fun OnboardingPreferenceScreenContent(
     modifier: Modifier = Modifier,
-    state: UserPreferenceState
+    state: UserPreferenceState,
+    onAction: (UserPreferenceAction) -> Unit
 ) {
     Column(
         modifier = modifier
@@ -70,25 +78,32 @@ fun OnboardingPreferenceScreenContent(
 
         DropDownSelector(
             title = "Currency",
-            options = FakeCurrency.entries,
-            selectedOption = FakeCurrency.INR,
+            options = Currency.entries,
+            selectedOption = state.expensesFormatState.currency,
             currencyCodeShow = { it.symbol },
             currencyNameShow = { it.title },
-            onOptionSelected = {  }
+            onOptionSelected = {
+                onAction(UserPreferenceAction.OnCurrencyUpdate(it))
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         DecimalSeparator(
             selectedDecimal = state.expensesFormatState.decimalSeparator,
-            onOptionSelected = {  }
+            onOptionSelected = {
+                println("Selected Decimal Separator: $it")
+                onAction(UserPreferenceAction.OnDecimalSeparatorUpdate(it))
+            }
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         ThousandsSeparator(
             selectedThousands = state.expensesFormatState.thousandsSeparator,
-            onOptionSelected = {  }
+            onOptionSelected = {
+                onAction(UserPreferenceAction.OnThousandsSeparatorUpdate(it))
+            }
         )
 
     }
@@ -108,6 +123,7 @@ fun DecimalSeparator(
             segmentOptions = DecimalSeparator.entries,
             selectedOption = selectedDecimal,
             onOptionSelected = {
+
                 onOptionSelected(it as DecimalSeparator)
             }
         )
@@ -139,7 +155,8 @@ fun ThousandsSeparator(
 fun OnboardingPreferenceScreenPreview() {
     SpendLessAppTheme {
         OnboardingPreferenceScreenContent(
-            state = UserPreferenceState()
+            state = UserPreferenceState(),
+            onAction = {}
         )
     }
 }
