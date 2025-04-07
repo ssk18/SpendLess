@@ -2,6 +2,7 @@ package com.ssk.core.presentation.designsystem.components
 
 import SpendLessPrimaryContainer
 import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.snap
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -47,11 +49,10 @@ fun SpendLessSegmentSelector(
     var selectedOffset by remember {
         mutableStateOf(IntOffset.Zero)
     }
+    var isInitialized by remember { mutableStateOf(false) }
     val targetOffsetX by animateIntAsState(
         targetValue = selectedOffset.x,
-        animationSpec = tween(
-            durationMillis = 300,
-        )
+        animationSpec = if (isInitialized) tween(durationMillis = 450) else snap()
     )
 
     Box(
@@ -60,6 +61,7 @@ fun SpendLessSegmentSelector(
             .height(48.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(SpendLessPrimaryContainer.copy(alpha = 0.08f))
+            .padding(4.dp)
     ) {
         Box(
             modifier = Modifier
@@ -84,6 +86,9 @@ fun SpendLessSegmentSelector(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
                         ) {
+                            if (!isInitialized) {
+                                isInitialized = true
+                            }
                             onOptionSelected(option)
                         }
                         .onGloballyPositioned { coordinates ->

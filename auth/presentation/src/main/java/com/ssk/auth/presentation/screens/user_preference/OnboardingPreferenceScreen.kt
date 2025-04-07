@@ -125,7 +125,7 @@ fun ThousandsSeparator(
         title = "Thousands Separator"
     ) {
         SpendLessSegmentSelector(
-            segmentOptions = DecimalSeparator.entries,
+            segmentOptions = ThousandsSeparator.entries,
             selectedOption = selectedThousands,
             onOptionSelected = {
                 onOptionSelected(it as ThousandsSeparator)

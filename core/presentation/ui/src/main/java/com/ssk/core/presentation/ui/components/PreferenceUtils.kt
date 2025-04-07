@@ -1,5 +1,6 @@
 package com.ssk.core.presentation.ui.components
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -100,10 +101,16 @@ fun SpendLessSegmentedSelectorPreview() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             SpendLessSegmentSelector(
                 segmentOptions = ThousandsSeparator.entries,
                 selectedOption = ThousandsSeparator.DOT,
+                onOptionSelected = {},
+            )
+            SpendLessSegmentSelector(
+                segmentOptions = DecimalSeparator.entries,
+                selectedOption = DecimalSeparator.DOT,
                 onOptionSelected = {},
             )
         }
