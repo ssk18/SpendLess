@@ -59,7 +59,7 @@ fun SpendLessSegmentSelector(
             .fillMaxWidth()
             .height(48.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(SpendLessPrimaryContainer)
+            .background(SpendLessPrimaryContainer.copy(alpha = 0.08f))
     ) {
         Box(
             modifier = Modifier
@@ -88,13 +88,13 @@ fun SpendLessSegmentSelector(
                         }
                         .onGloballyPositioned { coordinates ->
                             if (option == selectedOption) {
-                                selectedOptionWidth = with(density) {
-                                    coordinates.size.width.toDp()
-                                }
                                 selectedOffset = IntOffset(
                                     x = coordinates.positionInParent().x.toInt(),
                                     y = coordinates.positionInParent().y.toInt()
                                 )
+                                selectedOptionWidth = with(density) {
+                                    coordinates.size.width.toDp()
+                                }
                             }
                         },
                     contentColor = if (option == selectedOption) {

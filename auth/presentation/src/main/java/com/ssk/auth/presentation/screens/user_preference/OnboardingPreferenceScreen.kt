@@ -18,29 +18,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.user_preference.components.UserPreferenceFormat
+import com.ssk.core.presentation.designsystem.components.SpendLessSegmentSelector
 import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
 import com.ssk.core.presentation.designsystem.components.dropdown.FakeCurrency
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.components.DecimalSeparator
+import com.ssk.core.presentation.ui.components.SettingItem
+import com.ssk.core.presentation.ui.components.ThousandsSeparator
 
 @Composable
 fun OnboardingPreferenceScreenRoot(
     modifier: Modifier = Modifier,
 ) {
-    OnboardingPreferenceScreen(modifier = modifier)
-}
-
-@Composable
-fun OnboardingPreferenceScreen(
-    modifier: Modifier = Modifier,
-) {
     OnboardingPreferenceScreenContent(
-        modifier = modifier
+        modifier = modifier,
+        state = UserPreferenceState()
     )
 }
 
 @Composable
 fun OnboardingPreferenceScreenContent(
     modifier: Modifier = Modifier,
+    state: UserPreferenceState
 ) {
     Column(
         modifier = modifier
@@ -70,6 +69,7 @@ fun OnboardingPreferenceScreenContent(
         Spacer(modifier = Modifier.height(20.dp))
 
         DropDownSelector(
+            title = "Currency",
             options = FakeCurrency.entries,
             selectedOption = FakeCurrency.INR,
             currencyCodeShow = { it.symbol },
@@ -77,6 +77,60 @@ fun OnboardingPreferenceScreenContent(
             onOptionSelected = {  }
         )
 
+        Spacer(modifier = Modifier.height(16.dp))
+
+        DecimalSeparator(
+            selectedDecimal = state.expensesFormatState.decimalSeparator,
+            onOptionSelected = {  }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        ThousandsSeparator(
+            selectedThousands = state.expensesFormatState.thousandsSeparator,
+            onOptionSelected = {  }
+        )
+
+    }
+}
+
+@Composable
+fun DecimalSeparator(
+    modifier: Modifier = Modifier,
+    selectedDecimal: DecimalSeparator,
+    onOptionSelected: (DecimalSeparator) -> Unit,
+) {
+    SettingItem(
+        modifier = modifier,
+        title = "Decimal Separator"
+    ) {
+        SpendLessSegmentSelector(
+            segmentOptions = DecimalSeparator.entries,
+            selectedOption = selectedDecimal,
+            onOptionSelected = {
+                onOptionSelected(it as DecimalSeparator)
+            }
+        )
+    }
+}
+
+@Composable
+fun ThousandsSeparator(
+    modifier: Modifier = Modifier,
+    selectedThousands: ThousandsSeparator,
+    onOptionSelected: (ThousandsSeparator) -> Unit,
+) {
+    SettingItem(
+        modifier = modifier,
+        title = "Thousands Separator"
+    ) {
+        SpendLessSegmentSelector(
+            segmentOptions = DecimalSeparator.entries,
+            selectedOption = selectedThousands,
+            onOptionSelected = {
+                onOptionSelected(it as ThousandsSeparator)
+            }
+        )
     }
 }
 
@@ -84,6 +138,8 @@ fun OnboardingPreferenceScreenContent(
 @Composable
 fun OnboardingPreferenceScreenPreview() {
     SpendLessAppTheme {
-        OnboardingPreferenceScreen()
+        OnboardingPreferenceScreenContent(
+            state = UserPreferenceState()
+        )
     }
 }
