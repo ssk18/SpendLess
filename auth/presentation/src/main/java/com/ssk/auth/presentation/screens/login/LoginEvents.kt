@@ -7,4 +7,5 @@ sealed interface LoginEvents {
         val message: UiText
     ): LoginEvents
     data object NavigateToRegisterScreen: LoginEvents
+    data class NavigateToUserPreferences(val userName: String) : LoginEvents
 }

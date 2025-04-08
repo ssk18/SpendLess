@@ -11,4 +11,5 @@ sealed interface PinEntryEvents {
     data object OnNavigateBack: PinEntryEvents
     data class OnNavigateToHome(val userId: Long) : PinEntryEvents
     data object ShowPinShakeAnimation : PinEntryEvents
+    data class NavigateToUserPreferences(val userName: String, val pinCode: String) : PinEntryEvents
 }

@@ -33,4 +33,5 @@
     <string name="decimal_separator">Decimal Separator</string>
     <string name="thousands_separator">Thousands Separator</string>
     <string name="you_can_change_it_at_any_time_in_settings">You can change it at any time in Settings</string>
+    <string name="navigate_back">Navigate back</string>
 </resources>

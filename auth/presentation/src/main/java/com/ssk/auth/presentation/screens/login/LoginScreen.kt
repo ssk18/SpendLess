@@ -51,7 +51,7 @@ import org.koin.androidx.compose.koinViewModel
 fun LoginScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: LoginViewModel = koinViewModel(),
-    onLogInClick: () -> Unit,
+    onLogInClick: (String) -> Unit,
     onRegisterClick: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -71,6 +71,10 @@ fun LoginScreenRoot(
 
             LoginEvents.NavigateToRegisterScreen -> {
                 onRegisterClick()
+            }
+
+            is LoginEvents.NavigateToUserPreferences -> {
+                onLogInClick(events.userName)
             }
         }
     }

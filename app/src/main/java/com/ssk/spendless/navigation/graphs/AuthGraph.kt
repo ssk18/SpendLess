@@ -8,6 +8,7 @@ import androidx.navigation.compose.navigation
 import com.ssk.auth.presentation.screens.login.LoginScreenRoot
 import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryScreenRoot
 import com.ssk.auth.presentation.screens.registerscreen.RegisterScreenRoot
+import com.ssk.auth.presentation.screens.user_preference.OnboardingPreferenceScreenRoot
 import com.ssk.spendless.navigation.routes.NavRoute
 
 fun NavGraphBuilder.authGraph(
@@ -37,15 +38,30 @@ fun NavGraphBuilder.authGraph(
                 onNavigateToHome = {
                     navController.navigate(NavRoute.Register)
                 },
+                onNavigateToUserPreferences = { username, pinCode ->
+                    navController.navigate(NavRoute.UserPreferences(username, pinCode))
+                },
                 modifier = modifier
             )
         }
 
         composable<NavRoute.Login> {
             LoginScreenRoot(
-                onLogInClick = {},
+                onLogInClick = {
+                    navController.navigate(NavRoute.UserPreferences(it.toString(), ""))
+                },
                 onRegisterClick = {
                     navController.navigate(NavRoute.Register)
+                }
+            )
+        }
+
+        composable<NavRoute.UserPreferences> {
+            OnboardingPreferenceScreenRoot(
+                onStartButtonClicked = {
+                },
+                onBackClicked = {
+                    navController.navigate(NavRoute.PinEntry(it.toString()))
                 }
             )
         }

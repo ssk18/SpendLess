@@ -7,8 +7,8 @@ data class UserPreferenceState(
 ) {
     val isStartButtonEnabled: Boolean
         get() {
-            val decimalSeparator = expensesFormatState.decimalSeparator.separator
-            val thousandsSeparator = expensesFormatState.thousandsSeparator.separator
+            val decimalSeparator = expensesFormatState.decimalSeparatorUi.separator
+            val thousandsSeparator = expensesFormatState.thousandsSeparatorUi.separator
             return decimalSeparator != thousandsSeparator
         }
 }

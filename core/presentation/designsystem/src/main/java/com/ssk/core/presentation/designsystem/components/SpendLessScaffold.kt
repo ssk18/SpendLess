@@ -17,6 +17,7 @@ fun SpendLessScaffold(
     Scaffold(
         modifier = modifier,
         bottomBar = bottomBar,
+        topBar = topBar,
         floatingActionButton = floatingActionButton,
     ) { paddingValues ->
         if (applyGradient) {

@@ -21,7 +21,8 @@ import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 
 @Composable
 fun UserPreferenceFormat(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    formattedValue: String
 ) {
     Box(
         modifier = modifier
@@ -37,7 +38,7 @@ fun UserPreferenceFormat(
     ) {
         Column {
             Text(
-                text = "-$10,382.45",
+                text = formattedValue,
                 style = MaterialTheme.typography.headlineLarge,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
@@ -57,6 +58,8 @@ fun UserPreferenceFormat(
 @Composable
 fun UserPreferenceFormatPreview() {
     SpendLessAppTheme {
-        UserPreferenceFormat()
+        UserPreferenceFormat(
+            formattedValue = "₹ 1,00,000"
+        )
     }
 }

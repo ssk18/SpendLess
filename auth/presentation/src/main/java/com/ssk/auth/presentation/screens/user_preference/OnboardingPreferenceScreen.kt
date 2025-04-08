@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,28 +20,62 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.auth.presentation.R
+import com.ssk.auth.presentation.screens.user_preference.components.BackButton
 import com.ssk.auth.presentation.screens.user_preference.components.UserPreferenceFormat
 import com.ssk.core.domain.model.Currency
+import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
+import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.components.SpendLessSegmentSelector
 import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
-import com.ssk.core.presentation.ui.components.DecimalSeparator
+import com.ssk.core.presentation.ui.ObserveAsEvents
+import com.ssk.core.presentation.ui.components.DecimalSeparatorUi
+import com.ssk.core.presentation.ui.components.ExpensesFormatUi
 import com.ssk.core.presentation.ui.components.SettingItem
-import com.ssk.core.presentation.ui.components.ThousandsSeparator
+import com.ssk.core.presentation.ui.components.ThousandsSeparatorUi
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun OnboardingPreferenceScreenRoot(
     modifier: Modifier = Modifier,
-    viewModel: UserPreferencesViewModel = koinViewModel()
+    viewModel: UserPreferencesViewModel = koinViewModel(),
+    onStartButtonClicked: () -> Unit,
+    onBackClicked: () -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    OnboardingPreferenceScreenContent(
+    ObserveAsEvents(viewModel.uiEvents) { event ->
+        when (event) {
+            UserPreferenceEvent.NavigateToDashboardScreen -> {
+                onStartButtonClicked()
+            }
+            UserPreferenceEvent.OnBackClicked -> {
+                onBackClicked()
+            }
+        }
+    }
+
+    SpendLessScaffold(
         modifier = modifier,
-        state = state ,
-        onAction = viewModel::onAction
-    )
+        topBar = {
+            IconButton(
+                onClick = {
+                    viewModel.onAction(UserPreferenceAction.OnBackClicked)
+                },
+                modifier = Modifier
+            ) {
+
+            }
+        }
+    ) {
+        OnboardingPreferenceScreenContent(
+            modifier = Modifier
+                .padding(it),
+            state = state ,
+            onAction = viewModel::onAction
+        )
+    }
+
 }
 
 @Composable
@@ -56,6 +91,11 @@ fun OnboardingPreferenceScreenContent(
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        BackButton(
+            onClick = {
+                onAction(UserPreferenceAction.OnBackClicked)
+            }
+        )
         Text(
             text = stringResource(R.string.set_spendless_to_your_preferences),
             style = MaterialTheme.typography.headlineMedium,
@@ -72,9 +112,20 @@ fun OnboardingPreferenceScreenContent(
 
         Spacer(modifier = Modifier.height(24.dp))
 
-        UserPreferenceFormat()
+        UserPreferenceFormat(
+            formattedValue = state.expensesFormatState.formattedString
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
+
+        ExpensesFormat(
+            selectedFormat = state.expensesFormatState.expenseFormat,
+            onOptionSelected = {
+                onAction(UserPreferenceAction.OnExpenseFormatUpdate(it))
+            }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         DropDownSelector(
             title = "Currency",
@@ -90,7 +141,7 @@ fun OnboardingPreferenceScreenContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         DecimalSeparator(
-            selectedDecimal = state.expensesFormatState.decimalSeparator,
+            selectedDecimal = state.expensesFormatState.decimalSeparatorUi,
             onOptionSelected = {
                 println("Selected Decimal Separator: $it")
                 onAction(UserPreferenceAction.OnDecimalSeparatorUpdate(it))
@@ -100,31 +151,40 @@ fun OnboardingPreferenceScreenContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         ThousandsSeparator(
-            selectedThousands = state.expensesFormatState.thousandsSeparator,
+            selectedThousands = state.expensesFormatState.thousandsSeparatorUi,
             onOptionSelected = {
                 onAction(UserPreferenceAction.OnThousandsSeparatorUpdate(it))
             }
         )
 
+        Spacer(modifier = Modifier.height(34.dp))
+
+        SpendLessActionButton(
+            text = "Start Tracking!",
+            enabled = state.isStartButtonEnabled,
+            onClick = {
+                onAction(UserPreferenceAction.OnStartClicked)
+            }
+        )
     }
 }
 
 @Composable
 fun DecimalSeparator(
     modifier: Modifier = Modifier,
-    selectedDecimal: DecimalSeparator,
-    onOptionSelected: (DecimalSeparator) -> Unit,
+    selectedDecimal: DecimalSeparatorUi,
+    onOptionSelected: (DecimalSeparatorUi) -> Unit,
 ) {
     SettingItem(
         modifier = modifier,
         title = "Decimal Separator"
     ) {
         SpendLessSegmentSelector(
-            segmentOptions = DecimalSeparator.entries,
+            segmentOptions = DecimalSeparatorUi.entries,
             selectedOption = selectedDecimal,
             onOptionSelected = {
 
-                onOptionSelected(it as DecimalSeparator)
+                onOptionSelected(it as DecimalSeparatorUi)
             }
         )
     }
@@ -133,18 +193,38 @@ fun DecimalSeparator(
 @Composable
 fun ThousandsSeparator(
     modifier: Modifier = Modifier,
-    selectedThousands: ThousandsSeparator,
-    onOptionSelected: (ThousandsSeparator) -> Unit,
+    selectedThousands: ThousandsSeparatorUi,
+    onOptionSelected: (ThousandsSeparatorUi) -> Unit,
 ) {
     SettingItem(
         modifier = modifier,
         title = "Thousands Separator"
     ) {
         SpendLessSegmentSelector(
-            segmentOptions = ThousandsSeparator.entries,
+            segmentOptions = ThousandsSeparatorUi.entries,
             selectedOption = selectedThousands,
             onOptionSelected = {
-                onOptionSelected(it as ThousandsSeparator)
+                onOptionSelected(it as ThousandsSeparatorUi)
+            }
+        )
+    }
+}
+
+@Composable
+fun ExpensesFormat(
+    modifier: Modifier = Modifier,
+    selectedFormat: ExpensesFormatUi,
+    onOptionSelected: (ExpensesFormatUi) -> Unit,
+) {
+    SettingItem(
+        modifier = modifier,
+        title = "Expense Format"
+    ) {
+        SpendLessSegmentSelector(
+            segmentOptions = ExpensesFormatUi.entries,
+            selectedOption = selectedFormat,
+            onOptionSelected = {
+                onOptionSelected(it as ExpensesFormatUi)
             }
         )
     }

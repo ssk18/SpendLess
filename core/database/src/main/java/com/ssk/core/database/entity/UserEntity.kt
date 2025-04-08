@@ -15,7 +15,14 @@ import androidx.room.PrimaryKey
 data class UserEntity(
     @PrimaryKey(autoGenerate = true) val userId: Long,
     @ColumnInfo(name = "username") val username: String,
-    @ColumnInfo(name = "pin_code") val pinCode: ByteArray
+    @ColumnInfo(name = "pin_code") val pinCode: ByteArray,
+    val expensesFormat: String,
+    val currency: String,
+    val decimalSeparator: String,
+    val thousandsSeparator: String,
+    val biometricsPrompt: String,
+    val sessionExpiryDuration: String,
+    val lockedOutDuration: String
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.spendless.android.application.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {

@@ -1,30 +1,75 @@
 package com.ssk.auth.presentation.screens.user_preference
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.ssk.core.domain.model.Currency
-import com.ssk.core.presentation.ui.components.DecimalSeparator
-import com.ssk.core.presentation.ui.components.ExpensesFormat
-import com.ssk.core.presentation.ui.components.ThousandsSeparator
+import com.ssk.core.domain.model.User
+import com.ssk.core.domain.model.UserSettings
+import com.ssk.core.domain.repository.IUserRepository
+import com.ssk.core.presentation.ui.components.DecimalSeparatorUi
+import com.ssk.core.presentation.ui.components.ExpensesFormatUi
+import com.ssk.core.presentation.ui.components.ThousandsSeparatorUi
+import com.ssk.core.presentation.ui.components.toDomain
 import com.ssk.core.presentation.ui.states.ExpenseFormatState
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class UserPreferencesViewModel(
-    savedStateHandle: SavedStateHandle
-): ViewModel() {
+    private val savedStateHandle: SavedStateHandle,
+    private val userRepository: IUserRepository
+) : ViewModel() {
     private val _state = MutableStateFlow(UserPreferenceState())
     val state = _state.asStateFlow()
 
-    private val username = savedStateHandle.get<String>("username") ?: ""
+    private val _uiEvents = Channel<UserPreferenceEvent>()
+    val uiEvents = _uiEvents.receiveAsFlow()
 
     fun onAction(action: UserPreferenceAction) {
-        when(action) {
+        when (action) {
             is UserPreferenceAction.OnCurrencyUpdate -> updateCurrency(action.currency)
             is UserPreferenceAction.OnDecimalSeparatorUpdate -> updateDecimalSeparator(action.format)
             is UserPreferenceAction.OnExpenseFormatUpdate -> updateExpenseFormat(action.format)
             is UserPreferenceAction.OnThousandsSeparatorUpdate -> updateThousandsSeparator(action.format)
+            UserPreferenceAction.OnBackClicked -> navigateToCreatePin()
+            UserPreferenceAction.OnStartClicked -> saveUser()
+        }
+    }
+
+    private fun navigateToCreatePin() {
+        viewModelScope.launch {
+            _uiEvents.send(UserPreferenceEvent.OnBackClicked)
+        }
+    }
+
+    private fun saveUser() {
+        val username = savedStateHandle.get<String>("username")
+            ?: throw IllegalArgumentException("User name cannot be empty")
+        val pin = savedStateHandle.get<String>("pinCode")
+            ?: throw IllegalArgumentException("Pin cannot be empty")
+        Log.d("UserPreferencesViewModel", "saveUser: $username, $pin")
+        val expenseFormatState = state.value.expensesFormatState
+        val settings = UserSettings(
+            currency = expenseFormatState.currency,
+            decimalSeparator = expenseFormatState.decimalSeparatorUi.toDomain(),
+            thousandsSeparator = expenseFormatState.thousandsSeparatorUi.toDomain(),
+            expensesFormat = expenseFormatState.expenseFormat.toDomain()
+        )
+
+        val user = User(
+            username = username,
+            pinCode = pin,
+            settings = settings
+        )
+
+        viewModelScope.launch {
+            userRepository.registerUser(user)
+            _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)
         }
     }
 
@@ -36,23 +81,23 @@ class UserPreferencesViewModel(
         }
     }
 
-    private fun updateDecimalSeparator(decimalSeparator: DecimalSeparator) {
+    private fun updateDecimalSeparator(decimalSeparatorUi: DecimalSeparatorUi) {
         updateExpenseFormatState { currentState ->
             currentState.copy(
-                decimalSeparator = decimalSeparator
+                decimalSeparatorUi = decimalSeparatorUi
             )
         }
     }
 
-    private fun updateThousandsSeparator(thousandsSeparator: ThousandsSeparator) {
+    private fun updateThousandsSeparator(thousandsSeparatorUi: ThousandsSeparatorUi) {
         updateExpenseFormatState { currentState ->
             currentState.copy(
-                thousandsSeparator = thousandsSeparator
+                thousandsSeparatorUi = thousandsSeparatorUi
             )
         }
     }
 
-    private fun updateExpenseFormat(expensesFormat: ExpensesFormat) {
+    private fun updateExpenseFormat(expensesFormat: ExpensesFormatUi) {
         updateExpenseFormatState { currentState ->
             currentState.copy(
                 expenseFormat = expensesFormat
@@ -67,5 +112,4 @@ class UserPreferencesViewModel(
             )
         }
     }
-
 }

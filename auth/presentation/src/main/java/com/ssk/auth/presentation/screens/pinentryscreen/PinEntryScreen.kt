@@ -52,7 +52,8 @@ fun PinEntryScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: PinEntryViewModel = koinViewModel<PinEntryViewModel>(),
     onNavigateBack: () -> Unit,
-    onNavigateToHome: (userId: Long) -> Unit
+    onNavigateToHome: (userId: Long) -> Unit,
+    onNavigateToUserPreferences: (String, String) -> Unit
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -80,6 +81,10 @@ fun PinEntryScreenRoot(
                     message = events.message.asString(context),
                     duration = SnackbarDuration.Short,
                 )
+            }
+
+            is PinEntryEvents.NavigateToUserPreferences -> {
+                onNavigateToUserPreferences(events.userName, events.pinCode)
             }
         }
     }

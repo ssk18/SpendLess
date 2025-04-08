@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryState.PinEntryMode
-import com.ssk.core.domain.model.User
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.presentation.designsystem.components.SnackbarType
 import com.ssk.core.presentation.ui.UiText
@@ -91,12 +90,6 @@ class PinEntryViewModel(
                 PinEntryMode.CONFIRM -> {
                     if (currentState.pin == currentState.initialPin) {
                         try {
-                            userRepository.registerUser(
-                                User(
-                                    username = username,
-                                    pinCode = currentState.pin.toString()
-                                )
-                            )
                             _state.update {
                                 it.copy(
                                     isLoading = false,
@@ -105,10 +98,7 @@ class PinEntryViewModel(
                                 )
                             }
                             _uiEvents.send(
-                                PinEntryEvents.ShowSnackbar(
-                                    message = UiText.StringResource(R.string.pin_created_successfully),
-                                    type = SnackbarType.Success
-                                )
+                                PinEntryEvents.NavigateToUserPreferences(username, currentState.pin)
                             )
                         } catch (e: Exception) {
                             if (e is CancellationException) throw e

@@ -18,7 +18,7 @@ import com.ssk.core.presentation.designsystem.components.SpendLessSegmentSelecto
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.ui.R
 
-enum class ExpensesFormat(override val label: @Composable (() -> Unit)) : SegmentOption {
+enum class ExpensesFormatUi(override val label: @Composable (() -> Unit)) : SegmentOption {
     MIUNS(
         label = {
             OptionText(text = stringResource(R.string._10))
@@ -31,7 +31,7 @@ enum class ExpensesFormat(override val label: @Composable (() -> Unit)) : Segmen
     ),
 }
 
-enum class DecimalSeparator(
+enum class DecimalSeparatorUi(
     override val label: @Composable (() -> Unit),
     val separator: String
 ) : SegmentOption {
@@ -49,7 +49,7 @@ enum class DecimalSeparator(
     ),
 }
 
-enum class ThousandsSeparator(
+enum class ThousandsSeparatorUi(
     override val label: @Composable (() -> Unit),
     val separator: String
 ) : SegmentOption {
@@ -104,13 +104,13 @@ fun SpendLessSegmentedSelectorPreview() {
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             SpendLessSegmentSelector(
-                segmentOptions = ThousandsSeparator.entries,
-                selectedOption = ThousandsSeparator.DOT,
+                segmentOptions = ThousandsSeparatorUi.entries,
+                selectedOption = ThousandsSeparatorUi.DOT,
                 onOptionSelected = {},
             )
             SpendLessSegmentSelector(
-                segmentOptions = DecimalSeparator.entries,
-                selectedOption = DecimalSeparator.DOT,
+                segmentOptions = DecimalSeparatorUi.entries,
+                selectedOption = DecimalSeparatorUi.DOT,
                 onOptionSelected = {},
             )
         }

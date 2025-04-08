@@ -1,22 +1,22 @@
 package com.ssk.core.presentation.ui.states
 
 import com.ssk.core.domain.model.Currency
-import com.ssk.core.presentation.ui.components.DecimalSeparator
-import com.ssk.core.presentation.ui.components.ExpensesFormat
-import com.ssk.core.presentation.ui.components.ThousandsSeparator
+import com.ssk.core.presentation.ui.components.DecimalSeparatorUi
+import com.ssk.core.presentation.ui.components.ExpensesFormatUi
+import com.ssk.core.presentation.ui.components.ThousandsSeparatorUi
 
 data class ExpenseFormatState(
-    val expenseFormat: ExpensesFormat = ExpensesFormat.MIUNS,
+    val expenseFormat: ExpensesFormatUi = ExpensesFormatUi.MIUNS,
     val currency: Currency = Currency.INR,
-    val decimalSeparator: DecimalSeparator = DecimalSeparator.DOT,
-    val thousandsSeparator: ThousandsSeparator = ThousandsSeparator.DOT
+    val decimalSeparatorUi: DecimalSeparatorUi = DecimalSeparatorUi.DOT,
+    val thousandsSeparatorUi: ThousandsSeparatorUi = ThousandsSeparatorUi.DOT
 ) {
     val formattedString: String
         get() {
-            val example = "${currency.symbol}10${thousandsSeparator.separator}382${decimalSeparator.separator}45"
+            val example = "${currency.symbol}10${thousandsSeparatorUi.separator}382${decimalSeparatorUi.separator}45"
             return when (expenseFormat) {
-                ExpensesFormat.MIUNS -> "-$example"
-                ExpensesFormat.BRACKETS -> "($example)"
+                ExpensesFormatUi.MIUNS -> "-$example"
+                ExpensesFormatUi.BRACKETS -> "($example)"
             }
         }
 }

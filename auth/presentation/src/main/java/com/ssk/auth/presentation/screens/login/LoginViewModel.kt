@@ -56,6 +56,7 @@ class LoginViewModel(
             when (isPinValid) {
                 is Result.Success -> {
                     _events.send(LoginEvents.ShowSnackbar(UiText.StringResource(R.string.login_successful)))
+                    _events.send(LoginEvents.NavigateToUserPreferences(userName))
                     _state.update {
                         it.copy(
                             snackbarType = SnackbarType.Success
