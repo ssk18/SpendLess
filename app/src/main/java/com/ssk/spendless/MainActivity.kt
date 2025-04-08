@@ -7,10 +7,14 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.spendless.navigation.SpendLessNavigation
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+
+    private val sessionRepository: ISessionRepository by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,5 +29,10 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onUserInteraction() {
+        super.onUserInteraction()
+        sessionRepository.refreshSession()
     }
 }
