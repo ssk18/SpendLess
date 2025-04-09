@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.ssk.core.domain.model.Currency
 import com.ssk.core.domain.model.User
 import com.ssk.core.domain.model.UserSettings
+import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.presentation.ui.components.DecimalSeparatorUi
 import com.ssk.core.presentation.ui.components.ExpensesFormatUi
@@ -22,7 +23,8 @@ import kotlinx.coroutines.launch
 
 class UserPreferencesViewModel(
     private val savedStateHandle: SavedStateHandle,
-    private val userRepository: IUserRepository
+    private val userRepository: IUserRepository,
+    private val sessionRepository: ISessionRepository
 ) : ViewModel() {
     private val _state = MutableStateFlow(UserPreferenceState())
     val state = _state.asStateFlow()
@@ -69,6 +71,7 @@ class UserPreferencesViewModel(
 
         viewModelScope.launch {
             userRepository.registerUser(user)
+            sessionRepository.logIn(username)
             _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)
         }
     }

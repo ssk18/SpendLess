@@ -19,7 +19,7 @@ import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.ui.R
 
 enum class ExpensesFormatUi(override val label: @Composable (() -> Unit)) : SegmentOption {
-    MIUNS(
+    MINUS(
         label = {
             OptionText(text = stringResource(R.string._10))
         }

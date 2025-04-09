@@ -9,7 +9,6 @@ data class UserSettings(
     val sessionExpiryDuration: SessionExpiryDuration = SessionExpiryDuration.FIVE_MIN,
     val lockedOutDuration: LockedOutDuration = LockedOutDuration.THIRTY_SEC
 )
-
 enum class ExpensesFormat {
     MINUS,
     BRACKETS,

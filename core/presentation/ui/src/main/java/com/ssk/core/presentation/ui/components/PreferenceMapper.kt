@@ -6,7 +6,7 @@ import com.ssk.core.domain.model.ThousandsSeparator
 
 fun ExpensesFormatUi.toDomain(): ExpensesFormat {
     return when (this) {
-        ExpensesFormatUi.MIUNS -> ExpensesFormat.MINUS
+        ExpensesFormatUi.MINUS -> ExpensesFormat.MINUS
         ExpensesFormatUi.BRACKETS -> ExpensesFormat.BRACKETS
     }
 }
@@ -28,7 +28,7 @@ fun ThousandsSeparatorUi.toDomain(): ThousandsSeparator {
 
 fun ExpensesFormat.toUi(): ExpensesFormatUi {
     return when (this) {
-        ExpensesFormat.MINUS -> ExpensesFormatUi.MIUNS
+        ExpensesFormat.MINUS -> ExpensesFormatUi.MINUS
         ExpensesFormat.BRACKETS -> ExpensesFormatUi.BRACKETS
     }
 }

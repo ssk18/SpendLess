@@ -6,7 +6,7 @@ import com.ssk.core.presentation.ui.components.ExpensesFormatUi
 import com.ssk.core.presentation.ui.components.ThousandsSeparatorUi
 
 data class ExpenseFormatState(
-    val expenseFormat: ExpensesFormatUi = ExpensesFormatUi.MIUNS,
+    val expenseFormat: ExpensesFormatUi = ExpensesFormatUi.MINUS,
     val currency: Currency = Currency.INR,
     val decimalSeparatorUi: DecimalSeparatorUi = DecimalSeparatorUi.DOT,
     val thousandsSeparatorUi: ThousandsSeparatorUi = ThousandsSeparatorUi.DOT
@@ -15,7 +15,7 @@ data class ExpenseFormatState(
         get() {
             val example = "${currency.symbol}10${thousandsSeparatorUi.separator}382${decimalSeparatorUi.separator}45"
             return when (expenseFormat) {
-                ExpensesFormatUi.MIUNS -> "-$example"
+                ExpensesFormatUi.MINUS -> "-$example"
                 ExpensesFormatUi.BRACKETS -> "($example)"
             }
         }

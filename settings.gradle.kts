@@ -19,7 +19,7 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:convention:testClasses"))
+//gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:convention:testClasses"))
 rootProject.name = "SpendLess"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")
@@ -32,3 +32,8 @@ include(":core:presentation:ui")
 include(":core:data")
 include(":core:domain")
 include(":core:database")
+include(":dashboard")
+
+include(":dashboard:data")
+include(":dashboard:presentation")
+include(":dashboard:domain")
