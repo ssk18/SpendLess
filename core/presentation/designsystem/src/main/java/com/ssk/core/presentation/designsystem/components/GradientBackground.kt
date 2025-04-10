@@ -36,27 +36,33 @@ fun SpendLessGradientBackground(
     Box(
         modifier = modifier
             .fillMaxSize()
-            .background(
-                brush = Brush.horizontalGradient(
-                    listOf(
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
-                        onPrimaryFixed
+            .background(color = onPrimaryFixed)
+    ) {
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .background(
+                    brush = Brush.horizontalGradient(
+                        listOf(
+                            MaterialTheme.colorScheme.primary.copy(alpha = 0.5f),
+                            onPrimaryFixed
+                        )
                     )
                 )
-            )
-    )
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .then(
-                if (hasToolbar) {
-                    Modifier
-                } else {
-                    Modifier.systemBarsPadding()
-                }
-            )
-    ) {
-        content()
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(
+                    if (hasToolbar) {
+                        Modifier
+                    } else {
+                        Modifier.systemBarsPadding()
+                    }
+                )
+        ) {
+            content()
+        }
     }
 }
 

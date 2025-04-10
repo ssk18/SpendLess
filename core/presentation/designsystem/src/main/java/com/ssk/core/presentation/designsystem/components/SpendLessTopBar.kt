@@ -94,7 +94,7 @@ fun AppTopBar(
                 icon = icon,
                 iconColor = endIcon1Color,
                 backgroundColor = endIcon1BackgroundColor,
-                onClick = onEndIcon1Click
+                onClick = onEndIcon1Click,
             )
         }
 

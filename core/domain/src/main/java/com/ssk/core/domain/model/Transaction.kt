@@ -74,17 +74,17 @@ data class Transaction(
 
 sealed interface TransactionType
 
-enum class Expense : TransactionType {
-    HOME,
-    FOOD,
-    ENTERTAINMENT,
-    CLOTHING,
-    HEALTH,
-    PERSONAL_CARE,
-    TRANSPORTATION,
-    EDUCATION,
-    SAVING,
-    OTHER
+enum class Expense(val type: String) : TransactionType {
+    HOME("Home"),
+    FOOD("Food & Groceries"),
+    ENTERTAINMENT("Entertainment"),
+    CLOTHING("Clothing & Accessories"),
+    HEALTH("Health & Wellness"),
+    PERSONAL_CARE("Personal Care"),
+    TRANSPORTATION("Transportation"),
+    EDUCATION("Education"),
+    SAVING("Saving & Investments"),
+    OTHER("Other")
 }
 
 data object Income : TransactionType

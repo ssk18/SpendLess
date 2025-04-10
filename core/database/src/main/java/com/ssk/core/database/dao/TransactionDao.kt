@@ -23,4 +23,14 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions WHERE repeatType != :repeatType")
     suspend fun getRecurringTransactions(repeatType: RepeatType = RepeatType.NOT_REPEAT): List<TransactionEntity>
 
+    @Query("SELECT * FROM transactions")
+    suspend fun getAllTransactions(): List<TransactionEntity>
+
+@Query(
+    """
+        SELECT * FROM transactions
+        WHERE transactionType = "EXPENSE" AND userId = :userId
+    """
+)
+fun getExpenseTransactions(userId: Long): Flow<List<String>>
 }
