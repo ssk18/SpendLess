@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.ssk.core.domain.model.Transaction
@@ -47,39 +50,58 @@ fun LatestTransactionView(
     amountSettings: AmountSettings,
     onShowAllClick: () -> Unit,
 ) {
-    TransactionHeader(
-        onShowAllClick = onShowAllClick
-    )
-
-    Spacer(modifier = Modifier.height(16.dp))
-
-    LazyColumn(
-        modifier = modifier.fillMaxSize()
+    Surface(
+        modifier = modifier
+            .width(LocalConfiguration.current.screenWidthDp.dp)
+            .fillMaxHeight(),
+        contentColor = MaterialTheme.colorScheme.onSurface,
+        color = MaterialTheme.colorScheme.background,
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
-        transactions.entries.forEach { (instant, transactions) ->
-            stickyHeader {
-                Text(
-                    text = InstantFormatter.formatToRelativeDay(instant).asString(),
-                    style = MaterialTheme.typography.labelSmall.copy(
-                        color = MaterialTheme.colorScheme.onSurface.copy(
-                            alpha = 0.70f
-                        )
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp, vertical = 8.dp)
-                )
-            }
-            items(
-                items = transactions,
-                key = { transaction -> transaction.id }
-            ) { transaction ->
-                TransactionItemView(
-                    transaction = transaction,
-                    amountSettings = amountSettings
-                )
-            }
-        }
+       if (transactions.isEmpty()) {
+           EmptyTransactionView()
+       } else {
+           Column(
+               modifier = modifier.fillMaxSize().padding(top = 12.dp)
+           ) {
+               TransactionHeader(
+                   onShowAllClick = onShowAllClick
+               )
+
+               Spacer(modifier = Modifier.height(16.dp))
+
+               LazyColumn(
+                   modifier = modifier
+                       .fillMaxSize()
+                       .padding(horizontal = 12.dp)
+               ) {
+                   transactions.entries.forEach { (instant, transactions) ->
+                       stickyHeader {
+                           Text(
+                               text = InstantFormatter.formatToRelativeDay(instant).asString(),
+                               style = MaterialTheme.typography.labelSmall.copy(
+                                   color = MaterialTheme.colorScheme.onSurface.copy(
+                                       alpha = 0.70f
+                                   )
+                               ),
+                               modifier = Modifier
+                                   .fillMaxWidth()
+                                   .padding(horizontal = 4.dp, vertical = 8.dp)
+                           )
+                       }
+                       items(
+                           items = transactions,
+                           key = { transaction -> transaction.id }
+                       ) { transaction ->
+                           TransactionItemView(
+                               transaction = transaction,
+                               amountSettings = amountSettings
+                           )
+                       }
+                   }
+               }
+           }
+       }
     }
 }
 

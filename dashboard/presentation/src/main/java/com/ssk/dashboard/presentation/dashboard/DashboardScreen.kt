@@ -1,18 +1,16 @@
 package com.ssk.dashboard.presentation.dashboard
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.ssk.core.domain.model.RepeatType
+import com.ssk.core.domain.model.Transaction
+import com.ssk.core.domain.model.TransactionType
 import com.ssk.core.presentation.designsystem.components.AppTopBar
 import com.ssk.core.presentation.designsystem.components.SpendLessFloatingActionButton
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
@@ -20,7 +18,8 @@ import com.ssk.core.presentation.designsystem.theme.DownloadIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
-import com.ssk.dashboard.presentation.dashboard.components.EmptyTransactionView
+import com.ssk.dashboard.presentation.dashboard.components.LatestTransactionView
+import java.time.Instant
 
 @Composable
 fun DashboardScreen(
@@ -50,33 +49,20 @@ fun DashboardScreen(
                 .padding(top = padding.calculateTopPadding())
         ) {
             Column {
-                DashBoardContent(state = state)
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Box(
+                DashBoardContent(
+                    state = state,
                     modifier = Modifier
                         .weight(1f)
-                        .background(
-                            shape = RoundedCornerShape(
-                                topStart = 16.dp,
-                                topEnd = 16.dp
-                            ),
-                            color = MaterialTheme.colorScheme.background
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 16.dp, vertical = 16.dp)
-                    ) {
-                        if (state.latestTransactions.isEmpty()) {
-                            EmptyTransactionView()
-                        } else {
+                )
 
-                        }
-                    }
-                }
+                LatestTransactionView(
+                    transactions = state.latestTransactions,
+                    amountSettings = state.amountSettings,
+                    onShowAllClick = {
+                        onAction(DashboardAction.NavigateToAllTransactions)
+                    },
+                    modifier = Modifier.weight(1.4f)
+                )
             }
         }
     }
@@ -105,12 +91,71 @@ fun DashboardTopBar(
     )
 }
 
+private fun createTestTransactions(): Map<Instant, List<Transaction>> {
+    val today = Instant.now()
+    val yesterday = today.minusSeconds(24 * 60 * 60) // Вчора
+
+    val transactions = listOf(
+        Transaction(
+            id = 0,
+            userId = 0L,
+            title = "Salary",
+            amount = 1000f,
+            transactionType = TransactionType.INCOME,
+            repeatType = RepeatType.NOT_REPEAT,
+            note = "Enjoyed a coffee and a snack at Starbucks with Rick and M.",
+            transactionDate = today.toEpochMilli()
+        ),
+        Transaction(
+            id = 1,
+            userId = 0L,
+            title = "Food",
+            amount = 50f,
+            transactionType = TransactionType.FOOD,
+            repeatType = RepeatType.NOT_REPEAT,
+            note = "Enjoyed a coffee and a snack at Starbucks with Rick and M.",
+            transactionDate = today.toEpochMilli()
+        ),
+        Transaction(
+            id = 2,
+            userId = 0L,
+            title = "Transport",
+            amount = 30f,
+            transactionType = TransactionType.TRANSPORTATION,
+            repeatType = RepeatType.NOT_REPEAT,
+            transactionDate = yesterday.toEpochMilli()
+        ),
+        Transaction(
+            id = 3,
+            userId = 0L,
+            title = "Entertainment",
+            amount = 20f,
+            transactionType = TransactionType.ENTERTAINMENT,
+            repeatType = RepeatType.NOT_REPEAT,
+            transactionDate = yesterday.toEpochMilli()
+        ),
+        Transaction(
+            id = 4,
+            userId = 0L,
+            title = "Clothing",
+            amount = 80f,
+            transactionType = TransactionType.CLOTHING,
+            repeatType = RepeatType.NOT_REPEAT,
+            transactionDate = yesterday.toEpochMilli()
+        )
+    )
+
+    return transactions.groupBy { Instant.ofEpochMilli(it.transactionDate) }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun PreviewDashboardScreen() {
     SpendLessAppTheme {
         DashboardScreen(
-            state = DashboardState(),
+            state = DashboardState(
+                latestTransactions = createTestTransactions(),
+            ),
             onAction = {}
         )
     }

@@ -1,5 +1,6 @@
 package com.ssk.dashboard.presentation.dashboard.components
 
+import SpendLessWhite
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,6 +25,7 @@ import com.ssk.core.presentation.designsystem.theme.NoteIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.designsystem.theme.primaryFixed
 import com.ssk.core.presentation.designsystem.theme.secondaryFixed
+import com.ssk.core.presentation.designsystem.theme.secondaryFixedDim
 
 @Composable
 fun TransactionIcon(
@@ -30,9 +33,14 @@ fun TransactionIcon(
     transaction: Transaction
 ) {
     val transactionType = transaction.transactionType
-    val backgroundColor = when(transactionType) {
+    val backgroundColor = when (transactionType) {
         TransactionType.INCOME -> secondaryFixed.copy(alpha = 0.4f)
         else -> primaryFixed
+    }
+
+    val noteIconTint = when (transactionType) {
+        TransactionType.INCOME -> secondaryFixedDim
+        else -> MaterialTheme.colorScheme.primaryContainer
     }
 
     Box(
@@ -51,13 +59,24 @@ fun TransactionIcon(
         )
 
         transaction.note?.let {
-            Icon(
-                imageVector = NoteIcon,
-                contentDescription = null,
+            Box(
                 modifier = Modifier
                     .size(20.dp)
-                    .align(Alignment.BottomEnd)
-            )
+                    .background(
+                        shape = RoundedCornerShape(6.dp),
+                        color = SpendLessWhite
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Icon(
+                    imageVector = NoteIcon,
+                    contentDescription = null,
+                    tint = noteIconTint,
+                    modifier = Modifier
+                        .size(14.dp)
+                )
+            }
         }
     }
 }

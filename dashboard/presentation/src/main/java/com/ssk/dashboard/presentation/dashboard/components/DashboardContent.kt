@@ -189,7 +189,7 @@ fun LargestTransaction(
                 )
             } else {
                 Text(
-                    text = stringResource(R.string.your_largest_transaction_will_appear_here),
+                    text = "Your largest transaction will appear here",
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
