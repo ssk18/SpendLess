@@ -10,7 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.ssk.dashboard.presentation.R
 
 @Composable
 fun TransactionHeader(
@@ -25,7 +27,7 @@ fun TransactionHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "Latest Transactions",
+            text = stringResource(R.string.latest_transactions),
             style = MaterialTheme.typography.titleLarge
         )
         Text(
@@ -33,7 +35,7 @@ fun TransactionHeader(
                 .clickable {
                     onShowAllClick()
                 },
-            text = "Show all",
+            text = stringResource(R.string.show_all),
             style = MaterialTheme.typography.titleMedium.copy(
                 color = MaterialTheme.colorScheme.primary
             )

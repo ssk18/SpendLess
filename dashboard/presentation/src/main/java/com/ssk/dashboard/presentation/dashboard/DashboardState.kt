@@ -18,7 +18,8 @@ data class DashboardState(
     data class AccountInfoState(
         val accountBalance: String = "",
         val popularCategory: TransactionCategoryTypeUI? = null,
-        val largestTransaction: LargestTransaction? = null
+        val largestTransaction: LargestTransaction? = null,
+        val previousWeekExpenseAmount: String = ""
     )
 
     data class LargestTransaction(

@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ssk.core.presentation.designsystem.components.SpendLessGradientBackground
+import com.ssk.core.presentation.designsystem.model.TransactionCategoryTypeUI
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.designsystem.theme.primaryFixed
 import com.ssk.core.presentation.designsystem.theme.secondaryFixed
@@ -46,22 +47,19 @@ fun DashBoardContent(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         Spacer(modifier = Modifier.height(36.dp))
         Text(
             text = state.accountInfoState.accountBalance,
-            style = MaterialTheme.typography.bodySmall.copy(
-                color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f)
-            )
+            style = MaterialTheme.typography.displayLarge,
+            color = MaterialTheme.colorScheme.onPrimary
         )
         Text(
-            text = "Total Balance",
-            style = MaterialTheme.typography.bodyLarge.copy(
-                color = MaterialTheme.colorScheme.onPrimary
-            ),
-            modifier = Modifier
-                .align(Alignment.CenterHorizontally)
+            text = "Account balance",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
         )
 
         Spacer(modifier = Modifier.height(26.dp))
@@ -70,8 +68,24 @@ fun DashBoardContent(
             PopularCategoryView(
                 icon = it.symbol,
                 title = it.title,
-                description = "Most popular category"
+                description = "Popular category"
             )
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Row(
+            modifier = Modifier
+                .height(72.dp)
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            LargestTransaction(
+                largestTransaction = state.accountInfoState.largestTransaction,
+                modifier = Modifier.weight(1f)
+            )
+            PreviousWeekExpense(amount = state.accountInfoState.previousWeekExpenseAmount)
         }
 
     }
@@ -175,7 +189,7 @@ fun LargestTransaction(
                 )
             } else {
                 Text(
-                    text = "Your largest transaction will appear here",
+                    text = stringResource(R.string.your_largest_transaction_will_appear_here),
                     modifier = Modifier.padding(12.dp),
                     style = MaterialTheme.typography.titleMedium,
                     textAlign = TextAlign.Center
@@ -273,46 +287,25 @@ fun PreviousWeekExpense(
     }
 }
 
-
-@Preview(showBackground = true)
+@Preview(showBackground = true, name = "Dashboard Content Preview")
 @Composable
-fun LargestTransactionPreview() {
+fun DashboardContentPreview() {
     SpendLessAppTheme {
         SpendLessGradientBackground {
-            LargestTransaction(
-                largestTransaction = DashboardState.LargestTransaction(
-                    name = "Transaction",
-                    amount = "$1000",
-                    date = "2023-01-01"
-                ),
-                modifier = Modifier.padding(8.dp)
-            )
-
-            LargestTransaction(
-                largestTransaction = null,
-                modifier = Modifier.padding(8.dp)
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-fun PopularCategoryViewPreview() {
-    SpendLessAppTheme {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
-        ) {
-            SpendLessGradientBackground {
-                PopularCategoryView(
-                    modifier = Modifier.padding(16.dp),
-                    icon = "🍕",
-                    title = "Food & Groceries",
-                    description = "Most popular category"
+            DashBoardContent(
+                state = DashboardState(
+                    accountInfoState = DashboardState.AccountInfoState(
+                        accountBalance = "$1000",
+                        popularCategory = TransactionCategoryTypeUI.ENTERTAINMENT,
+                        largestTransaction = DashboardState.LargestTransaction(
+                            name = "McDonald's",
+                            amount = "$50",
+                            date = "12/12/2022"
+                        ),
+                        previousWeekExpenseAmount = "$200"
+                    )
                 )
-            }
+            )
         }
     }
 }
