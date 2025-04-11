@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -85,6 +86,10 @@ fun DashboardTopBar(
         onEndIcon2Click = {
             onAction(DashboardAction.NavigateToSettings)
         },
+        endIcon1BackgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
+        endIcon1Color = MaterialTheme.colorScheme.onPrimary,
+        endIcon2BackgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
+        endIcon2Color = MaterialTheme.colorScheme.onPrimary,
         modifier = Modifier.padding(
             horizontal = 8.dp
         )
