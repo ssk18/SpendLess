@@ -11,5 +11,6 @@
     <string name="transaction_fetch_error">Transaction failed\n</string>
     <string name="export_failed">export failed</string>    <string name="_10">-$10</string>
     <string name="parentheses_10">($10)</string>
-
+    <string name="today">TODAY</string>
+    <string name="yesterday">YESTERDAY</string>
 </resources>

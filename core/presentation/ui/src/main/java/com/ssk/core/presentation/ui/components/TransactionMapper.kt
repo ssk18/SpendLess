@@ -1,38 +1,39 @@
 package com.ssk.core.presentation.ui.components
 
-import com.ssk.core.domain.model.Expense
 import com.ssk.core.domain.model.RepeatType
+import com.ssk.core.domain.model.TransactionType
 import com.ssk.core.presentation.designsystem.model.RecurringTypeUI
 import com.ssk.core.presentation.designsystem.model.TransactionCategoryTypeUI
 
-fun Expense.toUi(): TransactionCategoryTypeUI {
+fun TransactionType.toUi(): TransactionCategoryTypeUI {
     return when (this) {
-        Expense.HOME -> TransactionCategoryTypeUI.HOME
-        Expense.FOOD -> TransactionCategoryTypeUI.FOOD
-        Expense.ENTERTAINMENT -> TransactionCategoryTypeUI.ENTERTAINMENT
-        Expense.CLOTHING -> TransactionCategoryTypeUI.CLOTHING
-        Expense.HEALTH -> TransactionCategoryTypeUI.HEALTH
-        Expense.PERSONAL_CARE -> TransactionCategoryTypeUI.PERSONAL_CARE
-        Expense.TRANSPORTATION -> TransactionCategoryTypeUI.TRANSPORTATION
-        Expense.EDUCATION -> TransactionCategoryTypeUI.EDUCATION
-        Expense.SAVING -> TransactionCategoryTypeUI.SAVINGS
-        Expense.OTHER -> TransactionCategoryTypeUI.OTHER
+        TransactionType.HOME -> TransactionCategoryTypeUI.HOME
+        TransactionType.FOOD -> TransactionCategoryTypeUI.FOOD
+        TransactionType.ENTERTAINMENT -> TransactionCategoryTypeUI.ENTERTAINMENT
+        TransactionType.CLOTHING -> TransactionCategoryTypeUI.CLOTHING
+        TransactionType.HEALTH -> TransactionCategoryTypeUI.HEALTH
+        TransactionType.PERSONAL_CARE -> TransactionCategoryTypeUI.PERSONAL_CARE
+        TransactionType.TRANSPORTATION -> TransactionCategoryTypeUI.TRANSPORTATION
+        TransactionType.EDUCATION -> TransactionCategoryTypeUI.EDUCATION
+        TransactionType.SAVINGS -> TransactionCategoryTypeUI.SAVINGS
+        TransactionType.OTHER -> TransactionCategoryTypeUI.OTHER
+        TransactionType.INCOME -> TransactionCategoryTypeUI.INCOME
     }
 }
 
-fun TransactionCategoryTypeUI.toDomain(): Expense {
+fun TransactionCategoryTypeUI.toDomain(): TransactionType {
     return when (this) {
-        TransactionCategoryTypeUI.HOME -> Expense.HOME
-        TransactionCategoryTypeUI.FOOD -> Expense.FOOD
-        TransactionCategoryTypeUI.ENTERTAINMENT -> Expense.ENTERTAINMENT
-        TransactionCategoryTypeUI.CLOTHING -> Expense.CLOTHING
-        TransactionCategoryTypeUI.HEALTH -> Expense.HEALTH
-        TransactionCategoryTypeUI.PERSONAL_CARE -> Expense.PERSONAL_CARE
-        TransactionCategoryTypeUI.TRANSPORTATION -> Expense.TRANSPORTATION
-        TransactionCategoryTypeUI.EDUCATION -> Expense.EDUCATION
-        TransactionCategoryTypeUI.SAVINGS -> Expense.SAVING
-        TransactionCategoryTypeUI.OTHER -> Expense.OTHER
-        TransactionCategoryTypeUI.INCOME -> TODO()
+        TransactionCategoryTypeUI.HOME -> TransactionType.HOME
+        TransactionCategoryTypeUI.FOOD -> TransactionType.FOOD
+        TransactionCategoryTypeUI.ENTERTAINMENT -> TransactionType.ENTERTAINMENT
+        TransactionCategoryTypeUI.CLOTHING -> TransactionType.CLOTHING
+        TransactionCategoryTypeUI.HEALTH -> TransactionType.HEALTH
+        TransactionCategoryTypeUI.PERSONAL_CARE -> TransactionType.PERSONAL_CARE
+        TransactionCategoryTypeUI.TRANSPORTATION -> TransactionType.TRANSPORTATION
+        TransactionCategoryTypeUI.EDUCATION -> TransactionType.EDUCATION
+        TransactionCategoryTypeUI.SAVINGS -> TransactionType.SAVINGS
+        TransactionCategoryTypeUI.OTHER -> TransactionType.OTHER
+        TransactionCategoryTypeUI.INCOME -> TransactionType.INCOME
     }
 }
 

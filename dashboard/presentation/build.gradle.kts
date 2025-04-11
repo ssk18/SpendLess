@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    namespace = "com.ssk.dashboard.data"
+    namespace = "com.ssk.dashboard.presentation"
 }
 
 dependencies {

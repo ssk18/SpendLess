@@ -1,5 +1,6 @@
 package com.ssk.core.domain.model
 
+import com.ssk.core.domain.model.TransactionType.values
 import java.time.Instant
 import java.time.Year
 import java.time.ZoneId
@@ -72,22 +73,37 @@ data class Transaction(
     }
 }
 
-sealed interface TransactionType
+enum class TransactionType(val symbol: String, val type: String) {
+    HOME("\uD83C\uDFE0", "Home"),
+    FOOD("\uD83C\uDF55", "Food & Groceries"),
+    ENTERTAINMENT("\uD83D\uDCBB", "Entertainment"),
+    CLOTHING("\uD83D\uDC54", "Clothing & Accessories"),
+    HEALTH("❤\uFE0F", "Health & Wellness"),
+    PERSONAL_CARE("\uD83D\uDEC1", "Personal Care"),
+    TRANSPORTATION("\uD83D\uDE97", "Transportation"),
+    EDUCATION("\uD83C\uDF93", "Education"),
+    SAVINGS("\uD83D\uDC8E", "Saving & Investments"),
+    OTHER("⚙\uFE0F", "Other"),
+    INCOME("\uD83D\uDCB0", "Income");
 
-enum class Expense(val type: String) : TransactionType {
-    HOME("Home"),
-    FOOD("Food & Groceries"),
-    ENTERTAINMENT("Entertainment"),
-    CLOTHING("Clothing & Accessories"),
-    HEALTH("Health & Wellness"),
-    PERSONAL_CARE("Personal Care"),
-    TRANSPORTATION("Transportation"),
-    EDUCATION("Education"),
-    SAVING("Saving & Investments"),
-    OTHER("Other")
+    private fun isIncome(): Boolean {
+        return this == INCOME
+    }
+
+    fun isExpense(): Boolean {
+        return !isIncome()
+    }
+
+    companion object {
+        fun incomeCategories(): Array<TransactionType> {
+            return arrayOf(INCOME)
+        }
+
+        fun expenseCategories(): Array<TransactionType> {
+            return values().filter { it.isExpense() }.toTypedArray()
+        }
+    }
 }
-
-data object Income : TransactionType
 
 enum class RepeatType {
     NOT_REPEAT,

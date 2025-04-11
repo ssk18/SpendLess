@@ -19,7 +19,9 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-//gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:convention:testClasses"))
+
+gradle.startParameter.excludedTaskNames.addAll(listOf(":build-logic:convention:testClasses"))
+
 rootProject.name = "SpendLess"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 include(":app")

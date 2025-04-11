@@ -57,6 +57,10 @@ val PlusIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_add)
 
+val NoteIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.ic_note)
+
 @Composable
 fun ExpenseIconBackground(
     modifier: Modifier = Modifier,

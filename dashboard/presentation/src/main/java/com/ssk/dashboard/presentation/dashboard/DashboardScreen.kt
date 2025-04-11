@@ -72,6 +72,8 @@ fun DashboardScreen(
                     ) {
                         if (state.latestTransactions.isEmpty()) {
                             EmptyTransactionView()
+                        } else {
+
                         }
                     }
                 }
