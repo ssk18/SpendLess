@@ -89,6 +89,7 @@ fun OptionText(
         Text(
             text = text,
             style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.padding(start = 6.dp)
         )
     }
 }

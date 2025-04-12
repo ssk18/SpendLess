@@ -12,4 +12,6 @@ interface ITransactionsRepository {
     suspend fun removeTransaction(transaction: Transaction)
     suspend fun getRecurringTransactions(): Result<List<Transaction>, DataError>
     suspend fun getMostPopularCategory(userId: Long): Flow<Result<TransactionType?, DataError>>
+    suspend fun getLargestTransaction(userId: Long): Flow<Result<Transaction, DataError>>
+    suspend fun getPreviousWeekTransactions(userId: Long): Flow<Result<List<Transaction>, DataError>>
 }

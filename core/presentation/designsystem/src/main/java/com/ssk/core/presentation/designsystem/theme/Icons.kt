@@ -61,6 +61,18 @@ val NoteIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_note)
 
+val TrendingDownIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_expense)
+
+val TrendingUpIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(id = R.drawable.ic_income)
+
+val TickIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.ic_tick)
+
 @Composable
 fun ExpenseIconBackground(
     modifier: Modifier = Modifier,

@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.core.domain.model.RepeatType
 import com.ssk.core.domain.model.Transaction
 import com.ssk.core.domain.model.TransactionType
@@ -20,7 +22,22 @@ import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
 import com.ssk.dashboard.presentation.dashboard.components.LatestTransactionView
+import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
+
+@Composable
+fun DashboardScreenRoot(
+    modifier: Modifier = Modifier,
+    viewModel: DashboardViewModel = koinViewModel()
+) {
+    val state by viewModel.dashboardState.collectAsStateWithLifecycle()
+    
+    DashboardScreen(
+        modifier = modifier,
+        state = state,
+        onAction = viewModel::onAction
+    )
+}
 
 @Composable
 fun DashboardScreen(

@@ -59,6 +59,7 @@ fun NavGraphBuilder.authGraph(
         composable<NavRoute.UserPreferences> {
             OnboardingPreferenceScreenRoot(
                 onStartButtonClicked = {
+                    navController.navigate(NavRoute.Dashboard)
                 },
                 onBackClicked = {
                     navController.navigate(NavRoute.PinEntry(it.toString()))

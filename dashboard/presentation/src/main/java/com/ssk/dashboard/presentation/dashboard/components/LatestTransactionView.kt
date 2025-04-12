@@ -37,7 +37,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import com.ssk.core.domain.model.Transaction
 import com.ssk.core.domain.model.TransactionType
-import com.ssk.core.presentation.ui.InstantFormatter
+import com.ssk.core.domain.utils.InstantFormatter
 import com.ssk.core.presentation.ui.components.ExpensesFormatUi
 import com.ssk.dashboard.presentation.dashboard.DashboardState.AmountSettings
 import com.ssk.dashboard.presentation.dashboard.utils.AmountFormatter
@@ -78,7 +78,7 @@ fun LatestTransactionView(
                    transactions.entries.forEach { (instant, transactions) ->
                        stickyHeader {
                            Text(
-                               text = InstantFormatter.formatToRelativeDay(instant).asString(),
+                               text = InstantFormatter.formatToRelativeDay(instant),
                                style = MaterialTheme.typography.labelSmall.copy(
                                    color = MaterialTheme.colorScheme.onSurface.copy(
                                        alpha = 0.70f

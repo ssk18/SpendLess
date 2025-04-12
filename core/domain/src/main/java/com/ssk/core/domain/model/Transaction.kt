@@ -105,10 +105,10 @@ enum class TransactionType(val symbol: String, val type: String) {
     }
 }
 
-enum class RepeatType {
-    NOT_REPEAT,
-    DAILY,
-    WEEKLY,
-    MONTHLY,
-    YEARLY
+enum class RepeatType(val symbol: String, val title: String) {
+    NOT_REPEAT("\uD83D\uDD04", "Does not repeat"),
+    DAILY("\uD83D\uDD04", "Daily"),
+    WEEKLY("\uD83D\uDD04", "Weekly on %s"),
+    MONTHLY("\uD83D\uDD04", "Monthly on the %s"),
+    YEARLY("\uD83D\uDD04", "Yearly on %s")
 }

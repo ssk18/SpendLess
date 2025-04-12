@@ -3,11 +3,11 @@ package com.ssk.core.data.repository
 import com.ssk.core.database.dao.TransactionDao
 import com.ssk.core.database.mapper.toDomain
 import com.ssk.core.database.mapper.toEntity
-import com.ssk.core.domain.model.Expense
 import com.ssk.core.domain.model.Transaction
 import com.ssk.core.domain.model.TransactionType
 import com.ssk.core.domain.repository.ITransactionsRepository
 import com.ssk.core.domain.utils.DataError
+import com.ssk.core.domain.utils.InstantFormatter
 import com.ssk.core.domain.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -70,8 +70,9 @@ class TransactionsRepository(
         return transactionDao.getExpenseTransactions(userId)
             .map { categories ->
                 val categories = categories.mapNotNull { category ->
-                    Expense.entries.find { it.type == category }
+                    TransactionType.entries.find { it.type == category.transactionType }
                 }
+                    .filter { it != TransactionType.INCOME }
 
                 val mostPopularCategory = categories
                     .groupingBy { it }
@@ -79,6 +80,65 @@ class TransactionsRepository(
                     .maxByOrNull { it.value }
                     ?.key
                 Result.Success(mostPopularCategory) as Result<TransactionType?, DataError>
+            }
+            .catch { e ->
+                if (e is CancellationException) throw e
+                emit(Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR))
+            }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getLargestTransaction(userId: Long): Flow<Result<Transaction, DataError>> {
+        return getTransactionByUser(userId)
+            .map { result ->
+                when (result) {
+                    is Result.Success -> {
+                        val largestTransaction = result.data
+                            .filter { transaction ->
+                                transaction.transactionType != TransactionType.INCOME
+                            }
+                            .maxByOrNull { transaction ->
+                                transaction.amount
+                            }
+                        largestTransaction?.let {
+                            Result.Success(it)
+                        } ?: run {
+                            Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+                        }
+                    }
+
+                    is Result.Error -> result
+                }
+            }
+            .catch { e ->
+                if (e is CancellationException) throw e
+                emit(Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR))
+            }
+            .flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getPreviousWeekTransactions(userId: Long): Flow<Result<List<Transaction>, DataError>> {
+        val (lastMonday, lastSunday) = InstantFormatter.getPreviousWeekRange()
+
+        return getTransactionByUser(userId)
+            .map { result ->
+                when (result) {
+                    is Result.Success -> {
+                        val previousWeekTransactions = result.data
+                            .filter { transaction ->
+                                transaction.transactionType != TransactionType.INCOME
+                            }
+                            .filter { transaction ->
+                                val transactionDate =
+                                    Instant.ofEpochMilli(transaction.transactionDate)
+                                transactionDate.isAfter(lastMonday) &&
+                                        (transactionDate.isBefore(lastSunday) || transactionDate == lastSunday)
+                            }
+                        Result.Success(previousWeekTransactions)
+                    }
+
+                    is Result.Error -> result
+                }
             }
             .catch { e ->
                 if (e is CancellationException) throw e

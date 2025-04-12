@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.ssk.spendless.navigation.graphs.authGraph
+import com.ssk.spendless.navigation.graphs.transactionsGraph
 import com.ssk.spendless.navigation.routes.NavRoute
 
 @Composable
@@ -20,6 +21,10 @@ fun SpendLessNavigation(
         authGraph(
             navController,
             modifier
+        )
+        transactionsGraph(
+            navController = navController,
+            modifier = modifier
         )
     }
 }

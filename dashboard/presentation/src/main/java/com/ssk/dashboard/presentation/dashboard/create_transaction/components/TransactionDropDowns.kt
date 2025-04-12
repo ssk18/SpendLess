@@ -1,0 +1,66 @@
+package com.ssk.dashboard.presentation.dashboard.create_transaction.components
+
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.ssk.core.domain.model.RepeatType
+import com.ssk.core.domain.model.TransactionType
+import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
+import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+
+@Composable
+fun TransactionDropDowns(
+    modifier: Modifier = Modifier,
+    isExpense: Boolean,
+    selectedExpenseCategory: TransactionType,
+    selectedRepeatType: RepeatType,
+    onExpenseCategorySelected: (TransactionType) -> Unit,
+    onRepeatTypeSelected: (RepeatType) -> Unit,
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        if (isExpense) {
+            DropDownSelector(
+                options = TransactionType.expenseCategories().toList(),
+                selectedOption = selectedExpenseCategory,
+                onOptionSelected = onExpenseCategorySelected,
+                currencyCodeShow = { it.symbol },
+                currencyNameShow = { it.type },
+                fontStyle = MaterialTheme.typography.bodyMedium
+            )
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        DropDownSelector(
+            options = RepeatType.entries,
+            selectedOption = selectedRepeatType,
+            onOptionSelected = onRepeatTypeSelected,
+            currencyCodeShow = { "" },
+            currencyNameShow = { it.name },
+            fontStyle = MaterialTheme.typography.bodyMedium
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TransactionDropDownsPreview() {
+    SpendLessAppTheme {
+        TransactionDropDowns(
+            isExpense = true,
+            selectedExpenseCategory = TransactionType.TRANSPORTATION,
+            selectedRepeatType = RepeatType.NOT_REPEAT,
+            onExpenseCategorySelected = {},
+            onRepeatTypeSelected = {}
+        )
+    }
+}

@@ -26,11 +26,11 @@ interface TransactionDao {
     @Query("SELECT * FROM transactions")
     suspend fun getAllTransactions(): List<TransactionEntity>
 
-@Query(
-    """
+    @Query(
+        """
         SELECT * FROM transactions
         WHERE transactionType = "EXPENSE" AND userId = :userId
     """
-)
-fun getExpenseTransactions(userId: Long): Flow<List<String>>
+    )
+    fun getExpenseTransactions(userId: Long): Flow<List<TransactionEntity>>
 }
