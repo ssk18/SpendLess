@@ -152,7 +152,7 @@ fun SuffixSign(
     )
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun AmountTextFieldPreview() {
     SpendLessAppTheme {
