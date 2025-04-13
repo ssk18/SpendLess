@@ -49,5 +49,13 @@ fun String.encryptPin(): ByteArray {
 }
 
 fun ByteArray.decryptPin(): String {
-    return Crypto.decrypt(this).decodeToString()
+    try {
+        val decrypted = Crypto.decrypt(this)
+        val result = decrypted.decodeToString()
+        android.util.Log.d("UserInfoMapper", "Decrypted PIN successfully")
+        return result
+    } catch (e: Exception) {
+        android.util.Log.e("UserInfoMapper", "Error decrypting PIN: ${e.message}", e)
+        throw e
+    }
 }

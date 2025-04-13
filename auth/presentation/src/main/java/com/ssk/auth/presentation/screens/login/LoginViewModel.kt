@@ -4,6 +4,7 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.auth.presentation.R
+import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.domain.utils.Result
 import com.ssk.core.presentation.designsystem.components.SnackbarType
@@ -17,7 +18,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class LoginViewModel(
-    private val userRepository: IUserRepository
+    private val userRepository: IUserRepository,
+    private val sessionRepository: ISessionRepository
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(LoginState())
@@ -50,27 +52,54 @@ class LoginViewModel(
         viewModelScope.launch {
             val userName = _state.value.username.text.toString()
             val pin = _state.value.pin.text.toString()
-
-            val isPinValid = userRepository.verifyPin(userName, pin)
-
-            when (isPinValid) {
-                is Result.Success -> {
-                    _events.send(LoginEvents.ShowSnackbar(UiText.StringResource(R.string.login_successful)))
-                    _events.send(LoginEvents.NavigateToUserPreferences(userName))
-                    _state.update {
-                        it.copy(
-                            snackbarType = SnackbarType.Success
-                        )
+            
+            try {
+                // First check if user exists
+                val userExists = userRepository.getUser(userName)
+                
+                when (userExists) {
+                    is Result.Success -> {
+                        // Now check pin
+                        val user = userExists.data
+                        
+                        if (user.pinCode == pin) {
+                            // Pin matches, login successful
+                            sessionRepository.logIn(userName)
+                            
+                            _events.send(LoginEvents.ShowSnackbar(UiText.StringResource(R.string.login_successful)))
+                            _events.send(LoginEvents.NavigateToDashboard)
+                            _state.update {
+                                it.copy(
+                                    snackbarType = SnackbarType.Success
+                                )
+                            }
+                        } else {
+                            // Pin doesn't match
+                            _events.send(LoginEvents.ShowSnackbar(UiText.StringResource(R.string.invalid_credentials)))
+                            _state.update {
+                                it.copy(
+                                    snackbarType = SnackbarType.Error
+                                )
+                            }
+                        }
+                    }
+                    is Result.Error -> {
+                        // User doesn't exist
+                        _events.send(LoginEvents.ShowSnackbar(UiText.StringResource(R.string.user_not_found)))
+                        _state.update {
+                            it.copy(
+                                snackbarType = SnackbarType.Error
+                            )
+                        }
                     }
                 }
-
-                is Result.Error -> {
-                    _events.send(LoginEvents.ShowSnackbar(isPinValid.error.asUiText()))
-                    _state.update {
-                        it.copy(
-                            snackbarType = SnackbarType.Error
-                        )
-                    }
+            } catch (e: Exception) {
+                android.util.Log.e("LoginViewModel", "Login error: ${e.message}", e)
+                _events.send(LoginEvents.ShowSnackbar(UiText.StringResource(R.string.unknown_error)))
+                _state.update {
+                    it.copy(
+                        snackbarType = SnackbarType.Error
+                    )
                 }
             }
         }

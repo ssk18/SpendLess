@@ -21,6 +21,9 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.navigation.compose)
 
+    // Splash Screen
+    implementation(libs.androidx.splashscreen)
+
     // Crypto
     implementation(libs.androidx.security.crypto)
 

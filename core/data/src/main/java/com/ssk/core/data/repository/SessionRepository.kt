@@ -10,6 +10,7 @@ import com.ssk.core.domain.model.LockedOutDuration
 import com.ssk.core.domain.model.SessionExpiryDuration
 import com.ssk.core.domain.repository.ISessionRepository
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 
@@ -38,6 +39,14 @@ class SessionRepository(
     override suspend fun logOut() {
         dataStore.edit { preferences ->
             preferences.remove(stringPreferencesKey(USERNAME_KEY))
+        }
+    }
+
+    override fun getLoggedInUsername(): String? {
+        return runBlocking {
+            dataStore.data.map { preferences ->
+                preferences[stringPreferencesKey(USERNAME_KEY)]
+            }.firstOrNull()
         }
     }
 

@@ -11,11 +11,13 @@ import com.ssk.spendless.navigation.routes.NavRoute
 @Composable
 fun SpendLessNavigation(
     modifier: Modifier = Modifier,
-    navController: NavHostController
+    navController: NavHostController,
+    startDestination: NavRoute = NavRoute.AuthRoot,
+    isUserLoggedIn: Boolean = false
 ) {
     NavHost(
         navController = navController,
-        startDestination = NavRoute.AuthRoot,
+        startDestination = if (isUserLoggedIn) NavRoute.TransactionsRoot else NavRoute.AuthRoot,
         modifier = modifier
     ) {
         authGraph(

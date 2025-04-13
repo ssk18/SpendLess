@@ -7,6 +7,7 @@ import com.ssk.core.data.di.coreDataModule
 import com.ssk.core.database.di.dataStoreModule
 import com.ssk.core.database.di.databaseModule
 import com.ssk.dashboard.presentation.di.dashboardModule
+import com.ssk.spendless.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.core.context.GlobalContext.startKoin
@@ -30,6 +31,7 @@ class SpendLessApp: Application() {
                 userDataValidatorModule,
                 authViewModelModule,
                 dashboardModule,
+                appModule
             )
         }
     }

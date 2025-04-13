@@ -22,4 +22,5 @@ val databaseModule = module {
             .build()
     }
     single { get<SpendLessDatabase>().userDao }
+    single { get<SpendLessDatabase>().transactionDao }
 }

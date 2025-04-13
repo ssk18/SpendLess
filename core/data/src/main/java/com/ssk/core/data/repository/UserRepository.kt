@@ -70,7 +70,9 @@ class UserRepository(
 
             userEntity?.let { userEntity ->
                 Result.Success(userEntity.toUserInfo())
-            } ?: Result.Error(DataError.Local.USER_FETCH_ERROR)
+            } ?: run {
+                Result.Error(DataError.Local.USER_FETCH_ERROR)
+            }
         } catch (e: Exception) {
             if (e is CancellationException) throw e
             Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)

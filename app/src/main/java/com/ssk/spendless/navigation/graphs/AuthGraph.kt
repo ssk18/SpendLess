@@ -47,8 +47,8 @@ fun NavGraphBuilder.authGraph(
 
         composable<NavRoute.Login> {
             LoginScreenRoot(
-                onLogInClick = {
-                    navController.navigate(NavRoute.UserPreferences(it.toString(), ""))
+                onDashboardClick = {
+                    navController.navigate(NavRoute.Dashboard)
                 },
                 onRegisterClick = {
                     navController.navigate(NavRoute.Register)

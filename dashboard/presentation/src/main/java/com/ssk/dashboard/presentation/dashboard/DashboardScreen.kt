@@ -29,7 +29,6 @@ import java.time.Instant
 fun DashboardScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: DashboardViewModel = koinViewModel(),
-    onNavigateToCreateTransaction: () -> Unit
 ) {
     val state by viewModel.dashboardState.collectAsStateWithLifecycle()
     
