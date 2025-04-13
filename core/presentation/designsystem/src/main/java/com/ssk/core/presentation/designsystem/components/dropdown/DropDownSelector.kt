@@ -63,7 +63,7 @@ fun <T> DropDownSelector(
     currencyCodeShow: (T) -> String,
     currencyNameShow: (T) -> String,
     selectedOption: T,
-    showIcnBackground: Boolean = false,
+    showIconBackground: Boolean = false,
     iconBackgroundColor: Color = primaryFixed,
     fontStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     onOptionSelected: (T) -> Unit,
@@ -126,7 +126,7 @@ fun <T> DropDownSelector(
                     expanded = it
                 },
                 selectedOption = selectedOption,
-                showIconBackground = showIcnBackground,
+                showIconBackground = showIconBackground,
                 iconBackgroundColor = iconBackgroundColor,
             )
 
@@ -157,7 +157,7 @@ fun <T> DropDownSelector(
                                 fontStyle = fontStyle,
                                 currencyCode = currencyCodeShow(option),
                                 currencyName = currencyNameShow(option),
-                                showIconBackground = showIcnBackground,
+                                showIconBackground = showIconBackground,
                                 iconBackgroundColor = iconBackgroundColor,
                                 showTickIcon = option == selectedOption
                             )
@@ -259,6 +259,7 @@ private fun CurrencyRow(
                 Text(
                     text = currencyCode,
                     fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
                 )
             }
         } else {
@@ -323,7 +324,7 @@ fun DropDownSelectorPreview() {
                     currencyCodeShow = { it.symbol },
                     currencyNameShow = { it.type },
                     selectedOption = TransactionType.FOOD,
-                    showIcnBackground = true,
+                    showIconBackground = true,
                 )
                 DropDownSelector(
                     modifier = Modifier
@@ -334,7 +335,7 @@ fun DropDownSelectorPreview() {
                     currencyCodeShow = { it.symbol },
                     currencyNameShow = { it.title },
                     selectedOption = RepeatType.NOT_REPEAT,
-                    showIcnBackground = true,
+                    showIconBackground = true,
                 )
             }
         }

@@ -34,7 +34,8 @@ fun TransactionDropDowns(
                 onOptionSelected = onExpenseCategorySelected,
                 currencyCodeShow = { it.symbol },
                 currencyNameShow = { it.type },
-                fontStyle = MaterialTheme.typography.bodyMedium
+                fontStyle = MaterialTheme.typography.bodyMedium,
+                showIconBackground = true
             )
         }
         
@@ -44,9 +45,10 @@ fun TransactionDropDowns(
             options = RepeatType.entries,
             selectedOption = selectedRepeatType,
             onOptionSelected = onRepeatTypeSelected,
-            currencyCodeShow = { "" },
-            currencyNameShow = { it.name },
-            fontStyle = MaterialTheme.typography.bodyMedium
+            currencyCodeShow = { it.symbol },
+            currencyNameShow = { it.title },
+            fontStyle = MaterialTheme.typography.bodyMedium,
+            showIconBackground = true
         )
     }
 }
