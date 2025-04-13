@@ -13,5 +13,7 @@ interface IUserRepository {
 
     suspend fun getUser(userName: String): Result<User, DataError>
 
+    suspend fun getUserById(userId: Long): Result<User, DataError>
+
     fun getAllUsers(): Flow<Result<List<User>, DataError>>
 }

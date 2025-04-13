@@ -17,13 +17,8 @@ import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -42,9 +37,6 @@ fun AmountTextField(
     onKeyboardAction: KeyboardActionHandler? = null,
     expensesFormat: ExpensesFormat
 ) {
-    var isFocused by remember {
-        mutableStateOf(false)
-    }
     val prefixSign = when (expensesFormat) {
         ExpensesFormat.MINUS -> "-"
         ExpensesFormat.BRACKETS -> "("
@@ -60,12 +52,9 @@ fun AmountTextField(
 
     BasicTextField(
         modifier = modifier
-            .wrapContentWidth()
-            .onFocusChanged {
-                isFocused = it.isFocused
-            },
+            .wrapContentWidth(),
         state = state,
-        textStyle = MaterialTheme.typography.titleMedium.copy(
+        textStyle = MaterialTheme.typography.displayMedium.copy(
             color = MaterialTheme.colorScheme.onSurface,
             textAlign = TextAlign.Center
         ),
@@ -84,7 +73,8 @@ fun AmountTextField(
 
                     Box(
                         modifier = Modifier
-                            .width(IntrinsicSize.Min)
+                            .width(IntrinsicSize.Min),
+                        //contentAlignment = Alignment.
                     ) {
                         AmountPlaceHolder(amount = state.text.toString())
                         innerBox()

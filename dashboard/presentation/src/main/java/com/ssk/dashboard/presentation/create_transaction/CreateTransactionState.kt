@@ -12,7 +12,8 @@ data class CreateTransactionState(
     val transactionFieldsState: TransactionFieldsState = TransactionFieldsState(),
     val expenseCategory: TransactionType = TransactionType.OTHER,
     val repeatingCategory: RepeatType = RepeatType.NOT_REPEAT,
-    val expensesFormat: ExpensesFormat = ExpensesFormat.MINUS
+    val expensesFormat: ExpensesFormat = ExpensesFormat.MINUS,
+    val userId: Long? = null,
 ) {
     val isCreateButtonEnabled: Boolean
         get() {

@@ -56,8 +56,6 @@ class UserPreferencesViewModel(
         val pin = savedStateHandle.get<String>("pinCode")
             ?: throw IllegalArgumentException("Pin cannot be empty")
         
-        Log.d("UserPreferencesViewModel", "saveUser: username=$username, pin=$pin")
-        
         val expenseFormatState = state.value.expensesFormatState
         val settings = UserSettings(
             currency = expenseFormatState.currency,
@@ -65,11 +63,6 @@ class UserPreferencesViewModel(
             thousandsSeparator = expenseFormatState.thousandsSeparatorUi.toDomain(),
             expensesFormat = expenseFormatState.expenseFormat.toDomain()
         )
-        
-        Log.d("UserPreferencesViewModel", "User settings: currency=${settings.currency}, " +
-            "decimal=${settings.decimalSeparator}, " +
-            "thousands=${settings.thousandsSeparator}, " +
-            "expFormat=${settings.expensesFormat}")
 
         val user = User(
             username = username,
@@ -78,50 +71,25 @@ class UserPreferencesViewModel(
         )
 
         viewModelScope.launch {
-            Log.d("UserPreferencesViewModel", "Registering user: ${user.username}")
             try {
-                // First check if user already exists
                 val existingUser = userRepository.getUser(username)
-                if (existingUser is com.ssk.core.domain.utils.Result.Success) {
-                    Log.d("UserPreferencesViewModel", "User already exists, updating login session")
-                    // User already exists, just log them in
+                if (existingUser is Result.Success) {
                     sessionRepository.logIn(username)
-                    Log.d("UserPreferencesViewModel", "User logged in, navigating to dashboard")
                     _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)
                     return@launch
                 }
-                
-                // Register the user
                 val result = userRepository.registerUser(user)
                 when (result) {
-                    is com.ssk.core.domain.utils.Result.Success -> {
-                        Log.d("UserPreferencesViewModel", "User registered successfully with ID: ${result.data}")
-                        
-                        // Double check the user was saved correctly
-                        val savedUser = userRepository.getUser(username)
-                        if (savedUser is com.ssk.core.domain.utils.Result.Success) {
-                            Log.d("UserPreferencesViewModel", "Retrieved user: ${savedUser.data.username}, " +
-                                "pin=${savedUser.data.pinCode}, " +
-                                "settings=${savedUser.data.settings}")
-                        } else {
-                            Log.e("UserPreferencesViewModel", "Failed to retrieve newly saved user")
-                        }
-                        
-                        // Log in the user
+                    is Result.Success -> {
                         sessionRepository.logIn(username)
-                        Log.d("UserPreferencesViewModel", "User logged in, navigating to dashboard")
                         _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)
                     }
                     is Result.Error -> {
-                        Log.e("UserPreferencesViewModel", "Error registering user: ${result.error}")
-                        // This is a development scenario, so we'll try to log in anyway
                         sessionRepository.logIn(username)
                         _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)
                     }
                 }
             } catch (e: Exception) {
-                Log.e("UserPreferencesViewModel", "Exception registering user: ${e.message}", e)
-                // For development, we'll try to continue anyway
                 try {
                     sessionRepository.logIn(username)
                     _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)

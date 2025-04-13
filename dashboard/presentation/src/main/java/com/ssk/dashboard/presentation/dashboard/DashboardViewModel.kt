@@ -39,10 +39,18 @@ class DashboardViewModel(
                 // Handle navigation to settings
             }
             is DashboardAction.NavigateToCreateTransaction -> {
-                // Handle navigation to create transaction
+                _dashboardState.update { currentState ->
+                    currentState.copy(
+                        showCreateTransactionSheet = true
+                    )
+                }
             }
             is DashboardAction.UpdateExportBottomSheet -> {
-                // Handle update export bottom sheet
+                _dashboardState.update { currentState ->
+                    currentState.copy(
+                        showCreateTransactionSheet = action.showSheet
+                    )
+                }
             }
             is DashboardAction.OnShowAllTransactionsClicked -> {
                 // Handle show all transactions clicked
@@ -60,6 +68,11 @@ class DashboardViewModel(
                 is Result.Success -> {
                     sessionRepository.startSession(result.data.settings.sessionExpiryDuration)
                     setAmountSettings(result.data)
+                    _dashboardState.update { currentState ->
+                        currentState.copy(
+                            userId = result.data.userId
+                        )
+                    }
                 }
                 is Result.Error -> {
                     // Handle error

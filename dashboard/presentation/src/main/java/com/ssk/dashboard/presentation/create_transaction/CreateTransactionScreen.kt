@@ -15,6 +15,7 @@ import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,9 +28,11 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.core.domain.model.ExpensesFormat
 import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.ObserveAsEvents
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionState.TransactionFieldsState
 import com.ssk.dashboard.presentation.create_transaction.components.AmountTextField
 import com.ssk.dashboard.presentation.create_transaction.components.CreateTransactionHeader
@@ -37,9 +40,32 @@ import com.ssk.dashboard.presentation.create_transaction.components.NoteTextFiel
 import com.ssk.dashboard.presentation.create_transaction.components.ReceiverTextField
 import com.ssk.dashboard.presentation.create_transaction.components.TransactionDropDowns
 import com.ssk.dashboard.presentation.create_transaction.components.TransactionTypeSelector
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
-fun CreateTransactionScreenRoot() {
+fun CreateTransactionScreenRoot(
+    modifier: Modifier = Modifier,
+    viewModel: CreateTransactionViewModel = koinViewModel<CreateTransactionViewModel>(),
+    userId: Long,
+    onDismiss: () -> Unit
+) {
+    // Set the userId when the screen is created
+    LaunchedEffect(userId) {
+        viewModel.setUserId(userId)
+    }
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.event) { event ->
+        when (event) {
+            CreateTransactionEvent.CloseBottomSheet -> onDismiss()
+        }
+    }
+
+    CreateTransactionScreen(
+        modifier = modifier,
+        state = state,
+        onAction = viewModel::onAction
+    )
 
 }
 
@@ -56,13 +82,14 @@ fun CreateTransactionScreen(
 
     ModalBottomSheet(
         onDismissRequest = {
-            onAction(CreateTransactionAction.OnCreateTransactionSheetToggled)
+            onAction(CreateTransactionAction.OnBottomSheetCloseClicked)
         },
         sheetState = sheetState,
+        dragHandle = null,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = modifier.padding(top = sheetHeight),
         properties = ModalBottomSheetProperties(
-            shouldDismissOnBackPress = true
+            shouldDismissOnBackPress = false
         )
     ) {
         Column(
@@ -72,8 +99,9 @@ fun CreateTransactionScreen(
         ) {
             CreateTransactionHeader(
                 onCloseClick = {
-                    onAction(CreateTransactionAction.OnCreateTransactionSheetToggled)
-                }
+                    onAction(CreateTransactionAction.OnBottomSheetCloseClicked)
+                },
+                modifier = Modifier.padding(top = 16.dp)
             )
 
             Spacer(modifier = Modifier.height(28.dp))
@@ -145,7 +173,7 @@ fun TransactionFields(
             isExpense = isExpense,
             keyboardOptions = KeyboardOptions(
                 imeAction = ImeAction.Next,
-                capitalization = KeyboardCapitalization.Words
+                capitalization = KeyboardCapitalization.Sentences
             ),
             onKeyboardAction = {
                 focusManager.moveFocus(FocusDirection.Down)

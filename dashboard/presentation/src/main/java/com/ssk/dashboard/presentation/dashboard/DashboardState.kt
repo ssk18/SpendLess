@@ -11,9 +11,11 @@ import java.time.Instant
 data class DashboardState(
     val isDataLoaded: Boolean = false,
     val username: String = "",
+    val userId: Long? = null,
     val accountInfoState: AccountInfoState = AccountInfoState(),
     val latestTransactions: Map<Instant, List<Transaction>> = emptyMap(),
-    val amountSettings: AmountSettings = AmountSettings()
+    val amountSettings: AmountSettings = AmountSettings(),
+    val showCreateTransactionSheet: Boolean = false
 ) {
     data class AccountInfoState(
         val accountBalance: String = "$0.00",

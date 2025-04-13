@@ -18,6 +18,21 @@ import kotlinx.coroutines.flow.map
 class UserRepository(
     private val userDao: UserDao
 ) : IUserRepository {
+    
+    override suspend fun getUserById(userId: Long): Result<User, DataError> {
+        return try {
+            val userEntity = userDao.getUserById(userId)
+            
+            userEntity?.let { entity ->
+                Result.Success(entity.toUserInfo())
+            } ?: run {
+                Result.Error(DataError.Local.USER_FETCH_ERROR)
+            }
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+        }
+    }
 
     override suspend fun registerUser(user: User): Result<Long, DataError> {
         return try {

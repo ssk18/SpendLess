@@ -20,6 +20,7 @@ import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.DownloadIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreenRoot
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
 import com.ssk.dashboard.presentation.dashboard.components.LatestTransactionView
 import org.koin.androidx.compose.koinViewModel
@@ -56,7 +57,9 @@ fun DashboardScreen(
         floatingActionButton = {
             SpendLessFloatingActionButton(
                 onClick = {
-                    onAction(DashboardAction.NavigateToCreateTransaction)
+                    state.userId?.let { userId ->
+                        onAction(DashboardAction.NavigateToCreateTransaction(userId))
+                    }
                 }
             )
         }
@@ -82,6 +85,18 @@ fun DashboardScreen(
                     modifier = Modifier.weight(1.4f)
                 )
             }
+        }
+    }
+
+    if (state.showCreateTransactionSheet) {
+        // Pass userId to CreateTransactionScreenRoot
+        state.userId?.let { userId ->
+            CreateTransactionScreenRoot(
+                userId = userId,
+                onDismiss = {
+                    onAction(DashboardAction.UpdateExportBottomSheet(false))
+                }
+            )
         }
     }
 }
