@@ -28,7 +28,8 @@ import java.time.Instant
 @Composable
 fun DashboardScreenRoot(
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel = koinViewModel()
+    viewModel: DashboardViewModel = koinViewModel(),
+    onNavigateToCreateTransaction: () -> Unit
 ) {
     val state by viewModel.dashboardState.collectAsStateWithLifecycle()
     

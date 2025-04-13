@@ -1,4 +1,4 @@
-package com.ssk.dashboard.presentation.dashboard.create_transaction.components
+package com.ssk.dashboard.presentation.create_transaction.components
 
 import SpendLessSuccess
 import androidx.compose.foundation.layout.Box

@@ -1,21 +1,15 @@
-package com.ssk.dashboard.presentation.dashboard.create_transaction.components
+package com.ssk.dashboard.presentation.create_transaction.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.text.input.KeyboardActionHandler
 import androidx.compose.foundation.text.input.TextFieldLineLimits
 import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,9 +26,10 @@ import androidx.compose.ui.unit.dp
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 
 @Composable
-fun NoteTextField(
+fun ReceiverTextField(
     modifier: Modifier = Modifier,
     state: TextFieldState,
+    isExpense: Boolean,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onKeyboardAction: KeyboardActionHandler? = null,
 ) {
@@ -60,7 +55,9 @@ fun NoteTextField(
             ) {
                 innerBox()
                 if (state.text.isEmpty() && !isFocused) {
-                    NotePlaceHolder()
+                    ReceiverPlaceHolder(
+                        isExpense = isExpense
+                    )
                 }
             }
         },
@@ -70,28 +67,26 @@ fun NoteTextField(
 }
 
 @Composable
-fun NotePlaceHolder() {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Add,
-            contentDescription = null,
-            modifier = Modifier.size(20.dp),
-            tint = MaterialTheme.colorScheme.outline,
-        )
-        Text(
-            text = "Add Note",
-            style = MaterialTheme.typography.bodyLarge,
+fun ReceiverPlaceHolder(
+    modifier: Modifier = Modifier,
+    isExpense: Boolean
+) {
+    Text(
+        text = if (isExpense) {
+            "Receiver"
+        } else {
+            "Sender"
+        },
+        style = MaterialTheme.typography.titleMedium.copy(
             color = MaterialTheme.colorScheme.outline
-        )
-    }
+        ),
+        modifier = modifier
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
-fun NoteTextFieldPreview() {
+fun ReceiverTextFieldPreview() {
     SpendLessAppTheme {
         Column(
             modifier = Modifier
@@ -99,8 +94,9 @@ fun NoteTextFieldPreview() {
                 .padding(vertical = 32.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            NoteTextField(
+            ReceiverTextField(
                 state = TextFieldState(),
+                isExpense = true
             )
         }
     }
