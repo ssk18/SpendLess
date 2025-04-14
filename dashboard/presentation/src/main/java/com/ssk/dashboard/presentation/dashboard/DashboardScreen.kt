@@ -20,6 +20,7 @@ import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.DownloadIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.dashboard.presentation.TransactionSharedViewModel
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreenRoot
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
 import com.ssk.dashboard.presentation.dashboard.components.LatestTransactionView
@@ -29,7 +30,7 @@ import java.time.Instant
 @Composable
 fun DashboardScreenRoot(
     modifier: Modifier = Modifier,
-    viewModel: DashboardViewModel = koinViewModel(),
+    viewModel: TransactionSharedViewModel = koinViewModel(),
 ) {
     val state by viewModel.dashboardState.collectAsStateWithLifecycle()
     

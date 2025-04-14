@@ -36,6 +36,21 @@ object AmountFormatter {
         return resultInt
     }
 
+    fun parseAmountToFloat(
+        amount: CharSequence,
+        amountSettings: AmountSettings,
+        isExpense: Boolean
+    ): Float {
+        val decimalSeparator = amountSettings.decimalSeparator.separator
+        val cleanedAmount = amount.toString()
+            .replace(amountSettings.thousandsSeparator.separator, "")
+            .replace(decimalSeparator, ".")
+            .toFloatOrNull()
+            ?: throw NumberFormatException("Invalid amount format: $amount")
+
+        return if (isExpense) -cleanedAmount else cleanedAmount
+    }
+
     fun formatUserInput(
         amount: Float,
         amountSettings: AmountSettings,
@@ -49,7 +64,10 @@ object AmountFormatter {
         )
     }
 
-    private fun replaceDecimalSeparator(amount: CharSequence, decimalSeparator: String): CharSequence {
+    private fun replaceDecimalSeparator(
+        amount: CharSequence,
+        decimalSeparator: String
+    ): CharSequence {
         val lastIndex = amount.lastIndexOfAny(
             listOf(
                 DecimalSeparatorUi.DOT.separator,

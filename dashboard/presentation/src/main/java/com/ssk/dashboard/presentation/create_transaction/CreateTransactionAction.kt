@@ -10,7 +10,4 @@ sealed interface CreateTransactionAction {
     data class OnRepeatingCategorySelected(val repeatingCategory: RepeatType) : CreateTransactionAction
     data object OnCreateTransactionClicked : CreateTransactionAction
     data object OnBottomSheetCloseClicked : CreateTransactionAction
-    data class OnTransactionAmountChanged(val amount: String) : CreateTransactionAction
-    data class OnTransactionTitleChanged(val title: String) : CreateTransactionAction
-    data class OnTransactionNoteChanged(val note: String) : CreateTransactionAction
 }

@@ -73,8 +73,7 @@ fun AmountTextField(
 
                     Box(
                         modifier = Modifier
-                            .width(IntrinsicSize.Min),
-                        //contentAlignment = Alignment.
+                            .width(IntrinsicSize.Min)
                     ) {
                         AmountPlaceHolder(amount = state.text.toString())
                         innerBox()

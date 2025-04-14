@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.ssk.core.domain.model.ExpensesFormat
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.domain.utils.Result
+import com.ssk.dashboard.presentation.dashboard.utils.AmountFormatter
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -111,6 +112,17 @@ class CreateTransactionViewModel(
             CreateTransactionAction.OnBottomSheetCloseClicked -> {
                 _event.trySend(CreateTransactionEvent.CloseBottomSheet)
             }
+        }
+    }
+
+    private fun createTransaction() {
+        _uiState.value.userId?.let {
+            val transactionFields = _uiState.value.transactionFieldsState
+            val transactionTitle = transactionFields.title.text.toString().trim()
+            val transactionAmount = AmountFormatter.getFormatedAmount(
+                amount = transactionFields.amount.text,
+                amountSettings = _uiState.value.amountSettings
+            )
         }
     }
 }
