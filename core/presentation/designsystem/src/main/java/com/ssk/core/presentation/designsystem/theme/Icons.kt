@@ -73,6 +73,10 @@ val TickIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.ic_tick)
 
+val LockIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.lock)
+
 @Composable
 fun ExpenseIconBackground(
     modifier: Modifier = Modifier,
