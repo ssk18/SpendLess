@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 import java.time.Instant
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -68,18 +69,27 @@ class TransactionsRepository(
 
     override suspend fun getMostPopularCategory(userId: Long): Flow<Result<TransactionType?, DataError>> {
         return transactionDao.getExpenseTransactions(userId)
-            .map { categories ->
-                val categories = categories.mapNotNull { category ->
-                    TransactionType.entries.find { it.type == category.transactionType }
-                }
-                    .filter { it != TransactionType.INCOME }
+            .map { transactions ->
+                Timber.d("Expense Transactions 0: $transactions and $userId")
+                // Convert entities to domain model
+                val expenseTransactions = transactions.map { it.toDomain() }
+                    .filter { it.transactionType != TransactionType.INCOME }
 
-                val mostPopularCategory = categories
-                    .groupingBy { it }
-                    .eachCount()
-                    .maxByOrNull { it.value }
-                    ?.key
-                Result.Success(mostPopularCategory) as Result<TransactionType?, DataError>
+                Timber.d("Expense Transactions: $expenseTransactions")
+                
+                if (expenseTransactions.isEmpty()) {
+                    Result.Success(null)
+                } else {
+                    val categoryCount = expenseTransactions
+                        .groupBy { it.transactionType }
+                        .mapValues { it.value.size }
+
+                    val mostPopularCategory = categoryCount.maxByOrNull { it.value }?.key
+
+                    Timber.d("Expense Transactions 1: $mostPopularCategory")
+                    
+                    Result.Success(mostPopularCategory) as Result<TransactionType?, DataError>
+                }
             }
             .catch { e ->
                 if (e is CancellationException) throw e
@@ -89,32 +99,11 @@ class TransactionsRepository(
     }
 
     override suspend fun getLargestTransaction(userId: Long): Flow<Result<Transaction, DataError>> {
-        return getTransactionByUser(userId)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> {
-                        // Filter out income transactions and get expenses only
-                        val expenses = result.data.filter { transaction ->
-                            transaction.transactionType != TransactionType.INCOME
-                        }
-                        
-                        if (expenses.isEmpty()) {
-                            Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
-                        } else {
-                            // Find the transaction with the highest absolute amount (biggest expense)
-                            val largestTransaction = expenses.maxByOrNull { transaction ->
-                                // Use absolute value to properly compare expense amounts
-                                Math.abs(transaction.amount)
-                            }
-                            
-                            largestTransaction?.let {
-                                Result.Success(it)
-                            } ?: Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
-                        }
-                    }
-
-                    is Result.Error -> result
-                }
+        return transactionDao.getExpenseTransactions(userId)
+            .map { transactions ->
+                val decryptedTransaction = transactions.map { it.toDomain() }
+                val largestTransaction = decryptedTransaction.minByOrNull { it.amount }
+                Result.Success(largestTransaction) as Result<Transaction, DataError>
             }
             .catch { e ->
                 if (e is CancellationException) throw e

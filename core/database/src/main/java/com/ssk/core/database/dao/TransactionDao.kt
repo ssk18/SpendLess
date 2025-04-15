@@ -29,7 +29,7 @@ interface TransactionDao {
     @Query(
         """
         SELECT * FROM transactions
-        WHERE transactionType = "EXPENSE" AND userId = :userId
+        WHERE transactionType != "INCOME" AND userId = :userId
     """
     )
     fun getExpenseTransactions(userId: Long): Flow<List<TransactionEntity>>

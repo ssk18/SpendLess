@@ -183,7 +183,7 @@ fun LargestTransaction(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            if (largestTransaction != null) {
+            if (largestTransaction != null && largestTransaction.name.isNotEmpty() && largestTransaction.amount.isNotEmpty()) {
                 LargestTransactionInfo(
                     largestTransaction = largestTransaction,
                 )
@@ -208,7 +208,6 @@ fun LargestTransactionInfo(
         modifier = modifier
             .fillMaxWidth()
             .padding(12.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -228,6 +227,8 @@ fun LargestTransactionInfo(
                 )
             )
         }
+
+        Spacer(modifier = Modifier.width(24.dp))
 
         Column(
             horizontalAlignment = Alignment.End,

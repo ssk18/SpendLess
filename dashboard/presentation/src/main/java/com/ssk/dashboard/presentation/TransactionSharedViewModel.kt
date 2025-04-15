@@ -320,6 +320,7 @@ class TransactionSharedViewModel(
         val formattedBalance = AmountFormatter.formatUserInput(
             amount = balance,
             amountSettings = _dashboardState.value.amountSettings,
+            enableTwoDecimal = true
         )
 
         val currency = amountSettings.currency.symbol
@@ -347,18 +348,19 @@ class TransactionSharedViewModel(
 
                     is Result.Success -> {
                         val transaction = result.data
-                        // Format the amount
+
                         val formattedAmount = AmountFormatter.formatUserInput(
                             amount = transaction.amount,
                             amountSettings = amountSettings,
+                            enableTwoDecimal = true
                         )
+                        val currency = amountSettings.currency.symbol
                         val formattedLargestAmount = when (amountSettings.expensesFormat) {
-                            ExpensesFormatUi.MINUS -> "-$formattedAmount"
-                            ExpensesFormatUi.BRACKETS -> "($formattedAmount)"
+                            ExpensesFormatUi.MINUS -> "-$currency$formattedAmount"
+                            ExpensesFormatUi.BRACKETS -> "($currency$formattedAmount)"
                         }
                         val title = transaction.title.take(MAX_TITLE_LENGTH)
 
-                        // Format the date
                         val date = InstantFormatter.formatDateString(transaction.transactionDate)
 
                         Triple(title, formattedLargestAmount, date)
@@ -402,6 +404,7 @@ class TransactionSharedViewModel(
                         AmountFormatter.formatUserInput(
                             amount = previousWeekExpenseAmount,
                             amountSettings = _dashboardState.value.amountSettings,
+                            enableTwoDecimal = true
                         )
                     }
                 }
@@ -414,14 +417,12 @@ class TransactionSharedViewModel(
         userId: Long
     ): DashboardState.AccountInfoState = coroutineScope {
         val balance = async { getAndFormatAccountBalance(transactions, amountSettings) }
-        
-        // Get the largest transaction info in a single call to ensure consistency
+
         val largestTransactionInfo = async { getLargestTransactionAmount(userId, amountSettings) }
         
         val popularCategory = async { getMostPopularCategory(userId) }
         val previousWeekExpenseAmount = async { getPreviousWeekExpenseAmount(userId) }
 
-        // Unpack the transaction info
         val (title, amount, date) = largestTransactionInfo.await()
         
         DashboardState.AccountInfoState(

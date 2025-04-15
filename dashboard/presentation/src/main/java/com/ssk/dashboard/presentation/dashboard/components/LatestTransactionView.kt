@@ -72,7 +72,7 @@ fun LatestTransactionView(
                     onShowAllClick = onShowAllClick
                 )
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 LazyColumn(
                     modifier = Modifier
@@ -92,7 +92,7 @@ fun LatestTransactionView(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .background(MaterialTheme.colorScheme.background)
-                                    .padding(horizontal = 4.dp, vertical = 4.dp)
+                                    .padding(horizontal = 4.dp, vertical = 8.dp)
                             )
                         }
                         items(
