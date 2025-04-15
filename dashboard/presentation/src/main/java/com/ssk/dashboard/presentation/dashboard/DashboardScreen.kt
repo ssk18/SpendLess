@@ -21,7 +21,7 @@ import com.ssk.core.presentation.designsystem.theme.DownloadIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.dashboard.presentation.TransactionSharedViewModel
-import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreenRoot
+import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreen
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
 import com.ssk.dashboard.presentation.dashboard.components.LatestTransactionView
 import org.koin.androidx.compose.koinViewModel
@@ -32,13 +32,21 @@ fun DashboardScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: TransactionSharedViewModel = koinViewModel(),
 ) {
-    val state by viewModel.dashboardState.collectAsStateWithLifecycle()
-    
+    val dashboardState by viewModel.dashboardState.collectAsStateWithLifecycle()
+    val createTransactionState by viewModel.createTransactionState.collectAsStateWithLifecycle()
+
     DashboardScreen(
         modifier = modifier,
-        state = state,
+        state = dashboardState,
         onAction = viewModel::onAction
     )
+
+    if (dashboardState.showCreateTransactionSheet) {
+        CreateTransactionScreen(
+            state = createTransactionState,
+            onAction = viewModel::onAction
+        )
+    }
 }
 
 @Composable
@@ -58,9 +66,7 @@ fun DashboardScreen(
         floatingActionButton = {
             SpendLessFloatingActionButton(
                 onClick = {
-                    state.userId?.let { userId ->
-                        onAction(DashboardAction.NavigateToCreateTransaction(userId))
-                    }
+                    onAction(DashboardAction.NavigateToCreateTransaction)
                 }
             )
         }
@@ -86,18 +92,6 @@ fun DashboardScreen(
                     modifier = Modifier.weight(1.4f)
                 )
             }
-        }
-    }
-
-    if (state.showCreateTransactionSheet) {
-        // Pass userId to CreateTransactionScreenRoot
-        state.userId?.let { userId ->
-            CreateTransactionScreenRoot(
-                userId = userId,
-                onDismiss = {
-                    onAction(DashboardAction.UpdateExportBottomSheet(false))
-                }
-            )
         }
     }
 }

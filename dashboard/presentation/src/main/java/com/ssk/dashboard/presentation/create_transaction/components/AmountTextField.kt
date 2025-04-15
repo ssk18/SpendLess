@@ -99,7 +99,7 @@ fun AmountPlaceHolder(
     amount: String
 ) {
     Text(
-        text = "00.00",
+        text = amount.ifEmpty { "00.00" },
         modifier = modifier,
         style = MaterialTheme.typography.displayMedium,
         color = if (amount.isEmpty()) {

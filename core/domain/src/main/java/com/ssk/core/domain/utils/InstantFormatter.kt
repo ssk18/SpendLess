@@ -29,6 +29,15 @@ object InstantFormatter {
         }.toString()
     }
 
+    fun convertInstantToLocalDate(timestamp: Long): Instant {
+        return Instant
+            .ofEpochMilli(timestamp)
+            .atZone(zoneId)
+            .toLocalDate()
+            .atStartOfDay(zoneId)
+            .toInstant()
+    }
+
     fun getPreviousWeekRange(): Pair<Instant, Instant> {
         val currentDateTime = LocalDate.now(zoneId)
 
@@ -40,6 +49,18 @@ object InstantFormatter {
         val lastSunday = lastMonday.plus(6, ChronoUnit.DAYS)
 
         return Pair(lastMonday, lastSunday)
+    }
+
+    fun formatDateString(timestamp: Long): String {
+        val instant = Instant.ofEpochMilli(timestamp)
+        val date = instant.atZone(zoneId).toLocalDate()
+
+        return date.format(
+            DateTimeFormatter.ofPattern(
+                "MMM d, yyyy",
+                englishLocal
+            )
+        )
     }
 
 }

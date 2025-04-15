@@ -9,19 +9,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.ssk.core.domain.model.RepeatType
-import com.ssk.core.domain.model.TransactionType
 import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
+import com.ssk.core.presentation.designsystem.model.RecurringTypeUI
+import com.ssk.core.presentation.designsystem.model.TransactionCategoryTypeUI
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 
 @Composable
 fun TransactionDropDowns(
     modifier: Modifier = Modifier,
     isExpense: Boolean,
-    selectedExpenseCategory: TransactionType,
-    selectedRepeatType: RepeatType,
-    onExpenseCategorySelected: (TransactionType) -> Unit,
-    onRepeatTypeSelected: (RepeatType) -> Unit,
+    selectedExpenseCategory: TransactionCategoryTypeUI,
+    selectedRepeatType: RecurringTypeUI,
+    onExpenseCategorySelected: (TransactionCategoryTypeUI) -> Unit,
+    onRepeatTypeSelected: (RecurringTypeUI) -> Unit,
 ) {
     Column(
         modifier = modifier
@@ -29,11 +29,11 @@ fun TransactionDropDowns(
     ) {
         if (isExpense) {
             DropDownSelector(
-                options = TransactionType.expenseCategories().toList(),
+                options = TransactionCategoryTypeUI.expenseCategories().toList(),
                 selectedOption = selectedExpenseCategory,
                 onOptionSelected = onExpenseCategorySelected,
                 currencyCodeShow = { it.symbol },
-                currencyNameShow = { it.type },
+                currencyNameShow = { it.title },
                 fontStyle = MaterialTheme.typography.bodyMedium,
                 showIconBackground = true
             )
@@ -42,7 +42,7 @@ fun TransactionDropDowns(
         Spacer(modifier = Modifier.height(8.dp))
         
         DropDownSelector(
-            options = RepeatType.entries,
+            options = RecurringTypeUI.entries,
             selectedOption = selectedRepeatType,
             onOptionSelected = onRepeatTypeSelected,
             currencyCodeShow = { it.symbol },
@@ -59,8 +59,8 @@ fun TransactionDropDownsPreview() {
     SpendLessAppTheme {
         TransactionDropDowns(
             isExpense = true,
-            selectedExpenseCategory = TransactionType.TRANSPORTATION,
-            selectedRepeatType = RepeatType.NOT_REPEAT,
+            selectedExpenseCategory = TransactionCategoryTypeUI.TRANSPORTATION,
+            selectedRepeatType = RecurringTypeUI.ONE_TIME,
             onExpenseCategorySelected = {},
             onRepeatTypeSelected = {}
         )

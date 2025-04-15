@@ -2,16 +2,16 @@ package com.ssk.dashboard.presentation.create_transaction
 
 import androidx.compose.foundation.text.input.TextFieldState
 import com.ssk.core.domain.model.ExpensesFormat
-import com.ssk.core.domain.model.RepeatType
-import com.ssk.core.domain.model.TransactionType
+import com.ssk.core.presentation.designsystem.model.RecurringTypeUI
+import com.ssk.core.presentation.designsystem.model.TransactionCategoryTypeUI
 import com.ssk.dashboard.presentation.create_transaction.components.TransactionTypeOptions
 
 data class CreateTransactionState(
     val isCreateTransactionOpen: Boolean = false,
     val transactionType: TransactionTypeOptions = TransactionTypeOptions.EXPENSE,
     val transactionFieldsState: TransactionFieldsState = TransactionFieldsState(),
-    val expenseCategory: TransactionType = TransactionType.OTHER,
-    val repeatingCategory: RepeatType = RepeatType.NOT_REPEAT,
+    val expenseCategory: TransactionCategoryTypeUI = TransactionCategoryTypeUI.OTHER,
+    val repeatingCategory: RecurringTypeUI = RecurringTypeUI.ONE_TIME,
     val expensesFormat: ExpensesFormat = ExpensesFormat.MINUS,
     val userId: Long? = null,
 ) {

@@ -93,17 +93,23 @@ class TransactionsRepository(
             .map { result ->
                 when (result) {
                     is Result.Success -> {
-                        val largestTransaction = result.data
-                            .filter { transaction ->
-                                transaction.transactionType != TransactionType.INCOME
-                            }
-                            .maxByOrNull { transaction ->
-                                transaction.amount
-                            }
-                        largestTransaction?.let {
-                            Result.Success(it)
-                        } ?: run {
+                        // Filter out income transactions and get expenses only
+                        val expenses = result.data.filter { transaction ->
+                            transaction.transactionType != TransactionType.INCOME
+                        }
+                        
+                        if (expenses.isEmpty()) {
                             Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+                        } else {
+                            // Find the transaction with the highest absolute amount (biggest expense)
+                            val largestTransaction = expenses.maxByOrNull { transaction ->
+                                // Use absolute value to properly compare expense amounts
+                                Math.abs(transaction.amount)
+                            }
+                            
+                            largestTransaction?.let {
+                                Result.Success(it)
+                            } ?: Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
                         }
                     }
 

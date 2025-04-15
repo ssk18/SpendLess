@@ -75,7 +75,13 @@ object AmountFormatter {
             )
         )
 
-        if (lastIndex != -1 || lastIndex + 2 < amount.length) {
+        // If no decimal separator found, return the original amount
+        if (lastIndex == -1) {
+            return amount
+        }
+
+        // If the decimal separator is too close to the end, return the original amount
+        if (lastIndex + 2 >= amount.length) {
             return amount
         }
 

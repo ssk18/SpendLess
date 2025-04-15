@@ -6,10 +6,12 @@ import SpendLessGreen
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -58,50 +60,54 @@ fun LatestTransactionView(
         color = MaterialTheme.colorScheme.background,
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
     ) {
-       if (transactions.isEmpty()) {
-           EmptyTransactionView()
-       } else {
-           Column(
-               modifier = modifier.fillMaxSize().padding(top = 12.dp)
-           ) {
-               TransactionHeader(
-                   onShowAllClick = onShowAllClick
-               )
+        if (transactions.isEmpty()) {
+            EmptyTransactionView()
+        } else {
+            Column(
+                modifier = modifier
+                    .fillMaxSize()
+                    .padding(top = 12.dp)
+            ) {
+                TransactionHeader(
+                    onShowAllClick = onShowAllClick
+                )
 
-               Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-               LazyColumn(
-                   modifier = modifier
-                       .fillMaxSize()
-                       .padding(horizontal = 12.dp)
-               ) {
-                   transactions.entries.forEach { (instant, transactions) ->
-                       stickyHeader {
-                           Text(
-                               text = InstantFormatter.formatToRelativeDay(instant),
-                               style = MaterialTheme.typography.labelSmall.copy(
-                                   color = MaterialTheme.colorScheme.onSurface.copy(
-                                       alpha = 0.70f
-                                   )
-                               ),
-                               modifier = Modifier
-                                   .fillMaxWidth()
-                                   .padding(horizontal = 4.dp, vertical = 8.dp)
-                           )
-                       }
-                       items(
-                           items = transactions,
-                           key = { transaction -> transaction.id }
-                       ) { transaction ->
-                           TransactionItemView(
-                               transaction = transaction,
-                               amountSettings = amountSettings
-                           )
-                       }
-                   }
-               }
-           }
-       }
+                LazyColumn(
+                    modifier = Modifier
+                        .padding(horizontal = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp),
+                    contentPadding = PaddingValues(bottom = 16.dp)
+                ) {
+                    transactions.entries.forEach { (instant, transactions) ->
+                        stickyHeader {
+                            Text(
+                                text = InstantFormatter.formatToRelativeDay(instant),
+                                style = MaterialTheme.typography.labelSmall.copy(
+                                    color = MaterialTheme.colorScheme.onSurface.copy(
+                                        alpha = 0.70f
+                                    )
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(MaterialTheme.colorScheme.background)
+                                    .padding(horizontal = 4.dp, vertical = 4.dp)
+                            )
+                        }
+                        items(
+                            items = transactions,
+                            key = { transaction -> transaction.id }
+                        ) { transaction ->
+                            TransactionItemView(
+                                transaction = transaction,
+                                amountSettings = amountSettings
+                            )
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

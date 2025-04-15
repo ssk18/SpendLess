@@ -58,7 +58,8 @@ fun TransactionIcon(
             modifier = Modifier.align(Alignment.Center)
         )
 
-        transaction.note?.let {
+        // Only show note icon if note is not null and not empty
+        if (transaction.note != null && transaction.note!!.isNotEmpty()) {
             Box(
                 modifier = Modifier
                     .size(20.dp)
@@ -68,7 +69,6 @@ fun TransactionIcon(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-
                 Icon(
                     imageVector = NoteIcon,
                     contentDescription = null,
