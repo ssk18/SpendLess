@@ -25,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.ui.graphics.Color
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 
@@ -54,31 +53,20 @@ private val ColorScheme = darkColorScheme(
     tertiaryContainer = SpendLessTertiaryContainer
 )
 
-data class StatusBarAppearance(
-    val isDarkStatusBarIcons: Boolean = true
-)
-
-val LocalStatusBarAppearance = compositionLocalOf { StatusBarAppearance() }
-
 @Composable
 fun SpendLessAppTheme(
     content: @Composable () -> Unit
 ) {
-    // Get the controller once
     val systemUiController = rememberSystemUiController()
-    
-    // Configure system bars once when the theme is applied
     DisposableEffect(systemUiController) {
-        // Make both status bar and nav bar transparent with light icons
         systemUiController.setSystemBarsColor(
             color = Color.Transparent,
-            darkIcons = false // Light icons for dark background
+            darkIcons = false
         )
-        
-        // Specifically target navigation bar
+
         systemUiController.setNavigationBarColor(
             color = Color.Transparent,
-            darkIcons = false,
+            darkIcons = true,
             navigationBarContrastEnforced = false
         )
         

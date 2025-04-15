@@ -15,7 +15,7 @@ dependencies {
     api(libs.androidx.material3)
     
     // System UI Controller
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.30.1")
+    implementation(libs.accompanist.systemuicontroller)
     
     // Add UI Tooling for Preview
     debugImplementation(libs.androidx.ui.tooling)
