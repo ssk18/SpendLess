@@ -21,6 +21,7 @@ import com.ssk.core.presentation.designsystem.theme.DownloadIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.ui.ObserveAsEvents
+import com.ssk.core.presentation.ui.components.EmptyScreen
 import com.ssk.dashboard.presentation.TransactionSharedViewModel
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreen
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
@@ -42,18 +43,22 @@ fun DashboardScreenRoot(
             DashboardEvent.NavigateToSettings -> {
                 navigateToSettings()
             }
+
             is DashboardEvent.ShowSnackbar -> {
 
             }
         }
     }
 
-    DashboardScreen(
-        modifier = modifier,
-        state = dashboardState,
-        onAction = viewModel::onAction
-    )
-
+    if (!dashboardState.isDataLoaded) {
+        EmptyScreen(showLoadIndicator = true)
+    } else {
+        DashboardScreen(
+            modifier = modifier,
+            state = dashboardState,
+            onAction = viewModel::onAction
+        )
+    }
     if (dashboardState.showCreateTransactionSheet) {
         CreateTransactionScreen(
             state = createTransactionState,
