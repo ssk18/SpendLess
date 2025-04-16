@@ -32,11 +32,7 @@ class MainActivity : ComponentActivity() {
         
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        
-        // Log auth state for debugging
-        val isLoggedIn = sessionRepository.getLoggedInUsername() != null
-        Timber.d("User logged in status: $isLoggedIn")
-        
+
         setContent {
             val navController = rememberNavController()
             val state = mainViewModel.state.collectAsStateWithLifecycle().value
@@ -47,7 +43,6 @@ class MainActivity : ComponentActivity() {
                 SpendLessNavigation(
                     modifier = Modifier.fillMaxSize(),
                     navController = navController,
-                    isUserLoggedIn = state.isUserLoggedIn,
                     startDestination = state.startDestination
                 )
             }

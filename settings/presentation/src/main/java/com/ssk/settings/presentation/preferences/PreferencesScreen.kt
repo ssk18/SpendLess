@@ -19,6 +19,7 @@ import com.ssk.core.presentation.designsystem.components.UserPreferenceFormat
 import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
 import com.ssk.core.presentation.designsystem.theme.ArrowBack
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.ObserveAsEvents
 import com.ssk.core.presentation.ui.components.DecimalSeparator
 import com.ssk.core.presentation.ui.components.SpendLessExpensesFormat
 import com.ssk.core.presentation.ui.components.ThousandsSeparator
@@ -29,9 +30,19 @@ import org.koin.androidx.compose.koinViewModel
 fun PreferencesScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
+    navigateToDashboard: () -> Unit
 ) {
     val state by viewModel.preferencesState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.preferencesEvent) { event ->
+        when (event) {
+            PreferencesUiEvent.NavigateToDashboard -> {
+                navigateToDashboard()
+            }
+        }
+    }
+
     SpendLessScaffold(
         modifier = modifier,
         topBar = {
@@ -68,7 +79,7 @@ fun PreferencesScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         UserPreferenceFormat(
-           formattedValue = state.expenseFormatState.formattedString
+            formattedValue = state.expenseFormatState.formattedString
         )
         SpendLessExpensesFormat(
             selectedFormat = state.expenseFormatState.expenseFormat,

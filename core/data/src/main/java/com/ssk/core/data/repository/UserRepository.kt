@@ -93,6 +93,20 @@ class UserRepository(
             Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
         }
     }
+    
+    override fun getUserAsFlow(userName: String): Flow<Result<User, DataError>> {
+        return userDao.observeUserByUsername(userName)
+            .map { userEntity ->
+                userEntity?.let { 
+                    Result.Success(it.toUserInfo()) 
+                } ?: Result.Error(DataError.Local.USER_FETCH_ERROR)
+            }
+            .catch { e ->
+                if (e is CancellationException) throw e
+                emit(Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR))
+            }
+            .flowOn(Dispatchers.IO)
+    }
 
     override fun getAllUsers(): Flow<Result<List<User>, DataError>> {
         return userDao.getAllUsers()

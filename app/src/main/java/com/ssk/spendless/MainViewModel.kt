@@ -4,12 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.spendless.navigation.routes.NavRoute
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class MainViewModel(
     private val sessionRepository: ISessionRepository
@@ -23,13 +21,8 @@ class MainViewModel(
 
     private fun checkAuthState() {
         viewModelScope.launch {
-            // Give splash screen a moment to show
-            delay(300)
-            
             val username = sessionRepository.getLoggedInUsername()
             val isLoggedIn = username != null
-
-            Timber.d("User logged in status: $isLoggedIn")
             
             _state.update { currentState ->
                 currentState.copy(

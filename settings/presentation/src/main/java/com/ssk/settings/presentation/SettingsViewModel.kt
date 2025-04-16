@@ -10,11 +10,14 @@ import com.ssk.core.domain.utils.Result
 import com.ssk.core.presentation.ui.components.toDomain
 import com.ssk.settings.presentation.preferences.PreferenceUiAction
 import com.ssk.settings.presentation.preferences.PreferenceUiState
+import com.ssk.settings.presentation.preferences.PreferencesUiEvent
 import com.ssk.settings.presentation.security.SecurityUiAction
 import com.ssk.settings.presentation.security.SecurityUiState
 import com.ssk.settings.presentation.security.components.toDomain
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -28,6 +31,9 @@ class SettingsViewModel(
 
     private val _preferencesState = MutableStateFlow(PreferenceUiState())
     val preferencesState = _preferencesState.asStateFlow()
+
+    private val _preferencesEvent = Channel<PreferencesUiEvent>()
+    val preferencesEvent = _preferencesEvent.receiveAsFlow()
 
     fun onAction(action: PreferenceUiAction) {
         when (action) {
@@ -61,7 +67,10 @@ class SettingsViewModel(
                 }
             }
 
-            PreferenceUiAction.OnSaveClicked -> saveUserPreferences()
+            PreferenceUiAction.OnSaveClicked -> {
+                saveUserPreferences()
+            }
+
             is PreferenceUiAction.OnThousandsSeparatorClicked -> {
                 _preferencesState.update { preferencesState ->
                     preferencesState.copy(
@@ -100,7 +109,9 @@ class SettingsViewModel(
                 }
             }
 
-            SecurityUiAction.OnSaveClicked -> saveSecuritySettings()
+            SecurityUiAction.OnSaveClicked -> {
+                saveSecuritySettings()
+            }
         }
     }
 
@@ -120,6 +131,7 @@ class SettingsViewModel(
                     )
                 )
             )
+            _preferencesEvent.send(PreferencesUiEvent.NavigateToDashboard)
         }
     }
 

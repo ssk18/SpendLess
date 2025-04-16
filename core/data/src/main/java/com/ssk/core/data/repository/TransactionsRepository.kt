@@ -12,11 +12,13 @@ import com.ssk.core.domain.utils.Result
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
 import java.time.Instant
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.math.abs
 
 class TransactionsRepository(
     private val transactionDao: TransactionDao,
@@ -67,81 +69,73 @@ class TransactionsRepository(
         }
     }
 
-    override suspend fun getMostPopularCategory(userId: Long): Flow<Result<TransactionType?, DataError>> {
-        return transactionDao.getExpenseTransactions(userId)
-            .map { transactions ->
-                Timber.d("Expense Transactions 0: $transactions and $userId")
-                // Convert entities to domain model
-                val expenseTransactions = transactions.map { it.toDomain() }
-                    .filter { it.transactionType != TransactionType.INCOME }
+    override suspend fun getMostPopularCategory(userId: Long): Result<TransactionType?, DataError> {
+        return try {
+            val transactions =
+                transactionDao.getExpenseTransactions(userId).firstOrNull() ?: emptyList()
+            val expenseTransactions = transactions.map { it.toDomain() }
+                .filter { it.transactionType != TransactionType.INCOME }
 
-                Timber.d("Expense Transactions: $expenseTransactions")
-                
-                if (expenseTransactions.isEmpty()) {
-                    Result.Success(null)
-                } else {
-                    val categoryCount = expenseTransactions
-                        .groupBy { it.transactionType }
-                        .mapValues { it.value.size }
+            val categoryCount = expenseTransactions
+                .groupBy { it.transactionType }
+                .mapValues { it.value.size }
 
-                    val mostPopularCategory = categoryCount.maxByOrNull { it.value }?.key
+            val mostPopularCategory = categoryCount.maxByOrNull { it.value }?.key
 
-                    Timber.d("Expense Transactions 1: $mostPopularCategory")
-                    
-                    Result.Success(mostPopularCategory) as Result<TransactionType?, DataError>
-                }
-            }
-            .catch { e ->
-                if (e is CancellationException) throw e
-                emit(Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR))
-            }
-            .flowOn(Dispatchers.IO)
+            Result.Success(mostPopularCategory) as Result<TransactionType?, DataError>
+
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Timber.e(e, "Error fetching largest transaction")
+            Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+        }
     }
 
-    override suspend fun getLargestTransaction(userId: Long): Flow<Result<Transaction?, DataError>> {
-        return transactionDao.getExpenseTransactions(userId)
-            .map { transactions ->
-                val decryptedTransactions = transactions.map { it.toDomain() }
-                // Use maxByOrNull with abs() to find largest expense by magnitude
-                val largestTransaction = decryptedTransactions.maxByOrNull { kotlin.math.abs(it.amount) }
-                Timber.d("Largest transaction found: ${largestTransaction?.title}, amount: ${largestTransaction?.amount}")
-                Result.Success(largestTransaction) as Result<Transaction?, DataError>
-            }
-            .catch { e ->
-                if (e is CancellationException) throw e
-                emit(Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR))
-            }
-            .flowOn(Dispatchers.IO)
+    override suspend fun getLargestTransaction(userId: Long): Result<Transaction?, DataError> {
+        return try {
+            val transactions =
+                transactionDao.getExpenseTransactions(userId).firstOrNull() ?: emptyList()
+            val decryptedTransactions = transactions.map { it.toDomain() }
+            // Use maxByOrNull with abs() to find largest expense by magnitude
+            val largestTransaction =
+                decryptedTransactions.maxByOrNull { abs(it.amount) }
+            Timber.d("Largest transaction found: ${largestTransaction?.title}, amount: ${largestTransaction?.amount}")
+            Result.Success(largestTransaction)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Timber.e(e, "Error fetching largest transaction")
+            Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+        }
     }
 
-    override suspend fun getPreviousWeekTransactions(userId: Long): Flow<Result<List<Transaction>, DataError>> {
+    override suspend fun getPreviousWeekTransactions(userId: Long): Result<List<Transaction>, DataError> {
         val (lastMonday, lastSunday) = InstantFormatter.getPreviousWeekRange()
 
-        return getTransactionByUser(userId)
-            .map { result ->
-                when (result) {
-                    is Result.Success -> {
-                        val previousWeekTransactions = result.data
-                            .filter { transaction ->
-                                transaction.transactionType != TransactionType.INCOME
-                            }
-                            .filter { transaction ->
-                                val transactionDate =
-                                    Instant.ofEpochMilli(transaction.transactionDate)
-                                transactionDate.isAfter(lastMonday) &&
-                                        (transactionDate.isBefore(lastSunday) || transactionDate == lastSunday)
-                            }
-                        Result.Success(previousWeekTransactions)
-                    }
-
-                    is Result.Error -> result
+        try {
+            // Get all transactions for the user
+            val transactionsResult = getTransactionByUser(userId).firstOrNull()
+            
+            return when (transactionsResult) {
+                is Result.Success -> {
+                    val previousWeekTransactions = transactionsResult.data
+                        .filter { transaction ->
+                            transaction.transactionType != TransactionType.INCOME
+                        }
+                        .filter { transaction ->
+                            val transactionDate = Instant.ofEpochMilli(transaction.transactionDate)
+                            transactionDate.isAfter(lastMonday) &&
+                                    (transactionDate.isBefore(lastSunday) || transactionDate == lastSunday)
+                        }
+                    Result.Success(previousWeekTransactions)
                 }
+                is Result.Error -> transactionsResult
+                null -> Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
             }
-            .catch { e ->
-                if (e is CancellationException) throw e
-                emit(Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR))
-            }
-            .flowOn(Dispatchers.IO)
+        } catch (e: Exception) {
+            if (e is CancellationException) throw e
+            Timber.e(e, "Error fetching previous week transactions")
+            return Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+        }
     }
 
 }

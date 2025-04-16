@@ -12,6 +12,9 @@ interface IUserRepository {
     suspend fun verifyPin(userName: String, pin: String): Result<Boolean, DataError>
 
     suspend fun getUser(userName: String): Result<User, DataError>
+    
+    // Add a flow to observe a user by username
+    fun getUserAsFlow(userName: String): Flow<Result<User, DataError>>
 
     suspend fun getUserById(userId: Long): Result<User, DataError>
 

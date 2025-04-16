@@ -17,6 +17,9 @@ interface UserDao {
     
     @Query("SELECT * FROM user_info WHERE userId=:userId")
     suspend fun getUserById(userId: Long): UserEntity?
+    
+    @Query("SELECT * FROM user_info WHERE username=:userName")
+    fun observeUserByUsername(userName: String): Flow<UserEntity?>
 
     @Query("SELECT * FROM user_info")
     fun getAllUsers(): Flow<List<UserEntity>>

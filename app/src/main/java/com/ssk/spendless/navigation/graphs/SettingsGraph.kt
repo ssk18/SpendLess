@@ -47,6 +47,13 @@ fun NavGraphBuilder.settingsGraph(
                 viewModel = settingsSharedViewModel,
                 navigateUp = {
                     navController.navigateUp()
+                },
+                navigateToDashboard = {
+                    navController.navigate(NavRoute.Dashboard) {
+                        popUpTo(NavRoute.SettingsRoot) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

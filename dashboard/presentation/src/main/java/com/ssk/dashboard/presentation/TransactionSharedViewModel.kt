@@ -34,9 +34,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
@@ -138,19 +136,21 @@ class TransactionSharedViewModel(
                 )
             }
 
-            val userDetails = userRepository.getUser(username)
-            when (userDetails) {
-                is Result.Success -> {
-                    userId = userDetails.data.userId
-                    sessionRepository.startSession(userDetails.data.settings.sessionExpiryDuration)
-                    setAmountSettings(userDetails.data)
-                    setTransactionAnalytics()
-                }
+            userRepository.getUserAsFlow(username)
+                .collectLatest { result ->
+                    when (result) {
+                        is Result.Success -> {
+                            userId = result.data.userId
+                            sessionRepository.startSession(result.data.settings.sessionExpiryDuration)
+                            setAmountSettings(result.data)
+                            setTransactionAnalytics()
+                        }
 
-                is Result.Error -> {
-                    _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching user details")))
+                        is Result.Error -> {
+                            _dashboardEvent.send(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching user details")))
+                        }
+                    }
                 }
-            }
         }
     }
 
@@ -162,10 +162,10 @@ class TransactionSharedViewModel(
         _dashboardState.update { currentState ->
             currentState.copy(
                 amountSettings = AmountSettings(
-                    expensesFormat = currentState.amountSettings.expensesFormat,
-                    currency = currentState.amountSettings.currency,
-                    decimalSeparator = currentState.amountSettings.decimalSeparator,
-                    thousandsSeparator = currentState.amountSettings.thousandsSeparator,
+                    expensesFormat = user.settings.expensesFormat.toUi(),
+                    currency = user.settings.currency,
+                    decimalSeparator = user.settings.decimalSeparator.toUi(),
+                    thousandsSeparator = user.settings.thousandsSeparator.toUi()
                 )
             )
         }
@@ -284,20 +284,35 @@ class TransactionSharedViewModel(
                     is Result.Error -> TODO()
                     is Result.Success -> {
                         val transactions = result.data
-                        val latestTransactions = getLatestTransaction(transactions)
-                            .groupBy { InstantFormatter.convertInstantToLocalDate(it.transactionDate) }
-                        val accountInfoState = getAccountInfoState(
-                            transactions = transactions,
-                            amountSettings = _dashboardState.value.amountSettings,
-                            userId = userId
-                        )
-                        _dashboardState.update { currentState ->
-                            currentState.copy(
-                                accountInfoState = accountInfoState,
-                                latestTransactions = latestTransactions,
-                                showCreateTransactionSheet = false,
-                                isDataLoaded = true
+                        if (transactions.isNotEmpty()) {
+                            val latestTransactions = getLatestTransaction(transactions)
+                                .groupBy { InstantFormatter.convertInstantToLocalDate(it.transactionDate) }
+                            val accountInfoState = getAccountInfoState(
+                                transactions = transactions,
+                                amountSettings = _dashboardState.value.amountSettings,
+                                userId = userId
                             )
+                            _dashboardState.update { currentState ->
+                                currentState.copy(
+                                    accountInfoState = accountInfoState,
+                                    latestTransactions = latestTransactions,
+                                    showCreateTransactionSheet = false,
+                                    isDataLoaded = true
+                                )
+                            }
+                        } else {
+                            val initAmount =
+                                "${_dashboardState.value.amountSettings.currency.symbol}0"
+
+                            _dashboardState.update {
+                                it.copy(
+                                    isDataLoaded = true,
+                                    accountInfoState = DashboardState.AccountInfoState(
+                                        accountBalance = initAmount,
+                                        previousWeekExpenseAmount = initAmount
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -342,82 +357,78 @@ class TransactionSharedViewModel(
         userId: Long,
         amountSettings: AmountSettings
     ): Triple<String, String, String> {
-        return transactionRepository.getLargestTransaction(userId)
-            .map { result ->
-                when (result) {
-                    is Result.Error -> {
-                        _dashboardEvent.send(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching largest transaction")))
-                        Triple("", "0.00", "")
-                    }
+        val result = transactionRepository.getLargestTransaction(userId)
+        
+        return when (result) {
+            is Result.Error -> {
+                _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching largest transaction")))
+                Triple("", "0.00", "")
+            }
 
-                    is Result.Success -> {
-                        val transaction = result.data
-                        
-                        // Handle null transaction case - return empty values for default state
-                        if (transaction == null) {
-                            Triple("", "", "")
-                        } else {
-                            val formattedAmount = AmountFormatter.formatUserInput(
-                                amount = transaction.amount,
-                                amountSettings = amountSettings,
-                                enableTwoDecimal = true
-                            )
-                            val currency = amountSettings.currency.symbol
-                            val formattedLargestAmount = when (amountSettings.expensesFormat) {
-                                ExpensesFormatUi.MINUS -> "-$currency$formattedAmount"
-                                ExpensesFormatUi.BRACKETS -> "($currency$formattedAmount)"
-                            }
-                            val title = transaction.title.take(MAX_TITLE_LENGTH)
+            is Result.Success -> {
+                val transaction = result.data
 
-                            val date = InstantFormatter.formatDateString(transaction.transactionDate)
-
-                            Triple(title, formattedLargestAmount, date)
+                if (transaction == null) {
+                    Triple("", "0.00", "")
+                } else {
+                    val formattedAmount = AmountFormatter.formatUserInput(
+                        amount = kotlin.math.abs(transaction.amount),
+                        amountSettings = amountSettings,
+                        enableTwoDecimal = true
+                    )
+                    val currency = amountSettings.currency.symbol
+                    val formattedLargestAmount = if (transaction.amount < 0) {
+                        when (amountSettings.expensesFormat) {
+                            ExpensesFormatUi.MINUS -> "-$currency$formattedAmount"
+                            ExpensesFormatUi.BRACKETS -> "($currency$formattedAmount)"
                         }
+                    } else {
+                        "$currency$formattedAmount"
                     }
+                    
+                    val title = transaction.title.take(MAX_TITLE_LENGTH)
+                    val date = InstantFormatter.formatDateString(transaction.transactionDate)
+
+                    Triple(title, formattedLargestAmount, date)
                 }
             }
-            .firstOrNull() ?: Triple("", "0.00", "")
+        }
     }
 
     private suspend fun getMostPopularCategory(userId: Long): TransactionCategoryTypeUI? {
-        return transactionRepository.getMostPopularCategory(userId)
-            .map { result ->
-                when (result) {
-                    is Result.Error -> {
-                        _dashboardEvent.send(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching most popular category")))
-                        null
-                    }
-
-                    is Result.Success -> {
-                        result.data?.toUi()
-                    }
-                }
+        val result = transactionRepository.getMostPopularCategory(userId)
+        return when (result) {
+            is Result.Error -> {
+                _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching most popular category")))
+                null
             }
-            .firstOrNull()
+            is Result.Success -> {
+                result.data?.toUi()
+            }
+        }
     }
 
     private suspend fun getPreviousWeekExpenseAmount(userId: Long): String {
-        return transactionRepository.getPreviousWeekTransactions(userId)
-            .map { result ->
-                when (result) {
-                    is Result.Error -> {
-                        _dashboardEvent.send(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching previous week expense amount")))
-                        "0.00"
-                    }
+        val result = transactionRepository.getPreviousWeekTransactions(userId)
+        
+        return when (result) {
+            is Result.Error -> {
+                _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching previous week expense amount")))
+                "$0.00"
+            }
 
-                    is Result.Success -> {
-                        val transactions = result.data
-                        val previousWeekExpenseAmount = transactions.fold(0f) { acc, transaction ->
-                            acc + transaction.amount
-                        }
-                        AmountFormatter.formatUserInput(
-                            amount = previousWeekExpenseAmount,
-                            amountSettings = _dashboardState.value.amountSettings,
-                            enableTwoDecimal = true
-                        )
-                    }
+            is Result.Success -> {
+                val transactions = result.data
+                val previousWeekExpenseAmount = transactions.fold(0f) { acc, transaction ->
+                    acc + transaction.amount
                 }
-            }.firstOrNull() ?: "0.00"
+                AmountFormatter.formatUserInput(
+                    amount = previousWeekExpenseAmount,
+                    amountSettings = _dashboardState.value.amountSettings,
+                    enableTwoDecimal = true
+                )
+            }
+        }
     }
 
     private suspend fun getAccountInfoState(
@@ -428,12 +439,12 @@ class TransactionSharedViewModel(
         val balance = async { getAndFormatAccountBalance(transactions, amountSettings) }
 
         val largestTransactionInfo = async { getLargestTransactionAmount(userId, amountSettings) }
-        
+
         val popularCategory = async { getMostPopularCategory(userId) }
         val previousWeekExpenseAmount = async { getPreviousWeekExpenseAmount(userId) }
 
         val (title, amount, date) = largestTransactionInfo.await()
-        
+
         DashboardState.AccountInfoState(
             accountBalance = balance.await(),
             popularCategory = popularCategory.await(),
@@ -445,7 +456,6 @@ class TransactionSharedViewModel(
             previousWeekExpenseAmount = previousWeekExpenseAmount.await()
         )
     }
-
 
     companion object {
         private const val MAX_TITLE_LENGTH = 14

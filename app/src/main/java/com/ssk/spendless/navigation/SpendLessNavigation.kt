@@ -2,6 +2,7 @@ package com.ssk.spendless.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.ssk.spendless.navigation.graphs.authGraph
@@ -13,12 +14,13 @@ import com.ssk.spendless.navigation.routes.NavRoute
 fun SpendLessNavigation(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    startDestination: NavRoute = NavRoute.AuthRoot,
-    isUserLoggedIn: Boolean = false
+    startDestination: NavRoute,
 ) {
+    val lifecycleOwner = LocalLifecycleOwner.current
+
     NavHost(
         navController = navController,
-        startDestination = if (isUserLoggedIn) NavRoute.TransactionsRoot else NavRoute.AuthRoot,
+        startDestination = startDestination,
         modifier = modifier
     ) {
         authGraph(

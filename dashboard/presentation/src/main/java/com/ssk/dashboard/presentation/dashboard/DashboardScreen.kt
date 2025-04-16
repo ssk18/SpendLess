@@ -37,6 +37,10 @@ fun DashboardScreenRoot(
     val dashboardState by viewModel.dashboardState.collectAsStateWithLifecycle()
     val createTransactionState by viewModel.createTransactionState.collectAsStateWithLifecycle()
 
+//    LaunchedEffect(Unit) {
+//        viewModel.refreshDashboardData()
+//    }
+
     ObserveAsEvents(viewModel.dashboardEvent) { event ->
         when (event) {
             DashboardEvent.NavigateToSettings -> {
