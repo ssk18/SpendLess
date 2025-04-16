@@ -1,9 +1,13 @@
 package com.ssk.dashboard.presentation.dashboard.components
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
@@ -76,14 +80,22 @@ fun DashBoardContent(
 
         Row(
             modifier = Modifier
-                .height(72.dp)
-                .fillMaxWidth(),
+                .height(IntrinsicSize.Max)
+                .fillMaxWidth()
+                .animateContentSize(
+                    animationSpec = spring(
+                        dampingRatio = Spring.DampingRatioMediumBouncy,
+                        stiffness = Spring.StiffnessLow
+                    )
+                ),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             LargestTransaction(
                 largestTransaction = state.accountInfoState.largestTransaction,
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .height(72.dp)
             )
             PreviousWeekExpense(amount = state.accountInfoState.previousWeekExpenseAmount)
         }
@@ -216,7 +228,7 @@ fun LargestTransactionInfo(
         ) {
             Text(
                 text = largestTransaction.name,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -224,11 +236,13 @@ fun LargestTransactionInfo(
                 text = "Largest transaction",
                 style = MaterialTheme.typography.bodySmall.copy(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
 
-        Spacer(modifier = Modifier.width(24.dp))
+        Spacer(modifier = Modifier.width(8.dp))
 
         Column(
             horizontalAlignment = Alignment.End,
@@ -236,7 +250,7 @@ fun LargestTransactionInfo(
         ) {
             Text(
                 text = largestTransaction.amount,
-                style = MaterialTheme.typography.titleLarge,
+                style = MaterialTheme.typography.titleMedium,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -244,7 +258,9 @@ fun LargestTransactionInfo(
                 text = largestTransaction.date,
                 style = MaterialTheme.typography.bodySmall.copy(
                     color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
-                )
+                ),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
     }

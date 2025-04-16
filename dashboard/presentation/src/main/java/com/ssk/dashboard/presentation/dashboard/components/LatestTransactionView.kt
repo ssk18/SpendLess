@@ -138,7 +138,9 @@ fun TransactionItemView(
                 indication = null
             ) {
                 transaction.note?.let {
-                    isExpanded = !isExpanded
+                    if (it.isNotEmpty()) {
+                        isExpanded = !isExpanded
+                    }
                 }
             },
         shape = RoundedCornerShape(16.dp),

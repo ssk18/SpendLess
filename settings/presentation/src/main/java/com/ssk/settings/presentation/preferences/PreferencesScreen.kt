@@ -34,15 +34,13 @@ fun PreferencesScreenRoot(
     navigateToDashboard: () -> Unit
 ) {
     val state by viewModel.preferencesState.collectAsStateWithLifecycle()
-
     ObserveAsEvents(viewModel.preferencesEvent) { event ->
         when (event) {
-            PreferencesUiEvent.NavigateToDashboard -> {
+             PreferenceUiEvent.NavigateUp ->  {
                 navigateToDashboard()
             }
         }
     }
-
     SpendLessScaffold(
         modifier = modifier,
         topBar = {
@@ -79,7 +77,7 @@ fun PreferencesScreen(
         verticalArrangement = Arrangement.spacedBy(24.dp)
     ) {
         UserPreferenceFormat(
-            formattedValue = state.expenseFormatState.formattedString
+           formattedValue = state.expenseFormatState.formattedString
         )
         SpendLessExpensesFormat(
             selectedFormat = state.expenseFormatState.expenseFormat,

@@ -49,11 +49,7 @@ fun NavGraphBuilder.settingsGraph(
                     navController.navigateUp()
                 },
                 navigateToDashboard = {
-                    navController.navigate(NavRoute.Dashboard) {
-                        popUpTo(NavRoute.SettingsRoot) {
-                            inclusive = true
-                        }
-                    }
+                    navController.navigateUp()
                 }
             )
         }

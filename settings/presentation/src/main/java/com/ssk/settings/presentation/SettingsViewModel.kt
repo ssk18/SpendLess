@@ -9,14 +9,15 @@ import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.domain.utils.Result
 import com.ssk.core.presentation.ui.components.toDomain
 import com.ssk.settings.presentation.preferences.PreferenceUiAction
+import com.ssk.settings.presentation.preferences.PreferenceUiEvent
 import com.ssk.settings.presentation.preferences.PreferenceUiState
-import com.ssk.settings.presentation.preferences.PreferencesUiEvent
 import com.ssk.settings.presentation.security.SecurityUiAction
 import com.ssk.settings.presentation.security.SecurityUiState
 import com.ssk.settings.presentation.security.components.toDomain
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -32,7 +33,7 @@ class SettingsViewModel(
     private val _preferencesState = MutableStateFlow(PreferenceUiState())
     val preferencesState = _preferencesState.asStateFlow()
 
-    private val _preferencesEvent = Channel<PreferencesUiEvent>()
+    private val _preferencesEvent = Channel<PreferenceUiEvent>()
     val preferencesEvent = _preferencesEvent.receiveAsFlow()
 
     fun onAction(action: PreferenceUiAction) {
@@ -131,7 +132,7 @@ class SettingsViewModel(
                     )
                 )
             )
-            _preferencesEvent.send(PreferencesUiEvent.NavigateToDashboard)
+            _preferencesEvent.send(PreferenceUiEvent.NavigateUp)
         }
     }
 
@@ -153,8 +154,9 @@ class SettingsViewModel(
 
     private suspend fun getUser(): User {
         val username = sessionRepository.getLoggedInUsername() ?: throw UserNotLoggedInException()
-
-        val result = userRepository.getUser(username)
+        val result = userRepository.getUserAsFlow(username).firstOrNull()
+            ?: throw IllegalArgumentException("Failed to load user data")
+            
         return when (result) {
             is Result.Error -> throw IllegalArgumentException("User with username $username not found")
             is Result.Success -> result.data
