@@ -58,4 +58,8 @@ dependencies {
     implementation(projects.dashboard.domain)
     implementation(projects.dashboard.data)
 
+    implementation(projects.settings.presentation)
+    implementation(projects.settings.domain)
+    implementation(projects.settings.data)
+
 }

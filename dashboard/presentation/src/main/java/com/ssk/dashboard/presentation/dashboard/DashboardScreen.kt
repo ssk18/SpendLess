@@ -20,6 +20,7 @@ import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.DownloadIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.ObserveAsEvents
 import com.ssk.dashboard.presentation.TransactionSharedViewModel
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreen
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
@@ -31,9 +32,21 @@ import java.time.Instant
 fun DashboardScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: TransactionSharedViewModel = koinViewModel(),
+    navigateToSettings: () -> Unit,
 ) {
     val dashboardState by viewModel.dashboardState.collectAsStateWithLifecycle()
     val createTransactionState by viewModel.createTransactionState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.dashboardEvent) { event ->
+        when (event) {
+            DashboardEvent.NavigateToSettings -> {
+                navigateToSettings()
+            }
+            is DashboardEvent.ShowSnackbar -> {
+
+            }
+        }
+    }
 
     DashboardScreen(
         modifier = modifier,
@@ -60,7 +73,12 @@ fun DashboardScreen(
         topBar = {
             DashboardTopBar(
                 state = state,
-                onAction = onAction
+                navigateToSettings = {
+                    onAction(DashboardAction.NavigateToSettings)
+                },
+                navigateToExport = {
+                    onAction(DashboardAction.NavigateToSettings)
+                }
             )
         },
         floatingActionButton = {
@@ -99,7 +117,8 @@ fun DashboardScreen(
 @Composable
 fun DashboardTopBar(
     state: DashboardState,
-    onAction: (DashboardAction) -> Unit
+    navigateToSettings: () -> Unit,
+    navigateToExport: () -> Unit,
 ) {
     AppTopBar(
         title = state.username,
@@ -108,10 +127,10 @@ fun DashboardTopBar(
         endIcon2 = SettingsIcon,
         onStartIconClick = null,
         onEndIcon1Click = {
-            onAction(DashboardAction.UpdateExportBottomSheet(true))
+            navigateToExport()
         },
         onEndIcon2Click = {
-            onAction(DashboardAction.NavigateToSettings)
+            navigateToSettings()
         },
         endIcon1BackgroundColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f),
         endIcon1Color = MaterialTheme.colorScheme.onPrimary,

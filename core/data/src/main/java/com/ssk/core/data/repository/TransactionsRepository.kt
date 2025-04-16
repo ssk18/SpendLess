@@ -98,12 +98,14 @@ class TransactionsRepository(
             .flowOn(Dispatchers.IO)
     }
 
-    override suspend fun getLargestTransaction(userId: Long): Flow<Result<Transaction, DataError>> {
+    override suspend fun getLargestTransaction(userId: Long): Flow<Result<Transaction?, DataError>> {
         return transactionDao.getExpenseTransactions(userId)
             .map { transactions ->
-                val decryptedTransaction = transactions.map { it.toDomain() }
-                val largestTransaction = decryptedTransaction.minByOrNull { it.amount }
-                Result.Success(largestTransaction) as Result<Transaction, DataError>
+                val decryptedTransactions = transactions.map { it.toDomain() }
+                // Use maxByOrNull with abs() to find largest expense by magnitude
+                val largestTransaction = decryptedTransactions.maxByOrNull { kotlin.math.abs(it.amount) }
+                Timber.d("Largest transaction found: ${largestTransaction?.title}, amount: ${largestTransaction?.amount}")
+                Result.Success(largestTransaction) as Result<Transaction?, DataError>
             }
             .catch { e ->
                 if (e is CancellationException) throw e

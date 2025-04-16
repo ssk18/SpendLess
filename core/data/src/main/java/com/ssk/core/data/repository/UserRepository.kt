@@ -34,9 +34,9 @@ class UserRepository(
         }
     }
 
-    override suspend fun registerUser(user: User): Result<Long, DataError> {
+    override suspend fun upsertUser(user: User): Result<Long, DataError> {
         return try {
-            val userId = userDao.insertUser(user.toUserEntity())
+            val userId = userDao.upsertUser(user.toUserEntity())
             when {
                 userId > 0 -> Result.Success(userId)
                 userId == -1L -> Result.Error(DataError.Local.INSERT_USER_ERROR)

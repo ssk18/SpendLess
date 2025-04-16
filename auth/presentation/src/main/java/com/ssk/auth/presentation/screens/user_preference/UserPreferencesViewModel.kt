@@ -78,7 +78,7 @@ class UserPreferencesViewModel(
                     _uiEvents.send(UserPreferenceEvent.NavigateToDashboardScreen)
                     return@launch
                 }
-                val result = userRepository.registerUser(user)
+                val result = userRepository.upsertUser(user)
                 when (result) {
                     is Result.Success -> {
                         sessionRepository.logIn(username)

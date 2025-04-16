@@ -6,4 +6,5 @@ sealed interface DashboardEvent {
     data class ShowSnackbar(
         val message: UiText
     ): DashboardEvent
+    data object NavigateToSettings: DashboardEvent
 }

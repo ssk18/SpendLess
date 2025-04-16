@@ -1,4 +1,4 @@
-package com.ssk.auth.presentation.screens.user_preference.components
+package com.ssk.core.presentation.designsystem.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

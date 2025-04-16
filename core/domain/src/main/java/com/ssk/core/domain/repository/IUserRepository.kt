@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
 
-    suspend fun registerUser(user: User): Result<Long, DataError>
+    suspend fun upsertUser(user: User): Result<Long, DataError>
 
     suspend fun verifyPin(userName: String, pin: String): Result<Boolean, DataError>
 

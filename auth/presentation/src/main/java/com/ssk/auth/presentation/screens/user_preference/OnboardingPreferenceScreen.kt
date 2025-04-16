@@ -21,18 +21,16 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.user_preference.components.BackButton
-import com.ssk.auth.presentation.screens.user_preference.components.UserPreferenceFormat
 import com.ssk.core.domain.model.Currency
 import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
-import com.ssk.core.presentation.designsystem.components.SpendLessSegmentSelector
+import com.ssk.core.presentation.designsystem.components.UserPreferenceFormat
 import com.ssk.core.presentation.designsystem.components.dropdown.DropDownSelector
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.core.presentation.ui.ObserveAsEvents
-import com.ssk.core.presentation.ui.components.DecimalSeparatorUi
-import com.ssk.core.presentation.ui.components.ExpensesFormatUi
-import com.ssk.core.presentation.ui.components.SettingItem
-import com.ssk.core.presentation.ui.components.ThousandsSeparatorUi
+import com.ssk.core.presentation.ui.components.DecimalSeparator
+import com.ssk.core.presentation.ui.components.SpendLessExpensesFormat
+import com.ssk.core.presentation.ui.components.ThousandsSeparator
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
@@ -118,7 +116,7 @@ fun OnboardingPreferenceScreenContent(
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        ExpensesFormat(
+        SpendLessExpensesFormat(
             selectedFormat = state.expensesFormatState.expenseFormat,
             onOptionSelected = {
                 onAction(UserPreferenceAction.OnExpenseFormatUpdate(it))
@@ -143,7 +141,6 @@ fun OnboardingPreferenceScreenContent(
         DecimalSeparator(
             selectedDecimal = state.expensesFormatState.decimalSeparatorUi,
             onOptionSelected = {
-                println("Selected Decimal Separator: $it")
                 onAction(UserPreferenceAction.OnDecimalSeparatorUpdate(it))
             }
         )
@@ -164,67 +161,6 @@ fun OnboardingPreferenceScreenContent(
             enabled = state.isStartButtonEnabled,
             onClick = {
                 onAction(UserPreferenceAction.OnStartClicked)
-            }
-        )
-    }
-}
-
-@Composable
-fun DecimalSeparator(
-    modifier: Modifier = Modifier,
-    selectedDecimal: DecimalSeparatorUi,
-    onOptionSelected: (DecimalSeparatorUi) -> Unit,
-) {
-    SettingItem(
-        modifier = modifier,
-        title = "Decimal Separator"
-    ) {
-        SpendLessSegmentSelector(
-            segmentOptions = DecimalSeparatorUi.entries,
-            selectedOption = selectedDecimal,
-            onOptionSelected = {
-
-                onOptionSelected(it as DecimalSeparatorUi)
-            }
-        )
-    }
-}
-
-@Composable
-fun ThousandsSeparator(
-    modifier: Modifier = Modifier,
-    selectedThousands: ThousandsSeparatorUi,
-    onOptionSelected: (ThousandsSeparatorUi) -> Unit,
-) {
-    SettingItem(
-        modifier = modifier,
-        title = "Thousands Separator"
-    ) {
-        SpendLessSegmentSelector(
-            segmentOptions = ThousandsSeparatorUi.entries,
-            selectedOption = selectedThousands,
-            onOptionSelected = {
-                onOptionSelected(it as ThousandsSeparatorUi)
-            }
-        )
-    }
-}
-
-@Composable
-fun ExpensesFormat(
-    modifier: Modifier = Modifier,
-    selectedFormat: ExpensesFormatUi,
-    onOptionSelected: (ExpensesFormatUi) -> Unit,
-) {
-    SettingItem(
-        modifier = modifier,
-        title = "Expense Format"
-    ) {
-        SpendLessSegmentSelector(
-            segmentOptions = ExpensesFormatUi.entries,
-            selectedOption = selectedFormat,
-            onOptionSelected = {
-                onOptionSelected(it as ExpensesFormatUi)
             }
         )
     }

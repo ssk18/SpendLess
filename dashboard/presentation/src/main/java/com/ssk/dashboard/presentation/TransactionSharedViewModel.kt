@@ -77,7 +77,7 @@ class TransactionSharedViewModel(
             }
 
             DashboardAction.NavigateToPinPrompt -> TODO()
-            DashboardAction.NavigateToSettings -> TODO()
+            DashboardAction.NavigateToSettings -> navigateToSettings()
             DashboardAction.OnShowAllTransactionsClicked -> TODO()
             is DashboardAction.UpdateExportBottomSheet -> {
                 _dashboardState.update { currentState ->
@@ -123,6 +123,10 @@ class TransactionSharedViewModel(
                 }
             }
         }
+    }
+
+    private fun navigateToSettings() {
+        _dashboardEvent.trySend(DashboardEvent.NavigateToSettings)
     }
 
     private fun getDashBoardData() {
@@ -348,22 +352,27 @@ class TransactionSharedViewModel(
 
                     is Result.Success -> {
                         val transaction = result.data
+                        
+                        // Handle null transaction case - return empty values for default state
+                        if (transaction == null) {
+                            Triple("", "", "")
+                        } else {
+                            val formattedAmount = AmountFormatter.formatUserInput(
+                                amount = transaction.amount,
+                                amountSettings = amountSettings,
+                                enableTwoDecimal = true
+                            )
+                            val currency = amountSettings.currency.symbol
+                            val formattedLargestAmount = when (amountSettings.expensesFormat) {
+                                ExpensesFormatUi.MINUS -> "-$currency$formattedAmount"
+                                ExpensesFormatUi.BRACKETS -> "($currency$formattedAmount)"
+                            }
+                            val title = transaction.title.take(MAX_TITLE_LENGTH)
 
-                        val formattedAmount = AmountFormatter.formatUserInput(
-                            amount = transaction.amount,
-                            amountSettings = amountSettings,
-                            enableTwoDecimal = true
-                        )
-                        val currency = amountSettings.currency.symbol
-                        val formattedLargestAmount = when (amountSettings.expensesFormat) {
-                            ExpensesFormatUi.MINUS -> "-$currency$formattedAmount"
-                            ExpensesFormatUi.BRACKETS -> "($currency$formattedAmount)"
+                            val date = InstantFormatter.formatDateString(transaction.transactionDate)
+
+                            Triple(title, formattedLargestAmount, date)
                         }
-                        val title = transaction.title.take(MAX_TITLE_LENGTH)
-
-                        val date = InstantFormatter.formatDateString(transaction.transactionDate)
-
-                        Triple(title, formattedLargestAmount, date)
                     }
                 }
             }

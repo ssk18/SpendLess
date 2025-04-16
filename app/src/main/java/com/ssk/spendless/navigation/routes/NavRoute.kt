@@ -27,4 +27,16 @@ sealed interface NavRoute {
 
     @Serializable
     data object CreateTransaction : NavRoute
+
+    @Serializable
+    data object SettingsRoot: NavRoute
+
+    @Serializable
+    data object Settings: NavRoute
+
+    @Serializable
+    data object Preferences: NavRoute
+
+    @Serializable
+    data object Security: NavRoute
 }

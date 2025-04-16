@@ -186,6 +186,8 @@ fun TransactionItemView(
                     },
                     modifier = Modifier.padding(end = 4.dp),
                     style = MaterialTheme.typography.titleLarge,
+                    maxLines = 1,
+                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
                     color = when (transaction.transactionType) {
                         TransactionType.INCOME -> SpendLessGreen
                         else -> MaterialTheme.colorScheme.onSurface

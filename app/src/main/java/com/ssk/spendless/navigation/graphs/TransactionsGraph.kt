@@ -5,8 +5,10 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.ssk.dashboard.presentation.TransactionSharedViewModel
 import com.ssk.dashboard.presentation.dashboard.DashboardScreenRoot
 import com.ssk.spendless.navigation.routes.NavRoute
+import com.ssk.spendless.navigation.sharedViewModel
 
 fun NavGraphBuilder.transactionsGraph(
     navController: NavHostController,
@@ -15,8 +17,14 @@ fun NavGraphBuilder.transactionsGraph(
     navigation<NavRoute.TransactionsRoot>(
         startDestination = NavRoute.Dashboard
     ) {
-        composable<NavRoute.Dashboard> {
-            DashboardScreenRoot()
+        composable<NavRoute.Dashboard> {entry ->
+            val transactionSharedViewModel = entry.sharedViewModel<TransactionSharedViewModel>(navController)
+            DashboardScreenRoot(
+                navigateToSettings = {
+                    navController.navigate(NavRoute.Settings)
+                },
+                viewModel = transactionSharedViewModel,
+            )
         }
     }
 }
