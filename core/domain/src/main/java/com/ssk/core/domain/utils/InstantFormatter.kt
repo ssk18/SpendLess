@@ -63,4 +63,22 @@ object InstantFormatter {
         )
     }
 
+    fun getCurrentDayOfWeek(): String {
+        return Instant.now()
+            .atZone(zoneId)
+            .format(DateTimeFormatter.ofPattern("EEEE", Locale.ENGLISH))
+    }
+
+    fun getCurrentDayOfMonth(): String {
+        return Instant.now()
+            .atZone(zoneId)
+            .format(DateTimeFormatter.ofPattern("d", Locale.ENGLISH))
+    }
+
+    fun getCurrentMonthAndDay(): String {
+        return Instant.now()
+            .atZone(zoneId)
+            .format(DateTimeFormatter.ofPattern("MMM d", Locale.ENGLISH))
+    }
+
 }
