@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.ssk.core.domain.model.ExpensesFormat
 import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.StatusBarEffect
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionState.TransactionFieldsState
 import com.ssk.dashboard.presentation.create_transaction.components.AmountTextField
 import com.ssk.dashboard.presentation.create_transaction.components.CreateTransactionHeader
@@ -46,6 +47,10 @@ fun CreateTransactionScreen(
     onAction: (CreateTransactionAction) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    
+    // Use the new StatusBarEffect composable to set dark status bar icons (black) for the light background
+    StatusBarEffect(darkIcons = false)
+    
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
     val sheetHeight = screenHeight * 0.07f
 

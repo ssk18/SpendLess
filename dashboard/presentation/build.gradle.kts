@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.serialization)
     implementation(libs.koin.androidx.compose)
+    implementation(libs.accompanist.systemuicontroller)
 
     // Project Dependencies
     implementation(projects.core.domain)

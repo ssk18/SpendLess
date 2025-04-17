@@ -1,7 +1,6 @@
 package com.ssk.dashboard.presentation.dashboard
 
 sealed interface DashboardAction {
-    data object NavigateToAllTransactions : DashboardAction
     data object NavigateToPinPrompt : DashboardAction
     data object NavigateToSettings : DashboardAction
     data object NavigateToCreateTransaction : DashboardAction

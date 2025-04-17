@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,8 +19,10 @@ import com.ssk.core.presentation.designsystem.components.AppTopBar
 import com.ssk.core.presentation.designsystem.components.SpendLessFloatingActionButton
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.DownloadIcon
+import com.ssk.core.presentation.designsystem.theme.LocalStatusBarAppearance
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.designsystem.theme.StatusBarAppearance
 import com.ssk.core.presentation.ui.ObserveAsEvents
 import com.ssk.core.presentation.ui.components.EmptyScreen
 import com.ssk.dashboard.presentation.TransactionSharedViewModel
@@ -34,6 +37,7 @@ fun DashboardScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: TransactionSharedViewModel = koinViewModel(),
     navigateToSettings: () -> Unit,
+    navigateToAllTransactions: () -> Unit
 ) {
     val dashboardState by viewModel.dashboardState.collectAsStateWithLifecycle()
     val createTransactionState by viewModel.createTransactionState.collectAsStateWithLifecycle()
@@ -44,20 +48,30 @@ fun DashboardScreenRoot(
                 navigateToSettings()
             }
 
-            is DashboardEvent.ShowSnackbar -> {
+            is DashboardEvent.ShowSnackbar -> {}
 
+            DashboardEvent.NavigateToAllTransactions -> {
+                navigateToAllTransactions()
             }
         }
     }
 
     if (!dashboardState.isDataLoaded) {
-        EmptyScreen(showLoadIndicator = true)
+        CompositionLocalProvider(
+            LocalStatusBarAppearance provides StatusBarAppearance(isDarkStatusBarIcons = true)
+        ) {
+            EmptyScreen(showLoadIndicator = true)
+        }
     } else {
-        DashboardScreen(
-            modifier = modifier,
-            state = dashboardState,
-            onAction = viewModel::onAction
-        )
+        CompositionLocalProvider(
+            LocalStatusBarAppearance provides StatusBarAppearance(isDarkStatusBarIcons = false)
+        ) {
+            DashboardScreen(
+                modifier = modifier,
+                state = dashboardState,
+                onAction = viewModel::onAction
+            )
+        }
     }
     if (dashboardState.showCreateTransactionSheet) {
         CreateTransactionScreen(
@@ -110,7 +124,7 @@ fun DashboardScreen(
                     transactions = state.latestTransactions,
                     amountSettings = state.amountSettings,
                     onShowAllClick = {
-                        onAction(DashboardAction.NavigateToAllTransactions)
+                        onAction(DashboardAction.OnShowAllTransactionsClicked)
                     },
                     modifier = Modifier.weight(1.4f)
                 )
@@ -147,7 +161,7 @@ fun DashboardTopBar(
     )
 }
 
-private fun createTestTransactions(): Map<Instant, List<Transaction>> {
+fun createTestTransactions(): Map<Instant, List<Transaction>> {
     val today = Instant.now()
     val yesterday = today.minusSeconds(24 * 60 * 60) // Вчора
 

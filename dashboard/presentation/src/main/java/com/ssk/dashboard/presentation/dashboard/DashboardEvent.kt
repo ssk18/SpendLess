@@ -7,4 +7,5 @@ sealed interface DashboardEvent {
         val message: UiText
     ): DashboardEvent
     data object NavigateToSettings: DashboardEvent
+    data object NavigateToAllTransactions: DashboardEvent
 }

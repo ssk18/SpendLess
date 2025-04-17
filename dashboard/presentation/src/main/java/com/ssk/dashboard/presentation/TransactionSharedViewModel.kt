@@ -1,6 +1,9 @@
 package com.ssk.dashboard.presentation
 
 import androidx.compose.foundation.text.input.clearText
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.core.domain.exception.UserNotLoggedInException
@@ -19,6 +22,7 @@ import com.ssk.core.presentation.ui.components.ExpensesFormatUi
 import com.ssk.core.presentation.ui.components.toDomain
 import com.ssk.core.presentation.ui.components.toUi
 import com.ssk.core.presentation.ui.textAsFlow
+import com.ssk.dashboard.presentation.all_transactions.AllTransactionsUiState
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionAction
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionEvent
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionState
@@ -52,6 +56,9 @@ class TransactionSharedViewModel(
     private val _createTransactionState = MutableStateFlow(CreateTransactionState())
     val createTransactionState = _createTransactionState.asStateFlow()
 
+    var allTransactionsUiState by mutableStateOf(AllTransactionsUiState())
+        private set
+
     private val _transactionsEvent = Channel<CreateTransactionEvent>()
     val transactionsEvent = _transactionsEvent.receiveAsFlow()
 
@@ -67,7 +74,6 @@ class TransactionSharedViewModel(
 
     fun onAction(action: DashboardAction) {
         when (action) {
-            DashboardAction.NavigateToAllTransactions -> TODO()
             is DashboardAction.NavigateToCreateTransaction -> {
                 _dashboardState.update {
                     it.copy(showCreateTransactionSheet = true)
@@ -76,7 +82,9 @@ class TransactionSharedViewModel(
 
             DashboardAction.NavigateToPinPrompt -> TODO()
             DashboardAction.NavigateToSettings -> navigateToSettings()
-            DashboardAction.OnShowAllTransactionsClicked -> TODO()
+            DashboardAction.OnShowAllTransactionsClicked -> {
+                _dashboardEvent.trySend(DashboardEvent.NavigateToAllTransactions)
+            }
             is DashboardAction.UpdateExportBottomSheet -> {
                 _dashboardState.update { currentState ->
                     currentState.copy(
@@ -199,6 +207,7 @@ class TransactionSharedViewModel(
                 repeatType = repeatingCategory
             )
 
+            updateDashboardData(transaction)
             viewModelScope.launch {
                 transactionRepository.saveTransaction(transaction)
                 toggleCreateTransactionSheet()
@@ -277,6 +286,34 @@ class TransactionSharedViewModel(
         }
     }
 
+    private fun updateDashboardData(transaction: Transaction) {
+        val currentState = _dashboardState.value
+
+        // Update Transactions
+        val updatedTransactions = currentState.latestTransactions.toMutableMap()
+        val transactionDate = InstantFormatter.convertInstantToLocalDate(transaction.transactionDate)
+        val transactionsForDate = updatedTransactions[transactionDate]?.toMutableList() ?: mutableListOf()
+
+        val updatedTransactionsForDate = listOf(transaction) + transactionsForDate
+        updatedTransactions[transactionDate] = updatedTransactionsForDate
+
+        // Update Account Balance
+        val allTransactions = currentState.latestTransactions
+            .flatMap { it.value }
+            .toMutableList()
+            .also { it.add(transaction) }
+        val updatedBalance = getAndFormatAccountBalance(allTransactions, currentState.amountSettings)
+
+        _dashboardState.update {
+            it.copy(
+                accountInfoState = it.accountInfoState.copy(accountBalance = updatedBalance),
+                latestTransactions = updatedTransactions,
+                isDataLoaded = true
+            )
+        }
+
+    }
+
     private suspend fun setTransactionAnalytics() {
         userId?.let { userId ->
             transactionRepository.getTransactionByUser(userId).collectLatest { result ->
@@ -300,6 +337,13 @@ class TransactionSharedViewModel(
                                     isDataLoaded = true
                                 )
                             }
+
+                            allTransactionsUiState = allTransactionsUiState.copy(
+                                transactions = transactions
+                                    .reversed()
+                                    .groupBy { InstantFormatter.convertInstantToLocalDate(it.transactionDate) },
+                                amountSettings = _dashboardState.value.amountSettings
+                            )
                         } else {
                             val initAmount =
                                 "${_dashboardState.value.amountSettings.currency.symbol}0"
