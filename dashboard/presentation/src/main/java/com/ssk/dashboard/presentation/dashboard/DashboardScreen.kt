@@ -29,6 +29,7 @@ import com.ssk.dashboard.presentation.TransactionSharedViewModel
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionScreen
 import com.ssk.dashboard.presentation.dashboard.components.DashBoardContent
 import com.ssk.dashboard.presentation.dashboard.components.LatestTransactionView
+import com.ssk.dashboard.presentation.export.ExportBottomSheet
 import org.koin.androidx.compose.koinViewModel
 import java.time.Instant
 
@@ -41,6 +42,7 @@ fun DashboardScreenRoot(
 ) {
     val dashboardState by viewModel.dashboardState.collectAsStateWithLifecycle()
     val createTransactionState by viewModel.createTransactionState.collectAsStateWithLifecycle()
+    val exportState by viewModel.exportState.collectAsStateWithLifecycle()
 
     ObserveAsEvents(viewModel.dashboardEvent) { event ->
         when (event) {
@@ -79,6 +81,12 @@ fun DashboardScreenRoot(
             onAction = viewModel::onAction
         )
     }
+
+    if (dashboardState.showExportBottomSheet) {
+        ExportBottomSheet(
+            state = exportState,
+        )
+    }
 }
 
 @Composable
@@ -96,7 +104,7 @@ fun DashboardScreen(
                     onAction(DashboardAction.NavigateToSettings)
                 },
                 navigateToExport = {
-                    onAction(DashboardAction.NavigateToSettings)
+                    onAction(DashboardAction.NavigateToExport)
                 }
             )
         },

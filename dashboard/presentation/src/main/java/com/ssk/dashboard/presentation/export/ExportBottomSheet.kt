@@ -110,6 +110,8 @@ fun ExportSheetHeader(
 @Composable
 fun ExportBottomSheetPreview() {
     SpendLessAppTheme {
-        ExportSheetHeader()
+        ExportBottomSheet(
+            state = ExportUiState(),
+        )
     }
 }

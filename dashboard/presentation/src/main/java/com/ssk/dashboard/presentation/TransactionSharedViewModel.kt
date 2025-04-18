@@ -32,6 +32,7 @@ import com.ssk.dashboard.presentation.dashboard.DashboardEvent
 import com.ssk.dashboard.presentation.dashboard.DashboardState
 import com.ssk.dashboard.presentation.dashboard.DashboardState.AmountSettings
 import com.ssk.dashboard.presentation.dashboard.utils.AmountFormatter
+import com.ssk.dashboard.presentation.export.ExportUiState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
@@ -55,6 +56,9 @@ class TransactionSharedViewModel(
 
     private val _createTransactionState = MutableStateFlow(CreateTransactionState())
     val createTransactionState = _createTransactionState.asStateFlow()
+
+    private val _exportState = MutableStateFlow(ExportUiState())
+    val exportState = _exportState.asStateFlow()
 
     var allTransactionsUiState by mutableStateOf(AllTransactionsUiState())
         private set
@@ -90,6 +94,12 @@ class TransactionSharedViewModel(
                     currentState.copy(
                         showCreateTransactionSheet = action.showSheet
                     )
+                }
+            }
+
+            DashboardAction.NavigateToExport -> {
+                _dashboardState.update {
+                    it.copy(showExportBottomSheet = true)
                 }
             }
         }

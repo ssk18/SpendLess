@@ -15,6 +15,7 @@ data class DashboardState(
     val latestTransactions: Map<Instant, List<Transaction>> = emptyMap(),
     val amountSettings: AmountSettings = AmountSettings(),
     val showCreateTransactionSheet: Boolean = false,
+    val showExportBottomSheet: Boolean = false,
 ) {
     data class AccountInfoState(
         val accountBalance: String = "$0.00",

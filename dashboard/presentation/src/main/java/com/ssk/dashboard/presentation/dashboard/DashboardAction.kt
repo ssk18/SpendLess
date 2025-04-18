@@ -6,4 +6,5 @@ sealed interface DashboardAction {
     data object NavigateToCreateTransaction : DashboardAction
     data class UpdateExportBottomSheet(val showSheet: Boolean) : DashboardAction
     data object OnShowAllTransactionsClicked : DashboardAction
+    data object NavigateToExport : DashboardAction
 }
