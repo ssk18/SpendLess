@@ -10,4 +10,8 @@
     <string name="show_all">Show all</string>
     <string name="expense_sign">%s$</string>
     <string name="income_sign">$</string>
+    <string name="last_three_months">Last three months</string>
+    <string name="last_month">Last Month</string>
+    <string name="current_month">Current month</string>
+    <string name="all_data">All data</string>
 </resources>

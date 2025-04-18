@@ -77,6 +77,14 @@ val LockIcon: ImageVector
     @Composable
     get() = ImageVector.vectorResource(R.drawable.lock)
 
+val ExpandedIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.arrow_drop_up)
+
+val CollapsedIcon: ImageVector
+    @Composable
+    get() = ImageVector.vectorResource(R.drawable.arrow_drop_down)
+
 @Composable
 fun ExpenseIconBackground(
     modifier: Modifier = Modifier,
