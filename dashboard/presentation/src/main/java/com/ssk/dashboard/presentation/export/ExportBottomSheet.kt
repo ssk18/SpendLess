@@ -85,13 +85,11 @@ fun ExportSheetHeader(
                 text = "Export",
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onSurface,
-                modifier = Modifier.weight(1f)
             )
             Text(
                 text = "Export transactions to CSV format",
                 style = MaterialTheme.typography.titleSmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f)
             )
         }
         IconButton(
@@ -112,10 +110,6 @@ fun ExportSheetHeader(
 @Composable
 fun ExportBottomSheetPreview() {
     SpendLessAppTheme {
-        ExportBottomSheet(
-            state = ExportUiState(
-                exportRange = ExportRange.LAST_MONTH
-            )
-        )
+        ExportSheetHeader()
     }
 }
