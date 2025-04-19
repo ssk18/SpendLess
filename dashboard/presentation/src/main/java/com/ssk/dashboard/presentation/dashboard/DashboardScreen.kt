@@ -82,9 +82,10 @@ fun DashboardScreenRoot(
         )
     }
 
-    if (dashboardState.showExportBottomSheet) {
+    if (exportState.isExportSheetOpen) {
         ExportBottomSheet(
             state = exportState,
+            onAction = viewModel::onAction,
         )
     }
 }

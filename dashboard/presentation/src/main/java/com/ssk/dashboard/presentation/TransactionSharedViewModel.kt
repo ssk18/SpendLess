@@ -22,6 +22,8 @@ import com.ssk.core.presentation.ui.components.ExpensesFormatUi
 import com.ssk.core.presentation.ui.components.toDomain
 import com.ssk.core.presentation.ui.components.toUi
 import com.ssk.core.presentation.ui.textAsFlow
+import com.ssk.dashboard.domain.CsvExporter
+import com.ssk.dashboard.presentation.all_transactions.AllTransactionsAction
 import com.ssk.dashboard.presentation.all_transactions.AllTransactionsUiState
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionAction
 import com.ssk.dashboard.presentation.create_transaction.CreateTransactionEvent
@@ -32,6 +34,7 @@ import com.ssk.dashboard.presentation.dashboard.DashboardEvent
 import com.ssk.dashboard.presentation.dashboard.DashboardState
 import com.ssk.dashboard.presentation.dashboard.DashboardState.AmountSettings
 import com.ssk.dashboard.presentation.dashboard.utils.AmountFormatter
+import com.ssk.dashboard.presentation.export.ExportRange
 import com.ssk.dashboard.presentation.export.ExportUiAction
 import com.ssk.dashboard.presentation.export.ExportUiState
 import kotlinx.coroutines.async
@@ -45,11 +48,17 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class TransactionSharedViewModel(
     private val userRepository: IUserRepository,
     private val transactionRepository: ITransactionsRepository,
-    private val sessionRepository: ISessionRepository
+    private val sessionRepository: ISessionRepository,
+    private val csvExporter: CsvExporter
 ) : ViewModel() {
 
     private val _dashboardState = MutableStateFlow(DashboardState())
@@ -90,17 +99,18 @@ class TransactionSharedViewModel(
             DashboardAction.OnShowAllTransactionsClicked -> {
                 _dashboardEvent.trySend(DashboardEvent.NavigateToAllTransactions)
             }
+
             is DashboardAction.UpdateExportBottomSheet -> {
-                _dashboardState.update { currentState ->
+                _exportState.update { currentState ->
                     currentState.copy(
-                        showCreateTransactionSheet = action.showSheet
+                        isExportSheetOpen = action.showSheet
                     )
                 }
             }
 
             DashboardAction.NavigateToExport -> {
-                _dashboardState.update {
-                    it.copy(showExportBottomSheet = true)
+                _exportState.update {
+                    it.copy(isExportSheetOpen = true)
                 }
             }
         }
@@ -144,7 +154,7 @@ class TransactionSharedViewModel(
 
     fun onAction(exportUiAction: ExportUiAction) {
         when (exportUiAction) {
-            ExportUiAction.OnExportClicked -> TODO()
+            ExportUiAction.OnExportClicked -> exportCsvData()
             is ExportUiAction.OnExportRangeClicked -> {
                 _exportState.update {
                     it.copy(
@@ -152,7 +162,18 @@ class TransactionSharedViewModel(
                     )
                 }
             }
+
             ExportUiAction.OnExportSheetToggled -> {
+                _exportState.update {
+                    it.copy(isExportSheetOpen = !it.isExportSheetOpen)
+                }
+            }
+        }
+    }
+
+    fun onAction(allTransactionsAction: AllTransactionsAction) {
+        when (allTransactionsAction) {
+            AllTransactionsAction.OnExportClicked -> {
                 _exportState.update {
                     it.copy(isExportSheetOpen = !it.isExportSheetOpen)
                 }
@@ -162,6 +183,66 @@ class TransactionSharedViewModel(
 
     private fun navigateToSettings() {
         _dashboardEvent.trySend(DashboardEvent.NavigateToSettings)
+    }
+
+    private fun exportCsvData() {
+        val transactionInRange = filterTransactionsByRange(
+            transactions = allTransactionsUiState.transactions.values.flatten(),
+            exportRange = _exportState.value.exportRange
+        )
+        csvExporter.exportToCsv(fileName = generateCsvName(), transactions = transactionInRange)
+        _exportState.update {
+            it.copy(
+                isExportSheetOpen = false,
+            )
+        }
+    }
+
+    private fun generateCsvName(): String {
+        val currentDateTime = LocalDateTime.now()
+        val formattedDate = currentDateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm"))
+        val title = when (_exportState.value.exportRange) {
+            ExportRange.THREE_MONTH -> "transactions_last_3_months_$formattedDate"
+            ExportRange.LAST_MONTH -> "transactions_last_month_$formattedDate"
+            ExportRange.CURRENT_MONTH -> "transactions_current_month_$formattedDate"
+            ExportRange.ALL -> "all_transactions_$formattedDate"
+        }
+        return "$title.csv"
+    }
+
+    private fun filterTransactionsByRange(
+        transactions: List<Transaction>,
+        exportRange: ExportRange
+    ): List<Transaction> {
+        val zoneId = ZoneId.systemDefault()
+        val now = LocalDate.now(zoneId)
+
+        val startDate: Instant
+
+        when (exportRange) {
+            ExportRange.THREE_MONTH -> {
+                val lastThreeMonths = now.minusMonths(3)
+                startDate = lastThreeMonths.withDayOfMonth(1).atStartOfDay(zoneId).toInstant()
+            }
+
+            ExportRange.LAST_MONTH -> {
+                val lastMonth = now.minusMonths(1)
+                startDate = lastMonth.withDayOfMonth(1).atStartOfDay(zoneId).toInstant()
+            }
+
+            ExportRange.CURRENT_MONTH -> {
+                startDate = now.withDayOfMonth(1).atStartOfDay(zoneId).toInstant()
+            }
+
+            ExportRange.ALL -> {
+                startDate = Instant.MIN
+            }
+        }
+
+        return transactions.filter { transaction ->
+            val transactionInstant = Instant.ofEpochMilli(transaction.transactionDate)
+            transactionInstant in startDate..Instant.now()
+        }.reversed()
     }
 
     private fun getDashBoardData() {
@@ -320,8 +401,10 @@ class TransactionSharedViewModel(
 
         // Update Transactions
         val updatedTransactions = currentState.latestTransactions.toMutableMap()
-        val transactionDate = InstantFormatter.convertInstantToLocalDate(transaction.transactionDate)
-        val transactionsForDate = updatedTransactions[transactionDate]?.toMutableList() ?: mutableListOf()
+        val transactionDate =
+            InstantFormatter.convertInstantToLocalDate(transaction.transactionDate)
+        val transactionsForDate =
+            updatedTransactions[transactionDate]?.toMutableList() ?: mutableListOf()
 
         val updatedTransactionsForDate = listOf(transaction) + transactionsForDate
         updatedTransactions[transactionDate] = updatedTransactionsForDate
@@ -331,7 +414,8 @@ class TransactionSharedViewModel(
             .flatMap { it.value }
             .toMutableList()
             .also { it.add(transaction) }
-        val updatedBalance = getAndFormatAccountBalance(allTransactions, currentState.amountSettings)
+        val updatedBalance =
+            getAndFormatAccountBalance(allTransactions, currentState.amountSettings)
 
         _dashboardState.update {
             it.copy(
@@ -431,7 +515,7 @@ class TransactionSharedViewModel(
         amountSettings: AmountSettings
     ): Triple<String, String, String> {
         val result = transactionRepository.getLargestTransaction(userId)
-        
+
         return when (result) {
             is Result.Error -> {
                 _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching largest transaction")))
@@ -458,7 +542,7 @@ class TransactionSharedViewModel(
                     } else {
                         "$currency$formattedAmount"
                     }
-                    
+
                     val title = transaction.title.take(MAX_TITLE_LENGTH)
                     val date = InstantFormatter.formatDateString(transaction.transactionDate)
 
@@ -475,6 +559,7 @@ class TransactionSharedViewModel(
                 _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching most popular category")))
                 null
             }
+
             is Result.Success -> {
                 result.data?.toUi()
             }
@@ -483,7 +568,7 @@ class TransactionSharedViewModel(
 
     private suspend fun getPreviousWeekExpenseAmount(userId: Long): String {
         val result = transactionRepository.getPreviousWeekTransactions(userId)
-        
+
         return when (result) {
             is Result.Error -> {
                 _dashboardEvent.trySend(DashboardEvent.ShowSnackbar(UiText.DynamicString("Error fetching previous week expense amount")))

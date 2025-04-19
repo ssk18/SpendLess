@@ -12,9 +12,11 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.core.domain.utils.InstantFormatter
 import com.ssk.core.presentation.designsystem.components.AppTopBar
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
@@ -24,14 +26,16 @@ import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.dashboard.presentation.TransactionSharedViewModel
 import com.ssk.dashboard.presentation.dashboard.components.TransactionItemView
 import com.ssk.dashboard.presentation.dashboard.createTestTransactions
+import com.ssk.dashboard.presentation.export.ExportBottomSheet
 import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun AllTransactionsScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: TransactionSharedViewModel = koinViewModel(),
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
 ) {
+    val exportState by viewModel.exportState.collectAsStateWithLifecycle()
     SpendLessScaffold(
         modifier = modifier,
         topBar = {
@@ -42,7 +46,9 @@ fun AllTransactionsScreenRoot(
                     onBackClick()
                 },
                 endIcon2 = DownloadIcon,
-                onEndIcon2Click = {},
+                onEndIcon2Click = {
+                    viewModel.onAction(AllTransactionsAction.OnExportClicked)
+                },
                 endIcon2BackgroundColor = MaterialTheme.colorScheme.background,
                 endIcon2Color = MaterialTheme.colorScheme.onBackground,
                 titleColor = MaterialTheme.colorScheme.onBackground
@@ -52,6 +58,13 @@ fun AllTransactionsScreenRoot(
         AllTransactionsScreen(
             modifier = Modifier.padding(it),
             state = viewModel.allTransactionsUiState
+        )
+    }
+
+    if (exportState.isExportSheetOpen) {
+        ExportBottomSheet(
+            state = exportState,
+            onAction = viewModel::onAction
         )
     }
 }

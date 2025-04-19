@@ -56,7 +56,11 @@ fun ExportBottomSheet(
                 .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            ExportSheetHeader()
+            ExportSheetHeader(
+                onCloseClicked = {
+                    onAction(ExportUiAction.OnExportSheetToggled)
+                }
+            )
             ExportSheetDropDown(
                 selectedItem = state.exportRange,
                 onItemSelected = {
@@ -65,7 +69,9 @@ fun ExportBottomSheet(
             )
             SpendLessActionButton(
                 text = "Export",
-                onClick = { /*TODO*/ },
+                onClick = {
+                    onAction(ExportUiAction.OnExportClicked)
+                },
                 modifier = Modifier.fillMaxWidth()
             )
         }
@@ -74,7 +80,8 @@ fun ExportBottomSheet(
 
 @Composable
 fun ExportSheetHeader(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCloseClicked: () -> Unit
 ) {
     Row(
         modifier = modifier
@@ -98,7 +105,7 @@ fun ExportSheetHeader(
             )
         }
         IconButton(
-            onClick = {},
+            onClick = onCloseClicked,
             colors = IconButtonDefaults.iconButtonColors(
                 contentColor = MaterialTheme.colorScheme.onSurface
             )
