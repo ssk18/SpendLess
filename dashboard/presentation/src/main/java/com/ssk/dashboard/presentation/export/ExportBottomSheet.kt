@@ -16,6 +16,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.ModalBottomSheetProperties
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -31,7 +32,8 @@ import com.ssk.dashboard.presentation.export.components.ExportSheetDropDown
 @Composable
 fun ExportBottomSheet(
     modifier: Modifier = Modifier,
-    state: ExportUiState
+    state: ExportUiState,
+    onAction: (ExportUiAction) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
@@ -39,11 +41,14 @@ fun ExportBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = {
-
+            onAction(ExportUiAction.OnExportSheetToggled)
         },
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = modifier.padding(top = sheetHeight),
+        properties = ModalBottomSheetProperties(
+            shouldDismissOnBackPress = true
+        )
     ) {
         Column(
             modifier = Modifier
@@ -55,7 +60,7 @@ fun ExportBottomSheet(
             ExportSheetDropDown(
                 selectedItem = state.exportRange,
                 onItemSelected = {
-
+                    onAction(ExportUiAction.OnExportRangeClicked(it))
                 }
             )
             SpendLessActionButton(
@@ -112,6 +117,7 @@ fun ExportBottomSheetPreview() {
     SpendLessAppTheme {
         ExportBottomSheet(
             state = ExportUiState(),
+            onAction = {}
         )
     }
 }

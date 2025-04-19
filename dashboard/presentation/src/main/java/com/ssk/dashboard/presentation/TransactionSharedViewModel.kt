@@ -32,6 +32,7 @@ import com.ssk.dashboard.presentation.dashboard.DashboardEvent
 import com.ssk.dashboard.presentation.dashboard.DashboardState
 import com.ssk.dashboard.presentation.dashboard.DashboardState.AmountSettings
 import com.ssk.dashboard.presentation.dashboard.utils.AmountFormatter
+import com.ssk.dashboard.presentation.export.ExportUiAction
 import com.ssk.dashboard.presentation.export.ExportUiState
 import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
@@ -136,6 +137,24 @@ class TransactionSharedViewModel(
                     it.copy(
                         transactionType = action.transactionType
                     )
+                }
+            }
+        }
+    }
+
+    fun onAction(exportUiAction: ExportUiAction) {
+        when (exportUiAction) {
+            ExportUiAction.OnExportClicked -> TODO()
+            is ExportUiAction.OnExportRangeClicked -> {
+                _exportState.update {
+                    it.copy(
+                        exportRange = exportUiAction.exportRange
+                    )
+                }
+            }
+            ExportUiAction.OnExportSheetToggled -> {
+                _exportState.update {
+                    it.copy(isExportSheetOpen = !it.isExportSheetOpen)
                 }
             }
         }
