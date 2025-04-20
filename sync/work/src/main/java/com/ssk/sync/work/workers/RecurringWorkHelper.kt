@@ -1,4 +1,4 @@
-package com.ssk.dashboard.data.workmanager
+package com.ssk.sync.work.workers
 
 import androidx.work.Constraints
 import java.time.Duration

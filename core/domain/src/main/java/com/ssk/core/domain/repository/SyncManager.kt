@@ -1,4 +1,4 @@
-package com.ssk.dashboard.domain
+package com.ssk.core.domain.repository
 
 import kotlinx.coroutines.flow.Flow
 

@@ -62,4 +62,6 @@ dependencies {
     implementation(projects.settings.domain)
     implementation(projects.settings.data)
 
+    implementation(projects.sync.work)
+
 }
