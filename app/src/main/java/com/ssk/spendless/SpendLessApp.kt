@@ -6,16 +6,19 @@ import com.ssk.auth.presentation.di.authViewModelModule
 import com.ssk.core.data.di.coreDataModule
 import com.ssk.core.database.di.dataStoreModule
 import com.ssk.core.database.di.databaseModule
-import com.ssk.dashboard.data.csvDataModule
+import com.ssk.dashboard.data.di.csvDataModule
+import com.ssk.dashboard.data.di.workManagerModule
 import com.ssk.dashboard.presentation.di.dashboardModule
 import com.ssk.settings.presentation.di.settingsViewModelModule
 import com.ssk.spendless.di.appModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
+import org.koin.androidx.workmanager.koin.workManagerFactory
+import org.koin.core.component.KoinComponent
 import org.koin.core.context.GlobalContext.startKoin
 import timber.log.Timber
 
-class SpendLessApp: Application() {
+class SpendLessApp: Application(), KoinComponent {
 
     override fun onCreate() {
         super.onCreate()
@@ -26,6 +29,7 @@ class SpendLessApp: Application() {
         startKoin {
             androidLogger()
             androidContext(this@SpendLessApp)
+            workManagerFactory()
             modules(
                 databaseModule,
                 dataStoreModule,
@@ -35,7 +39,8 @@ class SpendLessApp: Application() {
                 dashboardModule,
                 appModule,
                 settingsViewModelModule,
-                csvDataModule
+                csvDataModule,
+                workManagerModule
             )
         }
     }
