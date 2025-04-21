@@ -1,19 +1,13 @@
 package com.ssk.sync.work.initializer
 
-import android.content.Context
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.WorkManager
-import com.ssk.sync.work.workers.RecurringTransactionWorker
+import com.ssk.core.domain.repository.SyncManager
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-object Sync {
-    fun initialize(context: Context) {
-        WorkManager.getInstance(context).apply {
-            enqueueUniquePeriodicWork(
-                SYNC_WORK_NAME,
-                ExistingPeriodicWorkPolicy.KEEP,
-                RecurringTransactionWorker.startRecurringTransactionWork(),
-            )
-        }
+object Sync: KoinComponent {
+    fun initialize() {
+        val syncManager: SyncManager by inject()
+        syncManager.observeRecurringTransactions()
     }
 }
 

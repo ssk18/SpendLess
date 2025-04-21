@@ -36,6 +36,7 @@ securityCrypto = "1.1.0-alpha06"
 datastorePreferences = "1.1.4"
 androidx-datastore = "1.1.4"
 work = "2.10.0"
+koin-annotations = "2.0.1-Beta1"
 
 # Project versions
 projectApplicationId = "com.ssk.spendless"
@@ -98,6 +99,7 @@ koin-android-workmanager = { group = "io.insert-koin", name = "koin-androidx-wor
 koin-android = { group = "io.insert-koin", name = "koin-android", version.ref = "koin" }
 koin-core = { group = "io.insert-koin", name = "koin-core", version.ref = "koin" }
 koin-androidx-compose = { group = "io.insert-koin", name = "koin-androidx-compose", version.ref = "koin" }
+koin-androidx-startup = {group = "io.insert-koin", name = "koin-androidx-startup", version.ref = "koin"}
 
 # Datastore
 androidx-datastore-preference = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastorePreferences" }
@@ -112,7 +114,7 @@ androidx-security-crypto = { group = "androidx.security", name = "security-crypt
 # Timber
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
-# WOrk manager
+# Work manager
 androidx-work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
 
 # Gradle
@@ -158,7 +160,8 @@ compose-debug = [
 koin = [
     "koin-core",
     "koin-android",
-    "koin-android-workmanager"
+    "koin-android-workmanager",
+    "koin-androidx-startup"
 ]
 koin-compose = [
     "koin-core",

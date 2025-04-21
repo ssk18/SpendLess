@@ -20,4 +20,6 @@ dependencies {
     implementation(libs.serialization)
 
     implementation(projects.core.domain)
+
+    implementation(libs.timber)
 }

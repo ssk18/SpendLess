@@ -114,7 +114,7 @@ class TransactionsRepository(
         try {
             // Get all transactions for the user
             val transactionsResult = getTransactionByUser(userId).firstOrNull()
-            
+
             return when (transactionsResult) {
                 is Result.Success -> {
                     val previousWeekTransactions = transactionsResult.data
@@ -128,6 +128,7 @@ class TransactionsRepository(
                         }
                     Result.Success(previousWeekTransactions)
                 }
+
                 is Result.Error -> transactionsResult
                 null -> Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
             }
@@ -136,6 +137,17 @@ class TransactionsRepository(
             Timber.e(e, "Error fetching previous week transactions")
             return Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
         }
+    }
+
+    override suspend fun observeRecurringTransactions(): Flow<Result<Int, DataError>> {
+        return transactionDao.observeRecurringTransactions()
+            .map { Result.Success(it) }
+            .catch { e ->
+                if (e is CancellationException) throw e
+                Timber.e(e, "Error fetching largest transaction")
+                Result.Error(DataError.Local.UNKNOWN_DATABASE_ERROR)
+            }
+            .flowOn(Dispatchers.IO)
     }
 
 }

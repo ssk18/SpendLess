@@ -28,6 +28,7 @@ dependencies {
     implementation(libs.androidx.security.crypto)
 
     // Koin
+    implementation(libs.koin.androidx.startup)
     implementation(libs.bundles.koin)
     implementation(libs.bundles.koin.compose)
 

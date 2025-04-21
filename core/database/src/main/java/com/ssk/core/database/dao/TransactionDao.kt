@@ -33,4 +33,9 @@ interface TransactionDao {
     """
     )
     fun getExpenseTransactions(userId: Long): Flow<List<TransactionEntity>>
+
+    @Query("""
+        SELECT * FROM transactions WHERE repeatType != :repeatType
+    """)
+    fun observeRecurringTransactions(repeatType: RepeatType = RepeatType.NOT_REPEAT): Flow<Int>
 }
