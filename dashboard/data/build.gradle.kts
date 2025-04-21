@@ -12,6 +12,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.koin.android.workmanager)
     implementation(libs.serialization)
+    implementation(libs.timber)
 
     implementation(projects.core.domain)
     implementation(projects.core.database)

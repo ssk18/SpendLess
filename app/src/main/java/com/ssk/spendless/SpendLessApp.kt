@@ -7,6 +7,7 @@ import com.ssk.core.data.di.coreDataModule
 import com.ssk.core.database.di.dataStoreModule
 import com.ssk.core.database.di.databaseModule
 import com.ssk.dashboard.data.di.csvDataModule
+import com.ssk.dashboard.data.di.expenseMonitoringModule
 import com.ssk.dashboard.presentation.di.dashboardModule
 import com.ssk.settings.presentation.di.settingsViewModelModule
 import com.ssk.spendless.di.appModule
@@ -40,7 +41,8 @@ class SpendLessApp: Application() {
                 appModule,
                 settingsViewModelModule,
                 csvDataModule,
-                syncKoinModule
+                syncKoinModule,
+                expenseMonitoringModule
             )
         }
     }

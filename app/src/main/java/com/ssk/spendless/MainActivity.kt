@@ -53,4 +53,10 @@ class MainActivity : ComponentActivity() {
         super.onUserInteraction()
         sessionRepository.refreshSession()
     }
+
+    companion object {
+        // Navigation constants exposed for notifications
+        const val EXTRA_NAVIGATION_DESTINATION = "navigation_destination"
+        const val DESTINATION_ALL_TRANSACTIONS = "all_transactions"
+    }
 }
