@@ -8,11 +8,13 @@ import com.ssk.core.database.di.dataStoreModule
 import com.ssk.core.database.di.databaseModule
 import com.ssk.dashboard.data.di.csvDataModule
 import com.ssk.dashboard.data.di.expenseMonitoringModule
+import com.ssk.dashboard.domain.ExpenseAlarmScheduler
 import com.ssk.dashboard.presentation.di.dashboardModule
 import com.ssk.settings.presentation.di.settingsViewModelModule
 import com.ssk.spendless.di.appModule
 import com.ssk.sync.work.di.syncKoinModule
 import com.ssk.sync.work.initializer.Sync
+import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.koin.workManagerFactory
@@ -45,5 +47,10 @@ class SpendLessApp: Application() {
                 expenseMonitoringModule
             )
         }
+        
+        // Initialize expense alarm
+        val expenseAlarmScheduler: ExpenseAlarmScheduler by inject()
+        expenseAlarmScheduler.scheduleExpenseCheck()
+        Timber.d("Expense alarm scheduler initialized")
     }
 }
