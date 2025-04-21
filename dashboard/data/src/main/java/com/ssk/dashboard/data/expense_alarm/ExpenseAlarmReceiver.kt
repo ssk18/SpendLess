@@ -21,7 +21,7 @@ class ExpenseAlarmReceiver: BroadcastReceiver(), KoinComponent {
     private val userRepository: IUserRepository by inject()
     private val notificationManager: ExpenseNotificationManager by inject()
     private val sessionRepository: ISessionRepository by inject()
-    private val threshold = 2000f
+    private val threshold = 1300f
 
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context == null) {
@@ -48,8 +48,8 @@ class ExpenseAlarmReceiver: BroadcastReceiver(), KoinComponent {
                 return
             }
 
-            val user = (userResult as Result.Success).data
-            val userId = user.userId
+            val userDetails = (userResult as Result.Success).data
+            val userId = userDetails.userId
             
             if (userId == null) {
                 Timber.e("User has null ID, skipping expense check")

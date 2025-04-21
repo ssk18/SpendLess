@@ -18,18 +18,15 @@ import org.koin.android.ext.android.inject
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
 import org.koin.androidx.workmanager.koin.workManagerFactory
-import org.koin.core.context.GlobalContext.startKoin
+import org.koin.androix.startup.KoinStartup.onKoinStartup
+import org.koin.core.annotation.KoinExperimentalAPI
 import timber.log.Timber
 
+@OptIn(KoinExperimentalAPI::class)
 class SpendLessApp: Application() {
 
-    override fun onCreate() {
-        super.onCreate()
-        if (BuildConfig.DEBUG) {
-            Timber.plant(Timber.DebugTree())
-        }
-        Sync.initialize()
-        startKoin {
+    init {
+        onKoinStartup {
             androidLogger()
             androidContext(this@SpendLessApp)
             workManagerFactory()
@@ -44,11 +41,17 @@ class SpendLessApp: Application() {
                 settingsViewModelModule,
                 csvDataModule,
                 syncKoinModule,
-                expenseMonitoringModule
+                expenseMonitoringModule,
             )
         }
-        
-        // Initialize expense alarm
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        if (BuildConfig.DEBUG) {
+            Timber.plant(Timber.DebugTree())
+        }
+        Sync.initialize()
         val expenseAlarmScheduler: ExpenseAlarmScheduler by inject()
         expenseAlarmScheduler.scheduleExpenseCheck()
         Timber.d("Expense alarm scheduler initialized")

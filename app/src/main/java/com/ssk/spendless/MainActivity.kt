@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -12,6 +13,7 @@ import androidx.navigation.compose.rememberNavController
 import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 import com.ssk.spendless.navigation.SpendLessNavigation
+import com.ssk.spendless.navigation.routes.NavRoute
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
@@ -33,10 +35,20 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
 
+        val navigateTo = intent?.getStringExtra(EXTRA_NAVIGATION_DESTINATION)
+
         setContent {
             val navController = rememberNavController()
             val state = mainViewModel.state.collectAsStateWithLifecycle().value
-            
+
+            LaunchedEffect(navigateTo) {
+                if (navigateTo == DESTINATION_ALL_TRANSACTIONS) {
+                    navController.navigate(NavRoute.AllTransactions) {
+                        popUpTo(NavRoute.Dashboard)
+                    }
+                }
+            }
+
             Timber.d("Navigation state: isLoggedIn=${state.isUserLoggedIn}, startDestination=${state.startDestination}")
             
             SpendLessAppTheme {

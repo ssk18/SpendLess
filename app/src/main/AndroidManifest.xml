@@ -24,9 +24,12 @@
             android:exported="false"
             tools:node="merge">
             <meta-data
-                android:name="androidx.startup.WorkManagerInitializer"
+                android:name="androidx.work.WorkManagerInitializer"
                 android:value="androidx.startup"
                 tools:node="remove" />
+            <meta-data
+                android:name="org.koin.androix.startup.KoinInitializer"
+                android:value="androidx.startup" />
         </provider>
         
         <!-- Expense alarm receivers -->
