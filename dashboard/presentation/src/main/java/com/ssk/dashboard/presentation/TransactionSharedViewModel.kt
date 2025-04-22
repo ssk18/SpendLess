@@ -186,8 +186,11 @@ class TransactionSharedViewModel(
     }
 
     private fun exportCsvData() {
+        // Convert map values to a list of transactions
+        val allTransactions = allTransactionsUiState.transactions.values.flatMap { it }
+        
         val transactionInRange = filterTransactionsByRange(
-            transactions = allTransactionsUiState.transactions.values.flatten(),
+            transactions = allTransactions,
             exportRange = _exportState.value.exportRange
         )
         csvExporter.exportToCsv(fileName = generateCsvName(), transactions = transactionInRange)
@@ -611,7 +614,7 @@ class TransactionSharedViewModel(
                 amount = amount,
                 date = date
             ),
-            previousWeekExpenseAmount = previousWeekExpenseAmount.await()
+            previousWeekExpenseAmount = "${amountSettings.currency.symbol}${previousWeekExpenseAmount.await()}"
         )
     }
 

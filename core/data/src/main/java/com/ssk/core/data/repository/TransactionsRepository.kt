@@ -80,9 +80,28 @@ class TransactionsRepository(
                 .groupBy { it.transactionType }
                 .mapValues { it.value.size }
 
-            val mostPopularCategory = categoryCount.maxByOrNull { it.value }?.key
+            val maxCount = categoryCount.maxOfOrNull {
+                it.value
+            }
 
-            Result.Success(mostPopularCategory) as Result<TransactionType?, DataError>
+            val mostPopularCategories = categoryCount.filterValues { it == maxCount }
+
+            Timber.d("Most popular categories: $mostPopularCategories")
+            val mostPopularCategory: TransactionType? = if (mostPopularCategories.isNotEmpty()) {
+                // Always decide based on total amount spent for each category
+                mostPopularCategories.keys.maxByOrNull { type ->
+                    // Calculate the total absolute amount for this category
+                    val totalAmount = expenseTransactions
+                        .filter { it.transactionType == type }
+                        .sumOf { Math.abs(it.amount.toDouble()) }
+                    Timber.d("Category $type total amount: $totalAmount")
+                    totalAmount
+                }
+            } else {
+                null
+            }
+            Timber.d("Most popular category selected: $mostPopularCategory")
+            Result.Success(mostPopularCategory)
 
         } catch (e: Exception) {
             if (e is CancellationException) throw e

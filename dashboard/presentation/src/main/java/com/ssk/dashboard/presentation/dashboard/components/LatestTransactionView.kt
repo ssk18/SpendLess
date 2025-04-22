@@ -50,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.ssk.core.domain.model.Transaction
@@ -238,7 +239,7 @@ fun TransactionItemView(
                         modifier = Modifier.padding(end = 4.dp),
                         style = MaterialTheme.typography.titleLarge,
                         maxLines = 1,
-                        overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis,
+                        overflow = TextOverflow.Ellipsis,
                         color = when (transaction.transactionType) {
                             TransactionType.INCOME -> SpendLessGreen
                             else -> MaterialTheme.colorScheme.onSurface
