@@ -25,8 +25,8 @@ class ExpenseAlarmSchedulerImpl(
 
         val calendar: Calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 12)
-            set(Calendar.MINUTE, 13)
+            set(Calendar.HOUR_OF_DAY, 18)
+            set(Calendar.MINUTE, 30)
 
             if (timeInMillis < System.currentTimeMillis()) {
                 add(Calendar.DAY_OF_YEAR, 1)
