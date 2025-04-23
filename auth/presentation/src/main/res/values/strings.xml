@@ -37,4 +37,8 @@
     <string name="thousands_separator">Thousands Separator</string>
     <string name="you_can_change_it_at_any_time_in_settings">You can change it at any time in Settings</string>
     <string name="navigate_back">Navigate back</string>
+    <string name="enter_you_pin">enter_you_pin</string>
+    <string name="try_your_pin_again">Try your PIN again in %1$s</string>
+    <string name="enter_your_pin">Enter your PIN</string>
+    <string name="wrong_pin">Wrong PIN</string>
 </resources>
