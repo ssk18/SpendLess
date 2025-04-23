@@ -27,7 +27,13 @@ fun NavGraphBuilder.settingsGraph(
                     navController.navigateUp()
                 },
                 navigateToLogin = {
-                    navController.navigate(NavRoute.Login)
+                    // Navigate to Login and clear backstack
+                    navController.navigate(NavRoute.Login) {
+                        // Clear the entire back stack - important after logout
+                        popUpTo(0) {
+                            inclusive = true 
+                        }
+                    }
                 },
                 navigateToPreferences = {
                     navController.navigate(NavRoute.Preferences)

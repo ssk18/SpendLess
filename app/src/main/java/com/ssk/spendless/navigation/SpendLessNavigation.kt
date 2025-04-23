@@ -2,7 +2,6 @@ package com.ssk.spendless.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.ssk.spendless.navigation.graphs.authGraph
@@ -16,8 +15,6 @@ fun SpendLessNavigation(
     navController: NavHostController,
     startDestination: NavRoute,
 ) {
-    val lifecycleOwner = LocalLifecycleOwner.current
-
     NavHost(
         navController = navController,
         startDestination = startDestination,

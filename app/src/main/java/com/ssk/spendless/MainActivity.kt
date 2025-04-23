@@ -105,7 +105,9 @@ class MainActivity : ComponentActivity() {
     override fun onResume() {
         super.onResume()
         checkAndRequestPermissions()
-        Timber.d("Permissions rechecked in onResume")
+        // Ensure we're checking login state on app resume
+        mainViewModel.checkAuthState()
+        Timber.d("Permissions and auth state rechecked in onResume")
     }
 
 

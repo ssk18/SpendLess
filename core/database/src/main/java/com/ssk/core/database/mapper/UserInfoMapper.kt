@@ -52,10 +52,20 @@ fun ByteArray.decryptPin(): String {
     try {
         val decrypted = Crypto.decrypt(this)
         val result = decrypted.decodeToString()
-        android.util.Log.d("UserInfoMapper", "Decrypted PIN successfully")
+        android.util.Log.d("UserInfoMapper", "Decrypted PIN successfully $result")
         return result
     } catch (e: Exception) {
         android.util.Log.e("UserInfoMapper", "Error decrypting PIN: ${e.message}", e)
         throw e
     }
+}
+
+fun hexStringToByteArray(hexString: String): ByteArray {
+    val result = ByteArray(hexString.length / 2)
+    for (i in result.indices) {
+        val index = i * 2
+        val j = hexString.substring(index, index + 2).toInt(16)
+        result[i] = j.toByte()
+    }
+    return result
 }

@@ -14,6 +14,8 @@ import com.ssk.settings.presentation.preferences.PreferenceUiState
 import com.ssk.settings.presentation.security.SecurityUiAction
 import com.ssk.settings.presentation.security.SecurityUiState
 import com.ssk.settings.presentation.security.components.toDomain
+import com.ssk.settings.presentation.settings.SettingsAction
+import com.ssk.settings.presentation.settings.SettingsEvent
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,6 +37,9 @@ class SettingsViewModel(
 
     private val _preferencesEvent = Channel<PreferenceUiEvent>()
     val preferencesEvent = _preferencesEvent.receiveAsFlow()
+    
+    private val _settingsEvent = Channel<SettingsEvent>()
+    val settingsEvent = _settingsEvent.receiveAsFlow()
 
     fun onAction(action: PreferenceUiAction) {
         when (action) {
@@ -113,6 +118,27 @@ class SettingsViewModel(
             SecurityUiAction.OnSaveClicked -> {
                 saveSecuritySettings()
             }
+        }
+    }
+    
+    fun onAction(action: SettingsAction) {
+        when (action) {
+            SettingsAction.OnPreferencesClicked -> {
+                // Handled by composable directly
+            }
+            SettingsAction.OnSecurityClicked -> {
+                // Handled by composable directly
+            }
+            SettingsAction.OnLogOutClicked -> {
+                logOut()
+            }
+        }
+    }
+    
+    private fun logOut() {
+        viewModelScope.launch {
+            sessionRepository.logOut()
+            _settingsEvent.send(SettingsEvent.NavigateToLogin)
         }
     }
 

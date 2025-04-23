@@ -64,28 +64,18 @@ class MainViewModel(
         // Implementation will be handled in MainActivity directly
     }
 
-    private fun checkAuthState() {
+    fun checkAuthState() {
         viewModelScope.launch {
             val username = sessionRepository.getLoggedInUsername()
             val isLoggedIn = username != null
+            
+            Timber.d("Auth state check: isLoggedIn=$isLoggedIn, username=$username")
 
             _state.update { currentState ->
                 currentState.copy(
                     isLoading = false,
                     isUserLoggedIn = isLoggedIn,
                     startDestination = if (isLoggedIn) NavRoute.TransactionsRoot else NavRoute.AuthRoot
-                )
-            }
-        }
-    }
-
-    fun logOut() {
-        viewModelScope.launch {
-            sessionRepository.logOut()
-            _state.update { currentState ->
-                currentState.copy(
-                    isUserLoggedIn = false,
-                    startDestination = NavRoute.AuthRoot
                 )
             }
         }

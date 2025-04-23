@@ -23,6 +23,7 @@ import com.ssk.core.presentation.designsystem.theme.ExitIcon
 import com.ssk.core.presentation.designsystem.theme.LockIcon
 import com.ssk.core.presentation.designsystem.theme.SettingsIcon
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.ObserveAsEvents
 import com.ssk.settings.presentation.SettingsViewModel
 import com.ssk.settings.presentation.settings.components.SettingsButton
 import org.koin.androidx.compose.koinViewModel
@@ -36,6 +37,13 @@ fun SettingsScreenRoot(
     navigateToSecurity: () -> Unit,
     navigateToLogin: () -> Unit,
 ) {
+    // Collect events from the ViewModel
+    ObserveAsEvents(viewModel.settingsEvent) { event ->
+        when (event) {
+            SettingsEvent.NavigateToLogin -> navigateToLogin()
+        }
+    }
+    
     SpendLessScaffold(
         modifier = modifier,
         topBar = {
@@ -51,7 +59,7 @@ fun SettingsScreenRoot(
             modifier = Modifier.padding(it),
             onAction = { action ->
                 when (action) {
-                    SettingsAction.OnLogOutClicked -> navigateToLogin()
+                    SettingsAction.OnLogOutClicked -> viewModel.onAction(action)
                     SettingsAction.OnPreferencesClicked -> navigateToPreferences()
                     SettingsAction.OnSecurityClicked -> navigateToSecurity()
                 }
