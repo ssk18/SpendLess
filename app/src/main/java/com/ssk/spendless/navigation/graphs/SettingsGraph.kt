@@ -23,7 +23,7 @@ fun NavGraphBuilder.settingsGraph(
             val settingsSharedViewModel = entry.sharedViewModel<SettingsViewModel>(navController)
 
             SettingsScreenRoot(
-                onBackClick = {
+                navigateBack = {
                     navController.navigateUp()
                 },
                 navigateToLogin = {
@@ -31,7 +31,7 @@ fun NavGraphBuilder.settingsGraph(
                     navController.navigate(NavRoute.Login) {
                         // Clear the entire back stack - important after logout
                         popUpTo(0) {
-                            inclusive = true 
+                            inclusive = true
                         }
                     }
                 },
@@ -40,6 +40,9 @@ fun NavGraphBuilder.settingsGraph(
                 },
                 navigateToSecurity = {
                     navController.navigate(NavRoute.Security)
+                },
+                navigateToPinPrompt = {
+                  navController.navigate(NavRoute.PinPrompt)
                 },
                 viewModel = settingsSharedViewModel,
                 modifier = modifier
@@ -67,6 +70,13 @@ fun NavGraphBuilder.settingsGraph(
                 viewModel = settingsSharedViewModel,
                 navigateUp = {
                     navController.navigateUp()
+                },
+                navigateToPinPrompt = {
+                    navController.navigate(NavRoute.PinPrompt) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

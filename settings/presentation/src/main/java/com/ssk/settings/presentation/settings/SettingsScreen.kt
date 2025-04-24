@@ -32,15 +32,17 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
-    onBackClick: () -> Unit,
+    navigateBack: () -> Unit,
     navigateToPreferences: () -> Unit,
     navigateToSecurity: () -> Unit,
     navigateToLogin: () -> Unit,
+    navigateToPinPrompt: () -> Unit
 ) {
     // Collect events from the ViewModel
     ObserveAsEvents(viewModel.settingsEvent) { event ->
         when (event) {
             SettingsEvent.NavigateToLogin -> navigateToLogin()
+            SettingsEvent.NavigateBack -> navigateBack()
         }
     }
     
@@ -50,7 +52,7 @@ fun SettingsScreenRoot(
             AppTopBar(
                 title = "Settings",
                 startIcon = ArrowBack,
-                onStartIconClick = onBackClick,
+                onStartIconClick = navigateBack,
                 titleColor = MaterialTheme.colorScheme.onSurface
             )
         }

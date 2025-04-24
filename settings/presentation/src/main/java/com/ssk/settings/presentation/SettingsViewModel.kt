@@ -12,6 +12,7 @@ import com.ssk.settings.presentation.preferences.PreferenceUiAction
 import com.ssk.settings.presentation.preferences.PreferenceUiEvent
 import com.ssk.settings.presentation.preferences.PreferenceUiState
 import com.ssk.settings.presentation.security.SecurityUiAction
+import com.ssk.settings.presentation.security.SecurityUiEvent
 import com.ssk.settings.presentation.security.SecurityUiState
 import com.ssk.settings.presentation.security.components.toDomain
 import com.ssk.settings.presentation.settings.SettingsAction
@@ -40,6 +41,9 @@ class SettingsViewModel(
     
     private val _settingsEvent = Channel<SettingsEvent>()
     val settingsEvent = _settingsEvent.receiveAsFlow()
+
+    private val _securityEvent = Channel<SecurityUiEvent>()
+    val securityEvent = _securityEvent.receiveAsFlow()
 
     fun onAction(action: PreferenceUiAction) {
         when (action) {
@@ -175,6 +179,15 @@ class SettingsViewModel(
                     )
                 )
             )
+
+            viewModelScope.launch {
+                if (sessionRepository.isSessionExpired()) {
+                    _securityEvent.send(SecurityUiEvent.NavigateToPinPrompt)
+                } else {
+                    sessionRepository.startSession(user.settings.sessionExpiryDuration)
+                    _securityEvent.send(SecurityUiEvent.NavigateBack)
+                }
+            }
         }
     }
 

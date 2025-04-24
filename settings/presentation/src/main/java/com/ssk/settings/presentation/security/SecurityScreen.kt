@@ -17,6 +17,7 @@ import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.ArrowBack
 import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
+import com.ssk.core.presentation.ui.ObserveAsEvents
 import com.ssk.settings.presentation.SettingsViewModel
 import com.ssk.settings.presentation.security.components.SecurityContent
 import org.koin.androidx.compose.koinViewModel
@@ -25,9 +26,18 @@ import org.koin.androidx.compose.koinViewModel
 fun SecurityScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
-    navigateUp: () -> Unit
+    navigateUp: () -> Unit,
+    navigateToPinPrompt: () -> Unit
 ) {
     val state by viewModel.securityState.collectAsStateWithLifecycle()
+
+    ObserveAsEvents(viewModel.securityEvent) { event ->
+        when (event) {
+            is SecurityUiEvent.NavigateBack -> navigateUp()
+            is SecurityUiEvent.NavigateToPinPrompt -> navigateToPinPrompt()
+        }
+    }
+
     SpendLessScaffold(
         modifier = modifier,
         topBar = {
