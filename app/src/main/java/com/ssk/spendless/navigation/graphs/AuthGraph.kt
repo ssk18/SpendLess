@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.ssk.auth.presentation.screens.login.LoginScreenRoot
+import com.ssk.auth.presentation.screens.pin_prompt.PinPromptScreenRoot
 import com.ssk.auth.presentation.screens.pinentryscreen.PinEntryScreenRoot
 import com.ssk.auth.presentation.screens.registerscreen.RegisterScreenRoot
 import com.ssk.auth.presentation.screens.user_preference.OnboardingPreferenceScreenRoot
@@ -13,10 +14,11 @@ import com.ssk.spendless.navigation.routes.NavRoute
 
 fun NavGraphBuilder.authGraph(
     navController: NavHostController,
+    isUserSessionExpired: Boolean,
     modifier: Modifier = Modifier
 ) {
     navigation<NavRoute.AuthRoot>(
-        startDestination = NavRoute.Register
+        startDestination = if (isUserSessionExpired) NavRoute.PinPrompt else NavRoute.Register
     ) {
         composable<NavRoute.Register> {
             RegisterScreenRoot(
@@ -63,6 +65,25 @@ fun NavGraphBuilder.authGraph(
                 },
                 onBackClicked = {
                     navController.navigate(NavRoute.PinEntry(it.toString()))
+                }
+            )
+        }
+
+        composable<NavRoute.PinPrompt> {
+            PinPromptScreenRoot(
+                navigateToLogin = {
+                    navController.navigate(NavRoute.Login)
+                },
+                navigateBack = {
+                    if (navController.previousBackStackEntry != null) {
+                        navController.popBackStack()
+                    } else {
+                        navController.navigate(NavRoute.Dashboard) {
+                            popUpTo(0) {
+                                inclusive = true
+                            }
+                        }
+                    }
                 }
             )
         }

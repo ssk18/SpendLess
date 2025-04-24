@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-        sessionRepository.refreshSession()
+       // sessionRepository.refreshSession()
     }
     
     override fun onResume() {

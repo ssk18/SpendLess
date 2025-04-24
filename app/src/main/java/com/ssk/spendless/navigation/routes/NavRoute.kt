@@ -17,6 +17,9 @@ sealed interface NavRoute {
     data object Login : NavRoute
 
     @Serializable
+    data object PinPrompt : NavRoute
+
+    @Serializable
     data class UserPreferences(val username: String, val pinCode: String) : NavRoute
 
     @Serializable

@@ -50,6 +50,10 @@ class SessionRepository(
         }
     }
 
+    override fun isUserLoggedIn(): Boolean {
+        return getLoggedInUsername() != null
+    }
+
     override fun startSession(sessionExpiryDuration: SessionExpiryDuration) {
         val duration = when (sessionExpiryDuration) {
             SessionExpiryDuration.FIVE_MIN -> 5 * MINUTE_IN_MILLIS
