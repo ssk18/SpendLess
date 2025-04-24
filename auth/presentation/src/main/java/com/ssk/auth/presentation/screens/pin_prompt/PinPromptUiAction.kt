@@ -4,5 +4,5 @@ sealed interface PinPromptUiAction {
     data object OnLogoutClick : PinPromptUiAction
     data class OnPinButtonClick(val pin: String) : PinPromptUiAction
     data object OnDeleteClick : PinPromptUiAction
-    data object OnSubmitPin: PinPromptUiAction
+    data object VerifyPinLockStatus: PinPromptUiAction
 }

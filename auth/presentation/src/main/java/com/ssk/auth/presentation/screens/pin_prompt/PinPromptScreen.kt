@@ -12,12 +12,18 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -25,14 +31,50 @@ import androidx.compose.ui.unit.sp
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinDots
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinEntry
 import com.ssk.core.presentation.designsystem.components.AppTopBar
+import com.ssk.core.presentation.designsystem.components.GlobalSnackBar
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
 import com.ssk.core.presentation.designsystem.theme.ExitIcon
 import com.ssk.core.presentation.designsystem.theme.RegisterIcon
+import com.ssk.core.presentation.ui.ObserveAsEvents
+import org.koin.androidx.compose.koinViewModel
 
 @Composable
 fun PinPromptScreenRoot(
     modifier: Modifier = Modifier,
+    viewModel: PinPromptViewModel = koinViewModel(),
+    navigateToLogin: () -> Unit,
+    navigateBack: () -> Unit
+
 ) {
+    val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    var showShakeAnimation by remember { mutableStateOf(false) }
+
+    ObserveAsEvents(viewModel.event) { event ->
+        when (event) {
+            PinPromptEvent.NavigateToLogin -> {
+                navigateToLogin()
+            }
+
+            PinPromptEvent.OnSuccessfulPin -> {
+                navigateBack()
+            }
+            is PinPromptEvent.ShowSnackbar -> {
+                snackbarHostState.showSnackbar(
+                    message = event.message.asString(context),
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
+    }
+
+    PinPromptScreen(
+        modifier = modifier,
+        state = viewModel.state,
+        showShakeAnimation = showShakeAnimation,
+        snackbarHostState = snackbarHostState,
+        onAction = viewModel::onAction
+    )
 
 }
 
@@ -40,12 +82,13 @@ fun PinPromptScreenRoot(
 fun PinPromptScreen(
     modifier: Modifier = Modifier,
     state: PinPromptUiState,
-    shoeShakeAnimation: Boolean,
+    showShakeAnimation: Boolean,
+    snackbarHostState: SnackbarHostState,
     onAction: (PinPromptUiAction) -> Unit
 ) {
     val offset by animateFloatAsState(
-        targetValue = if (shoeShakeAnimation) 1f else 0f,
-        animationSpec = if (shoeShakeAnimation) {
+        targetValue = if (showShakeAnimation) 1f else 0f,
+        animationSpec = if (showShakeAnimation) {
             keyframes {
                 durationMillis = 500
                 0f at 0
@@ -68,13 +111,19 @@ fun PinPromptScreen(
                 endIcon2Color = MaterialTheme.colorScheme.error,
                 endIcon2BackgroundColor = MaterialTheme.colorScheme.error.copy(alpha = 0.08f),
                 onEndIcon2Click = {
-
+                    onAction(PinPromptUiAction.OnLogoutClick)
                 }
+            )
+        },
+        snackbarHost = {
+            GlobalSnackBar(
+                hostState = snackbarHostState,
+                snackbarType = state.snackbarType
             )
         }
     ) { contentPadding ->
         Column(
-            modifier = modifier
+            modifier = Modifier
                 .fillMaxSize()
                 .padding(contentPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -93,7 +142,7 @@ fun PinPromptScreen(
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
-                text = "Enter your PIN",
+                text = state.description.asString(),
                 fontWeight = FontWeight.Light
             )
             Spacer(modifier = Modifier.height(32.dp))

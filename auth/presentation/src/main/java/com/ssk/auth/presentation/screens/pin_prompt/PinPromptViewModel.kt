@@ -30,16 +30,45 @@ class PinPromptViewModel(
 
     fun onAction(action: PinPromptUiAction) {
         when (action) {
-            PinPromptUiAction.OnDeleteClick -> TODO()
-            PinPromptUiAction.OnLogoutClick -> TODO()
-            is PinPromptUiAction.OnPinButtonClick -> TODO()
-            PinPromptUiAction.OnSubmitPin -> TODO()
+            PinPromptUiAction.OnDeleteClick -> removePinNumber()
+            PinPromptUiAction.OnLogoutClick -> logOutUser()
+            is PinPromptUiAction.OnPinButtonClick -> updatePin(action.pin)
+            PinPromptUiAction.VerifyPinLockStatus -> checkPinLockStatus()
         }
     }
 
     private fun checkPinLockStatus() {
         val pinLockDuration = sessionRepository.getPinLockRemainingTime()
+        if (pinLockDuration > 0) {
+            disableKeyboard(pinLockDuration)
+        } else {
+            val user = getUsername()
+            state = state.copy(
+                isKeyboardLocked = false,
+                username = "Hello, $user"
+            )
+        }
+    }
 
+    private fun updatePin(number: String) {
+        state = state.copy(
+            pinCode = state.pinCode + number
+        )
+        if (state.pinCode.length == PIN_LENGTH) {
+            validatePin(state.pinCode)
+        }
+    }
+
+    private fun removePinNumber() {
+        state = state.copy(
+            pinCode = state.pinCode.dropLast(1)
+        )
+    }
+    private fun logOutUser() {
+        viewModelScope.launch {
+            sessionRepository.logOut()
+            _events.send(PinPromptEvent.NavigateToLogin)
+        }
     }
 
     private fun validatePin(enteredPin: String) {

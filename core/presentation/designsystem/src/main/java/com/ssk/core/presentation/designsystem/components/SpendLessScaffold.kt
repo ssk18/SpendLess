@@ -17,6 +17,7 @@ fun SpendLessScaffold(
     topBar: @Composable () -> Unit = {},
     bottomBar: @Composable () -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
+    snackbarHost: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
     val view = LocalView.current
@@ -35,6 +36,7 @@ fun SpendLessScaffold(
         bottomBar = bottomBar,
         topBar = topBar,
         floatingActionButton = floatingActionButton,
+        snackbarHost = snackbarHost
     ) { paddingValues ->
         if (applyGradient) {
             SpendLessGradientBackground {
