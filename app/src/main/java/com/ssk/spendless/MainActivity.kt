@@ -91,7 +91,8 @@ class MainActivity : ComponentActivity() {
                 SpendLessNavigation(
                     modifier = Modifier.fillMaxSize(),
                     navController = navController,
-                    startDestination = state.startDestination
+                    startDestination = state.startDestination,
+                    sessionRepository = sessionRepository
                 )
             }
         }
