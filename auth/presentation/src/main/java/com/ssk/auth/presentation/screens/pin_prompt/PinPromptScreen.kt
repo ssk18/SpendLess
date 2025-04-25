@@ -16,7 +16,6 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,9 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
-import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinDots
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinEntry
@@ -53,26 +50,11 @@ fun PinPromptScreenRoot(
     viewModel: PinPromptViewModel = koinViewModel(),
     navigateToLogin: () -> Unit,
     navigateBack: () -> Unit
-
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     var showShakeAnimation by remember { mutableStateOf(false) }
-    val lifecycleOwner = LocalLifecycleOwner.current
-
-    DisposableEffect(lifecycleOwner) {
-        val lifecycle = lifecycleOwner.lifecycle
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) {
-                viewModel.onAction(PinPromptUiAction.VerifyPinLockStatus)
-            }
-        }
-        lifecycle.addObserver(observer)
-
-        onDispose {
-            lifecycle.removeObserver(observer)
-        }
-    }
 
     ObserveAsEvents(viewModel.event) { event ->
         when (event) {
@@ -83,6 +65,7 @@ fun PinPromptScreenRoot(
             PinPromptEvent.OnSuccessfulPin -> {
                 navigateBack()
             }
+
             is PinPromptEvent.ShowSnackbar -> {
                 snackbarHostState.showSnackbar(
                     message = event.message.asString(context),
@@ -94,7 +77,7 @@ fun PinPromptScreenRoot(
 
     PinPromptScreen(
         modifier = modifier,
-        state = viewModel.state,
+        state = state,
         showShakeAnimation = showShakeAnimation,
         snackbarHostState = snackbarHostState,
         onAction = viewModel::onAction
@@ -157,25 +140,33 @@ fun PinPromptScreen(
                 contentDescription = null,
                 tint = Color.Unspecified,
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
-                text = state.username,
+                text = if (state.isExceededFailedAttempts) {
+                    "Too many failed attempts"
+                } else {
+                    stringResource(R.string.pin_prompt_headline, state.username)
+                },
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             )
+
             Spacer(modifier = Modifier.height(8.dp))
-            if (state.currentAttempt > 3) {
-                LockedPinPromptText(lockoutTime = state.)
+
+            if (state.isExceededFailedAttempts) {
+                LockedPinPromptText(lockoutTime = state.lockOutTimeRemaining)
             } else {
                 Text(
-                    text = stringResource(R.string.pin_prompt_sub_headline),
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 16.sp
+                    modifier = Modifier.padding(top = 8.dp),
+                    text = stringResource(R.string.enter_your_pin)
                 )
             }
+
             Spacer(modifier = Modifier.height(32.dp))
+
             Box(
                 modifier = Modifier
                     .offset {
@@ -188,7 +179,9 @@ fun PinPromptScreen(
                     isLocked = state.isKeyboardLocked
                 )
             }
+
             Spacer(modifier = Modifier.height(32.dp))
+
             PinEntry(
                 onPinClick = {
                     onAction(PinPromptUiAction.OnPinButtonClick(it))
@@ -226,8 +219,14 @@ private fun LockedPinPromptText(lockoutTime: Long) {
                 )
             ) {
                 append(" ")
-                append(lockoutTime.)
+                append(lockoutTime.formatToTimeString())
             }
         }
     )
+}
+
+fun Long.formatToTimeString(): String {
+    val minutes = this / 60
+    val seconds = this % 60
+    return "%02d:%02d".format(minutes, seconds)
 }

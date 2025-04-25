@@ -2,11 +2,13 @@ package com.ssk.auth.presentation.screens.pin_prompt
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.ssk.auth.presentation.R
 import com.ssk.core.domain.exception.UserNotLoggedInException
 import com.ssk.core.domain.model.LockedOutDuration
 import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.domain.utils.Result
+import com.ssk.core.presentation.ui.UiText
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -19,6 +21,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import timber.log.Timber
 
 class PinPromptViewModel(
     private val userRepository: IUserRepository,
@@ -42,17 +45,18 @@ class PinPromptViewModel(
             }
 
             is PinPromptUiAction.OnPinButtonClick -> {
-                if (_state.value.pinCode.length < MAX_PIN_LENGTH) {
+                val pin = _state.value.pinCode
+                if (pin.length < MAX_PIN_LENGTH) {
                     _state.update {
                         it.copy(
                             pinCode = it.pinCode + action.pin,
                         )
                     }
                 }
-            }
-
-            PinPromptUiAction.VerifyPinLockStatus -> {
-                validatePin(_state.value.pinCode)
+                val updatedPin = _state.value.pinCode
+                if (updatedPin.length == MAX_PIN_LENGTH) {
+                    validatePin(updatedPin)
+                }
             }
         }
     }
@@ -69,6 +73,7 @@ class PinPromptViewModel(
                     when (userPreferences) {
                         is Result.Error -> Unit
                         is Result.Success -> {
+                            Timber.d("User settings: ${userPreferences.data}")
                             _state.update {
                                 it.copy(
                                     username = userPreferences.data.username,
@@ -125,6 +130,8 @@ class PinPromptViewModel(
             if (_state.value.remainingPinAttempts <= 0) {
                 startLockoutTimer()
             }
+
+            _events.send(PinPromptEvent.ShowSnackbar(UiText.StringResource(R.string.wrong_pin)))
         }
     }
 

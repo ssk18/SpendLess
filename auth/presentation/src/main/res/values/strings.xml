@@ -42,4 +42,5 @@
     <string name="enter_your_pin">Enter your PIN</string>
     <string name="wrong_pin">Wrong PIN</string>
     <string name="try_your_pin_again_in">Try your PIN again in</string>
+    <string name="pin_prompt_headline">Hello, %s!</string>
 </resources>
