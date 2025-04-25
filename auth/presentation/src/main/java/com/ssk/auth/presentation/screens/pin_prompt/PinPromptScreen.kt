@@ -16,6 +16,7 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,10 +25,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinDots
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinEntry
 import com.ssk.core.presentation.designsystem.components.AppTopBar
@@ -49,6 +58,21 @@ fun PinPromptScreenRoot(
     val snackbarHostState = remember { SnackbarHostState() }
     val context = LocalContext.current
     var showShakeAnimation by remember { mutableStateOf(false) }
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val lifecycle = lifecycleOwner.lifecycle
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                viewModel.onAction(PinPromptUiAction.VerifyPinLockStatus)
+            }
+        }
+        lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycle.removeObserver(observer)
+        }
+    }
 
     ObserveAsEvents(viewModel.event) { event ->
         when (event) {
@@ -135,16 +159,22 @@ fun PinPromptScreen(
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Hello, ${state.username}",
+                text = state.username,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp
             )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = state.description.asString(),
-                fontWeight = FontWeight.Light
-            )
+            if (state.currentAttempt > 3) {
+                LockedPinPromptText(lockoutTime = state.)
+            } else {
+                Text(
+                    text = stringResource(R.string.pin_prompt_sub_headline),
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 16.sp
+                )
+            }
             Spacer(modifier = Modifier.height(32.dp))
             Box(
                 modifier = Modifier
@@ -154,7 +184,8 @@ fun PinPromptScreen(
                 contentAlignment = Alignment.Center
             ) {
                 PinDots(
-                    pinLength = state.pinCode.length
+                    pinLength = state.pinCode.length,
+                    isLocked = state.isKeyboardLocked
                 )
             }
             Spacer(modifier = Modifier.height(32.dp))
@@ -165,10 +196,38 @@ fun PinPromptScreen(
                 onDeleteClick = {
                     onAction(PinPromptUiAction.OnDeleteClick)
                 },
-                onClearPin = {
-
-                }
+                isLocked = state.isKeyboardLocked
             )
         }
     }
+}
+
+@Composable
+private fun LockedPinPromptText(lockoutTime: Long) {
+    val textStyle = MaterialTheme.typography.bodyMedium
+    Text(
+        text = buildAnnotatedString {
+            withStyle(
+                style = SpanStyle(
+                    fontFamily = textStyle.fontFamily,
+                    color = textStyle.color,
+                    fontSize = textStyle.fontSize,
+                    fontWeight = FontWeight.Normal
+                )
+            ) {
+                append(stringResource(R.string.try_your_pin_again_in))
+            }
+            withStyle(
+                style = SpanStyle(
+                    fontFamily = textStyle.fontFamily,
+                    color = textStyle.color,
+                    fontSize = textStyle.fontSize,
+                    fontWeight = FontWeight.Bold
+                )
+            ) {
+                append(" ")
+                append(lockoutTime.)
+            }
+        }
+    )
 }

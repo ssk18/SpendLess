@@ -31,13 +31,17 @@ fun PreferencesScreenRoot(
     modifier: Modifier = Modifier,
     viewModel: SettingsViewModel = koinViewModel(),
     navigateUp: () -> Unit,
-    navigateToDashboard: () -> Unit
+    navigateToPinPrompt: () -> Unit
 ) {
     val state by viewModel.preferencesState.collectAsStateWithLifecycle()
     ObserveAsEvents(viewModel.preferencesEvent) { event ->
         when (event) {
              PreferenceUiEvent.NavigateUp ->  {
-                navigateToDashboard()
+                navigateUp()
+            }
+
+            PreferenceUiEvent.NavigateToPinPrompt -> {
+                navigateToPinPrompt()
             }
         }
     }

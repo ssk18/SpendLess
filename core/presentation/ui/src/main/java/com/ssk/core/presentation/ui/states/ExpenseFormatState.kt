@@ -8,7 +8,7 @@ import com.ssk.core.presentation.ui.components.ThousandsSeparatorUi
 data class ExpenseFormatState(
     val expenseFormat: ExpensesFormatUi = ExpensesFormatUi.MINUS,
     val currency: Currency = Currency.INR,
-    val decimalSeparatorUi: DecimalSeparatorUi = DecimalSeparatorUi.DOT,
+    val decimalSeparatorUi: DecimalSeparatorUi = DecimalSeparatorUi.POINT,
     val thousandsSeparatorUi: ThousandsSeparatorUi = ThousandsSeparatorUi.DOT
 ) {
     val formattedString: String

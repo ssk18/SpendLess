@@ -33,7 +33,7 @@ data class DashboardState(
     data class AmountSettings(
         val expensesFormat: ExpensesFormatUi = ExpensesFormatUi.MINUS,
         val currency: Currency = Currency.USD,
-        val decimalSeparator: DecimalSeparatorUi = DecimalSeparatorUi.DOT,
+        val decimalSeparator: DecimalSeparatorUi = DecimalSeparatorUi.POINT,
         val thousandsSeparator: ThousandsSeparatorUi = ThousandsSeparatorUi.COMMA,
     )
 }

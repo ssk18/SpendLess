@@ -13,7 +13,7 @@ fun ExpensesFormatUi.toDomain(): ExpensesFormat {
 
 fun DecimalSeparatorUi.toDomain(): DecimalSeparator {
     return when (this) {
-        DecimalSeparatorUi.DOT -> DecimalSeparator.POINT
+        DecimalSeparatorUi.POINT -> DecimalSeparator.POINT
         DecimalSeparatorUi.COMMA -> DecimalSeparator.COMMA
     }
 }
@@ -35,7 +35,7 @@ fun ExpensesFormat.toUi(): ExpensesFormatUi {
 
 fun DecimalSeparator.toUi(): DecimalSeparatorUi {
     return when (this) {
-        DecimalSeparator.POINT -> DecimalSeparatorUi.DOT
+        DecimalSeparator.POINT -> DecimalSeparatorUi.POINT
         DecimalSeparator.COMMA -> DecimalSeparatorUi.COMMA
     }
 }

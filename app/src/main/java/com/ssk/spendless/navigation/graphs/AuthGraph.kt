@@ -1,6 +1,7 @@
 package com.ssk.spendless.navigation.graphs
 
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
@@ -86,6 +87,14 @@ fun NavGraphBuilder.authGraph(
                     }
                 }
             )
+        }
+    }
+}
+
+fun NavController.navigateToPinPrompt() {
+    navigate(NavRoute.PinPrompt) {
+        popUpTo(0) {
+            inclusive = true
         }
     }
 }

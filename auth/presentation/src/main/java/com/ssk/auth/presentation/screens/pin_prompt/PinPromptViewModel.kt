@@ -1,174 +1,167 @@
 package com.ssk.auth.presentation.screens.pin_prompt
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ssk.auth.presentation.R
 import com.ssk.core.domain.exception.UserNotLoggedInException
 import com.ssk.core.domain.model.LockedOutDuration
 import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.core.domain.repository.IUserRepository
 import com.ssk.core.domain.utils.Result
-import com.ssk.core.presentation.ui.UiText
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class PinPromptViewModel(
     private val userRepository: IUserRepository,
     private val sessionRepository: ISessionRepository
 ) : ViewModel() {
 
-    var state by mutableStateOf(PinPromptUiState())
-        private set
+    private val _state = MutableStateFlow(PinPromptUiState())
+    val state = _state.asStateFlow()
 
     private val _events = Channel<PinPromptEvent>()
     val event = _events.receiveAsFlow()
 
     fun onAction(action: PinPromptUiAction) {
         when (action) {
-            PinPromptUiAction.OnDeleteClick -> removePinNumber()
-            PinPromptUiAction.OnLogoutClick -> logOutUser()
-            is PinPromptUiAction.OnPinButtonClick -> updatePin(action.pin)
-            PinPromptUiAction.VerifyPinLockStatus -> checkPinLockStatus()
+            PinPromptUiAction.OnDeleteClick -> deletePin()
+            PinPromptUiAction.OnLogoutClick -> {
+                viewModelScope.launch {
+                    sessionRepository.logOut()
+                    _events.send(PinPromptEvent.NavigateToLogin)
+                }
+            }
+
+            is PinPromptUiAction.OnPinButtonClick -> {
+                if (_state.value.pinCode.length < MAX_PIN_LENGTH) {
+                    _state.update {
+                        it.copy(
+                            pinCode = it.pinCode + action.pin,
+                        )
+                    }
+                }
+            }
+
+            PinPromptUiAction.VerifyPinLockStatus -> {
+                validatePin(_state.value.pinCode)
+            }
         }
     }
 
-    private fun checkPinLockStatus() {
-        val pinLockDuration = sessionRepository.getPinLockRemainingTime()
-        if (pinLockDuration > 0) {
-            disableKeyboard(pinLockDuration)
-        } else {
-            val user = getUsername()
-            state = state.copy(
-                isKeyboardLocked = false,
-                username = "Hello, $user"
-            )
-        }
+    init {
+        getUserSettings()
     }
 
-    private fun updatePin(number: String) {
-        state = state.copy(
-            pinCode = state.pinCode + number
-        )
-        if (state.pinCode.length == PIN_LENGTH) {
-            validatePin(state.pinCode)
-        }
-    }
-
-    private fun removePinNumber() {
-        state = state.copy(
-            pinCode = state.pinCode.dropLast(1)
-        )
-    }
-    private fun logOutUser() {
+    fun getUserSettings() {
         viewModelScope.launch {
-            sessionRepository.logOut()
-            _events.send(PinPromptEvent.NavigateToLogin)
+            val user = getUserName()
+            userRepository.getUserAsFlow(user)
+                .onEach { userPreferences ->
+                    when (userPreferences) {
+                        is Result.Error -> Unit
+                        is Result.Success -> {
+                            _state.update {
+                                it.copy(
+                                    username = userPreferences.data.username,
+                                    lockOutTimeRemaining = getLockedoutDuration(userPreferences.data.settings.lockedOutDuration),
+                                )
+                            }
+                        }
+                    }
+                }
+        }
+    }
+
+    private fun getLockedoutDuration(lockedOutDuration: LockedOutDuration): Long {
+        return when (lockedOutDuration) {
+            LockedOutDuration.FIFTEEN_SEC -> 15
+            LockedOutDuration.THIRTY_SEC -> 30
+            LockedOutDuration.ONE_MIN -> 60
+            LockedOutDuration.FIVE_MIN -> 300
+        }
+    }
+
+    private fun deletePin() {
+        _state.update {
+            it.copy(
+                pinCode = it.pinCode.dropLast(1)
+            )
         }
     }
 
     private fun validatePin(enteredPin: String) {
         viewModelScope.launch {
-            val username = getUsername()
-            val result = userRepository.getUser(username)
-            when (result) {
-                is Result.Error  -> _events.send(PinPromptEvent.ShowSnackbar(
-                    UiText.DynamicString(result.error.toString())
-                ))
-                is Result.Success -> {
-                    val user =  result.data
-                    val pin = user.pinCode
-                    if (pin == enteredPin) {
-                        sessionRepository.startSession(user.settings.sessionExpiryDuration)
-                        _events.send(PinPromptEvent.OnSuccessfulPin)
-                    } else {
-                        state = state.copy(
-                            pinCode = "",
-                        )
-                        _events.send(PinPromptEvent.ShowSnackbar(
-                            UiText.StringResource(R.string.wrong_pin)
-                        ))
-                        updateUserAttempts()
-
-                        if (state.currentAttempt == MAX_ATTEMPT) {
-                            lockKeyboard(user.settings.lockedOutDuration)
-                        }
-                    }
+            val username = getUserName()
+            val user = userRepository.getUser(username)
+            val userPin = withContext(Dispatchers.IO) {
+                when (user) {
+                    is Result.Error -> null
+                    is Result.Success -> user.data.pinCode
                 }
+            }
+
+            if (user is Result.Success && userPin == enteredPin) {
+                sessionRepository.startSession(user.data.settings.sessionExpiryDuration)
+                _events.send(PinPromptEvent.OnSuccessfulPin)
+                return@launch
+            }
+
+            _state.update {
+                it.copy(
+                    pinCode = "",
+                    remainingPinAttempts = it.remainingPinAttempts - 1
+                )
+            }
+
+            if (_state.value.remainingPinAttempts <= 0) {
+                startLockoutTimer()
             }
         }
     }
 
-    private fun getUsername(): String {
+    private fun getUserName(): String {
         return sessionRepository.getLoggedInUsername() ?: throw UserNotLoggedInException()
     }
 
-    private fun lockKeyboard(lockedOutDuration: LockedOutDuration) {
-        updateUserAttempts(resetPin = true)
-        val duration = when (lockedOutDuration) {
-            LockedOutDuration.FIFTEEN_SEC -> FIFTEEN_SECONDS
-            LockedOutDuration.THIRTY_SEC -> THIRTY_SECONDS
-            LockedOutDuration.ONE_MIN -> ONE_MINUTE
-            LockedOutDuration.FIVE_MIN -> FIVE_MINUTES
-        }
-        sessionRepository.setPinLockTimestamp(lockedOutDuration)
-        disableKeyboard(duration)
-    }
-
-    private fun disableKeyboard(lockedOutDuration: Int) {
+    private fun startLockoutTimer() {
         viewModelScope.launch {
-            state = state.copy(
-                isKeyboardLocked = true
-            )
-            for (i in lockedOutDuration downTo 0) {
-                updateDescription(R.string.try_your_pin_again, i)
-                if (i != 0) {
+            val lockoutDuration = getLockedoutDuration(_state.value.lockoutDuration)
+
+            (lockoutDuration downTo 0).asFlow()
+                .onEach { remainingTime ->
+                    _state.update {
+                        it.copy(
+                            lockOutTimeRemaining = remainingTime,
+                            pinCode = "",
+                            isExceededFailedAttempts = true
+                        )
+                    }
                     delay(1000)
-                } else {
-                    state = state.copy(
-                        isKeyboardLocked = false
-                    )
-                    sessionRepository.restorePinLock()
-                    updateDescription(R.string.enter_your_pin)
                 }
-            }
-        }
-    }
-
-    private fun updateDescription(description: Int, vararg args: Any) {
-        state = state.copy(
-            description = UiText.StringResource(
-                description,
-                arrayOf(args)
-            )
-        )
-    }
-
-    private fun updateUserAttempts(resetPin: Boolean = false) {
-        if (resetPin) {
-            state = state.copy(
-                currentAttempt = 0
-            )
-        } else {
-            state = state.copy(
-                currentAttempt = state.currentAttempt.inc()
-            )
+                .onCompletion {
+                    _state.update {
+                        it.copy(
+                            isExceededFailedAttempts = false,
+                            remainingPinAttempts = MAX_ATTEMPT,
+                            lockOutTimeRemaining = 0
+                        )
+                    }
+                }
         }
     }
 
     companion object {
-        private const val PIN_LENGTH = 5
-        private const val MAX_ATTEMPT = 3
-        private const val FIFTEEN_SECONDS = 15
-        private const val THIRTY_SECONDS = 30
-        private const val ONE_MINUTE = 60
-        private const val FIVE_MINUTES = 300
-        private const val PIN_FAILED_MESSAGE = "Too many failed attempts"
-        private const val PIN_TRY_AGAIN = "Try your PIN again"
+        const val MAX_PIN_LENGTH = 5
+        const val MAX_ATTEMPT = 3
     }
 
 }

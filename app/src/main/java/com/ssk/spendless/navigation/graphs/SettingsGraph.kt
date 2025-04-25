@@ -36,10 +36,16 @@ fun NavGraphBuilder.settingsGraph(
                     }
                 },
                 navigateToPreferences = {
-                    navController.navigate(NavRoute.Preferences)
+                    navController.navigate(NavRoute.Preferences) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 },
                 navigateToSecurity = {
-                    navController.navigate(NavRoute.Security)
+                    navController.navigate(NavRoute.Security) {
+                        launchSingleTop = true
+                        restoreState = true
+                    }
                 },
                 navigateToPinPrompt = {
                   navController.navigate(NavRoute.PinPrompt)
@@ -57,8 +63,12 @@ fun NavGraphBuilder.settingsGraph(
                 navigateUp = {
                     navController.navigateUp()
                 },
-                navigateToDashboard = {
-                    navController.navigateUp()
+                navigateToPinPrompt = {
+                    navController.navigate(NavRoute.PinPrompt) {
+                        popUpTo(0) {
+                            inclusive = true
+                        }
+                    }
                 }
             )
         }

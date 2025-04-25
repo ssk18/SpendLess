@@ -59,6 +59,7 @@ fun PinEntryScreenRoot(
     val snackbarHostState = remember { SnackbarHostState() }
     var showShakeAnimation by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    
 
     ObserveAsEvents(viewModel.uiEvents) { events ->
         when (events) {
@@ -193,9 +194,6 @@ fun PinEntryScreen(
             onDeleteClick = {
                 onAction(PinEntryAction.OnDeleteClick)
             },
-            onClearPin = {
-                onAction(PinEntryAction.OnClearPin)
-            }
         )
     }
 }

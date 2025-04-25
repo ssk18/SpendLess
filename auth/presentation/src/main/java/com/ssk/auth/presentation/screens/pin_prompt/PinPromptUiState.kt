@@ -1,16 +1,15 @@
 package com.ssk.auth.presentation.screens.pin_prompt
 
-import com.ssk.auth.presentation.R
+import com.ssk.core.domain.model.LockedOutDuration
 import com.ssk.core.presentation.designsystem.components.SnackbarType
-import com.ssk.core.presentation.ui.UiText
 
 data class PinPromptUiState(
     val username: String = "",
-    val description: UiText = UiText.StringResource(R.string.enter_you_pin),
     val pinCode: String = "",
-    val currentAttempt: Int = 0,
-    val isLoading: Boolean = false,
-    val error: UiText? = null,
-    val snackbarType: SnackbarType = SnackbarType.Info,
+    val remainingPinAttempts: Int = 3,
+    val isExceededFailedAttempts: Boolean = false,
+    val lockOutTimeRemaining: Long = 0L,
+    val snackbarType: SnackbarType = SnackbarType.Error,
     val isKeyboardLocked: Boolean = false,
+    val lockoutDuration: LockedOutDuration = LockedOutDuration.FIFTEEN_SEC,
 )

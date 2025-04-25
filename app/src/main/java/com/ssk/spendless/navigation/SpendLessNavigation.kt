@@ -10,6 +10,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.spendless.navigation.graphs.authGraph
+import com.ssk.spendless.navigation.graphs.navigateToPinPrompt
 import com.ssk.spendless.navigation.graphs.settingsGraph
 import com.ssk.spendless.navigation.graphs.transactionsGraph
 import com.ssk.spendless.navigation.routes.NavRoute
@@ -28,7 +29,7 @@ fun SpendLessNavigation(
         val lifecycle = lifecycleOwner.lifecycle
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START && isUserSessionExpired) {
-                navController.navigate(NavRoute.PinPrompt)
+                navController.navigateToPinPrompt()
             }
         }
         lifecycle.addObserver(observer)

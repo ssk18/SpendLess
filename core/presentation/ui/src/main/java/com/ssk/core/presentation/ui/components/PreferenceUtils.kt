@@ -35,7 +35,7 @@ enum class DecimalSeparatorUi(
     override val label: @Composable (() -> Unit),
     val separator: String
 ) : SegmentOption {
-    DOT(
+    POINT(
         label = {
             OptionText(text = "1.00")
         },
@@ -111,7 +111,7 @@ fun SpendLessSegmentedSelectorPreview() {
             )
             SpendLessSegmentSelector(
                 segmentOptions = DecimalSeparatorUi.entries,
-                selectedOption = DecimalSeparatorUi.DOT,
+                selectedOption = DecimalSeparatorUi.POINT,
                 onOptionSelected = {},
             )
         }

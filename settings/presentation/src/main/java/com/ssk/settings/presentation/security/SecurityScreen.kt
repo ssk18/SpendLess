@@ -7,11 +7,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ssk.core.presentation.designsystem.components.AppTopBar
 import com.ssk.core.presentation.designsystem.components.SpendLessActionButton
 import com.ssk.core.presentation.designsystem.components.SpendLessScaffold
@@ -29,8 +27,6 @@ fun SecurityScreenRoot(
     navigateUp: () -> Unit,
     navigateToPinPrompt: () -> Unit
 ) {
-    val state by viewModel.securityState.collectAsStateWithLifecycle()
-
     ObserveAsEvents(viewModel.securityEvent) { event ->
         when (event) {
             is SecurityUiEvent.NavigateBack -> navigateUp()
@@ -52,7 +48,7 @@ fun SecurityScreenRoot(
         }
     ) {
         SecurityScreen(
-            state = state,
+            state = viewModel.securityState,
             onAction = viewModel::onAction,
             modifier = Modifier.padding(it)
         )

@@ -32,15 +32,20 @@ import com.ssk.core.presentation.designsystem.theme.primaryFixed
 fun PinEntryItem(
     modifier: Modifier = Modifier,
     pin: String,
-    onClick: () -> Unit
+    isLocked: Boolean,
+    alpha: Float = 1f,
+    onClick: (() -> Unit)
 ) {
+    val adjustedAlpha = if (isLocked) alpha * 0.3f else alpha
     Box(
         modifier = modifier
             .size(108.dp)
             .padding(2.dp)
             .clip(RoundedCornerShape(16.dp))
-            .background(primaryFixed)
-            .clickable {
+            .background(primaryFixed.copy(adjustedAlpha))
+            .clickable(
+                enabled = !isLocked
+            ) {
                 onClick()
             },
         contentAlignment = Alignment.Center
@@ -48,7 +53,7 @@ fun PinEntryItem(
         Text(
             text = pin,
             style = MaterialTheme.typography.titleMedium,
-            color = onPrimaryFixed,
+            color = onPrimaryFixed.copy(adjustedAlpha),
             textAlign = TextAlign.Center,
             fontSize = 24.sp
         )
@@ -58,15 +63,20 @@ fun PinEntryItem(
 @Composable
 fun DeleteButton(
     modifier: Modifier = Modifier,
+    isLocked: Boolean,
+    alpha: Float = 1f,
     onDeleteClick: () -> Unit
 ) {
+    val adjustedAlpha = if (isLocked) alpha * 0.3f else alpha
     Box(
         modifier = modifier
             .size(108.dp)
             .padding(2.dp)
             .clip(RoundedCornerShape(16.dp))
             .background(primaryFixed.copy(0.3f))
-            .clickable {
+            .clickable(
+                enabled = !isLocked
+            ) {
                 onDeleteClick()
             },
         contentAlignment = Alignment.Center
@@ -74,7 +84,7 @@ fun DeleteButton(
         Icon(
             imageVector = Icons.AutoMirrored.Filled.Backspace,
             contentDescription = "Delete",
-            tint = MaterialTheme.colorScheme.onBackground,
+            tint = MaterialTheme.colorScheme.onBackground.copy(adjustedAlpha),
             modifier = Modifier.size(30.dp)
         )
     }
@@ -83,9 +93,9 @@ fun DeleteButton(
 @Composable
 fun PinEntry(
     modifier: Modifier = Modifier,
+    isLocked: Boolean = false,
     onPinClick: (String) -> Unit,
     onDeleteClick: () -> Unit,
-    onClearPin: () -> Unit
 ) {
     val pins = listOf("1", "2", "3", "4", "5", "6", "7", "8", "9")
     LazyVerticalGrid(
@@ -98,7 +108,8 @@ fun PinEntry(
                 pin = pin,
                 onClick = {
                     onPinClick(pin)
-                }
+                },
+                isLocked = isLocked
             )
         }
         item {
@@ -113,12 +124,14 @@ fun PinEntry(
                 pin = "0",
                 onClick = {
                     onPinClick("0")
-                }
+                },
+                isLocked = isLocked
             )
         }
         item {
             DeleteButton(
-                onDeleteClick = onDeleteClick
+                onDeleteClick = onDeleteClick,
+                isLocked = isLocked
             )
         }
     }
@@ -131,7 +144,6 @@ fun PinEntryItemPreview() {
         PinEntry(
             onPinClick = {},
             onDeleteClick = {},
-            onClearPin = {}
         )
     }
 }

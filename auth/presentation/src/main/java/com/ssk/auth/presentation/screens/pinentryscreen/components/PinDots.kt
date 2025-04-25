@@ -22,7 +22,8 @@ import com.ssk.core.presentation.designsystem.theme.SpendLessAppTheme
 fun PinDots(
     modifier: Modifier = Modifier,
     maxLength: Int = 5,
-    pinLength: Int
+    pinLength: Int,
+    isLocked: Boolean = false
 ) {
     Row(
         modifier = modifier,
@@ -33,7 +34,11 @@ fun PinDots(
 
             val dotColor by animateColorAsState(
                 targetValue = if (isActive) {
-                    SpendLessPurple
+                    if (isLocked) {
+                        SpendLessPurple.copy(0.05f)
+                    } else {
+                        SpendLessPurple
+                    }
                 } else {
                     SpendLessLightGrey.copy(alpha = 0.12f)
                 },

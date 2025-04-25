@@ -70,7 +70,7 @@ object AmountFormatter {
     ): CharSequence {
         val lastIndex = amount.lastIndexOfAny(
             listOf(
-                DecimalSeparatorUi.DOT.separator,
+                DecimalSeparatorUi.POINT.separator,
                 DecimalSeparatorUi.COMMA.separator
             )
         )
