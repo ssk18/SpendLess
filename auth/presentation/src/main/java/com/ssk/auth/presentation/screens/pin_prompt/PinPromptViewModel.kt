@@ -15,6 +15,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -66,24 +67,23 @@ class PinPromptViewModel(
     }
 
     fun getUserSettings() {
-        viewModelScope.launch {
-            val user = getUserName()
-            userRepository.getUserAsFlow(user)
-                .onEach { userPreferences ->
-                    when (userPreferences) {
-                        is Result.Error -> Unit
-                        is Result.Success -> {
-                            Timber.d("User settings: ${userPreferences.data}")
-                            _state.update {
-                                it.copy(
-                                    username = userPreferences.data.username,
-                                    lockOutTimeRemaining = getLockedoutDuration(userPreferences.data.settings.lockedOutDuration),
-                                )
-                            }
+        val user = getUserName()
+        userRepository.getUserAsFlow(user)
+            .onEach { userPreferences ->
+                when (userPreferences) {
+                    is Result.Error -> Unit
+                    is Result.Success -> {
+                        Timber.d("User settings: ${userPreferences.data}")
+                        _state.update {
+                            it.copy(
+                                username = userPreferences.data.username,
+                                lockOutTimeRemaining = getLockedoutDuration(userPreferences.data.settings.lockedOutDuration),
+                            )
                         }
                     }
                 }
-        }
+            }
+            .launchIn(viewModelScope)
     }
 
     private fun getLockedoutDuration(lockedOutDuration: LockedOutDuration): Long {
@@ -163,6 +163,7 @@ class PinPromptViewModel(
                         )
                     }
                 }
+                .launchIn(viewModelScope)
         }
     }
 
