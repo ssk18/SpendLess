@@ -7,3 +7,7 @@ data class MainState(
     val startDestination: NavRoute = NavRoute.AuthRoot,
     val isUserLoggedIn: Boolean = false
 )
+
+sealed class MainEvent {
+    data object SessionExpired : MainEvent()
+}

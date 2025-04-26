@@ -100,7 +100,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onUserInteraction() {
         super.onUserInteraction()
-       // sessionRepository.refreshSession()
+        mainViewModel.refreshSession()
     }
     
     override fun onResume() {
@@ -108,6 +108,7 @@ class MainActivity : ComponentActivity() {
         checkAndRequestPermissions()
         // Ensure we're checking login state on app resume
         mainViewModel.checkAuthState()
+        mainViewModel.checkSessionExpiration()
         Timber.d("Permissions and auth state rechecked in onResume")
     }
 

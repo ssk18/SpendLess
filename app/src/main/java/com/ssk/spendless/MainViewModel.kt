@@ -7,8 +7,10 @@ import com.ssk.core.domain.repository.ISessionRepository
 import com.ssk.spendless.navigation.routes.NavRoute
 import com.ssk.spendless.permissions.PermissionState
 import com.ssk.spendless.permissions.Permissions
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -22,8 +24,32 @@ class MainViewModel(
     private val _permissionState = MutableStateFlow(PermissionState())
     val permissionState = _permissionState.asStateFlow()
 
+    private val _event = Channel<MainEvent>()
+    val event = _event.receiveAsFlow()
+
     init {
         checkAuthState()
+    }
+
+    fun checkSessionExpiration() {
+        viewModelScope.launch {
+            if (sessionRepository.isSessionExpired() && sessionRepository.isUserLoggedIn()) {
+                _event.send(MainEvent.SessionExpired)
+            }
+        }
+    }
+
+    fun refreshSession() {
+        // First check if session is expired before refreshing
+        viewModelScope.launch {
+            if (sessionRepository.isSessionExpired() && sessionRepository.isUserLoggedIn()) {
+                _event.send(MainEvent.SessionExpired)
+                Timber.d("Session expired, navigating to PIN prompt")
+            } else {
+                sessionRepository.refreshSession()
+                Timber.d("Session refreshed")
+            }
+        }
     }
 
     fun updatePermissionState(permission: Permissions, isGranted: Boolean) {
@@ -58,7 +84,7 @@ class MainViewModel(
             )
         }
     }
-    
+
     fun checkPermissionsAgain(context: Context) {
         Timber.d("Checking permissions again")
         // Implementation will be handled in MainActivity directly
@@ -68,7 +94,7 @@ class MainViewModel(
         viewModelScope.launch {
             val username = sessionRepository.getLoggedInUsername()
             val isLoggedIn = username != null
-            
+
             Timber.d("Auth state check: isLoggedIn=$isLoggedIn, username=$username")
 
             _state.update { currentState ->
