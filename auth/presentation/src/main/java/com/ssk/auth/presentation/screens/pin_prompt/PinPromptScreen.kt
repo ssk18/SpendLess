@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.ssk.auth.domain.formatToTimeString
 import com.ssk.auth.presentation.R
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinDots
 import com.ssk.auth.presentation.screens.pinentryscreen.components.PinEntry
@@ -223,10 +224,4 @@ private fun LockedPinPromptText(lockoutTime: Long) {
             }
         }
     )
-}
-
-fun Long.formatToTimeString(): String {
-    val minutes = this / 60
-    val seconds = this % 60
-    return "%02d:%02d".format(minutes, seconds)
 }
