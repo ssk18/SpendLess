@@ -77,7 +77,7 @@ class PinPromptViewModel(
                         _state.update {
                             it.copy(
                                 username = userPreferences.data.username,
-                                lockOutTimeRemaining = getLockedoutDuration(userPreferences.data.settings.lockedOutDuration),
+                                lockoutDuration = userPreferences.data.settings.lockedOutDuration,
                             )
                         }
                     }

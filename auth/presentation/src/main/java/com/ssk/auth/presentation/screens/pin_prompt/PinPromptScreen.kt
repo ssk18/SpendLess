@@ -177,7 +177,7 @@ fun PinPromptScreen(
             ) {
                 PinDots(
                     pinLength = state.pinCode.length,
-                    isLocked = state.isKeyboardLocked
+                    isLocked = state.isExceededFailedAttempts
                 )
             }
 
@@ -190,7 +190,7 @@ fun PinPromptScreen(
                 onDeleteClick = {
                     onAction(PinPromptUiAction.OnDeleteClick)
                 },
-                isLocked = state.isKeyboardLocked
+                isLocked = state.isExceededFailedAttempts
             )
         }
     }

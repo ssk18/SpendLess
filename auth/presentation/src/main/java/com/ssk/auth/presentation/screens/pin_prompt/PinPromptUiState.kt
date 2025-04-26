@@ -10,6 +10,5 @@ data class PinPromptUiState(
     val isExceededFailedAttempts: Boolean = false,
     val lockOutTimeRemaining: Long = 0L,
     val snackbarType: SnackbarType = SnackbarType.Error,
-    val isKeyboardLocked: Boolean = false,
     val lockoutDuration: LockedOutDuration = LockedOutDuration.FIFTEEN_SEC,
 )
