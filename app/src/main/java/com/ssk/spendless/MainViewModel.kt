@@ -1,6 +1,5 @@
 package com.ssk.spendless
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ssk.core.domain.repository.ISessionRepository
@@ -39,15 +38,30 @@ class MainViewModel(
         }
     }
 
+    fun onAction(action: MainAction) {
+        when (action) {
+            is MainAction.SetPinPromptActive -> {
+                _state.update { it.copy(isPinPromptActive = action.isActive) }
+            }
+        }
+    }
+    
     fun refreshSession() {
         // First check if session is expired before refreshing
         viewModelScope.launch {
+            // Skip session checks when already on PIN prompt
+            if (_state.value.isPinPromptActive) {
+                Timber.d("Skipping session check while already on PIN prompt screen")
+                return@launch
+            }
+            
             if (sessionRepository.isSessionExpired() && sessionRepository.isUserLoggedIn()) {
+                // Before sending the event, ensure any pin lock data is cleared
+                sessionRepository.restorePinLock() // Reset any PIN lock state
+                
                 _event.send(MainEvent.SessionExpired)
-                Timber.d("Session expired, navigating to PIN prompt")
             } else {
                 sessionRepository.refreshSession()
-                Timber.d("Session refreshed")
             }
         }
     }
@@ -70,12 +84,10 @@ class MainViewModel(
         permission: Permissions,
         isGranted: Boolean
     ) {
-        Timber.d("Permission result: $permission = $isGranted")
         updatePermissionState(permission, isGranted)
     }
 
     fun onPermissionRequested(permission: Permissions) {
-        Timber.d("Permission requested: $permission")
         _permissionState.update { currentState ->
             currentState.copy(
                 permissionRequested = currentState.permissionRequested.toMutableMap().apply {
@@ -83,11 +95,6 @@ class MainViewModel(
                 }
             )
         }
-    }
-
-    fun checkPermissionsAgain(context: Context) {
-        Timber.d("Checking permissions again")
-        // Implementation will be handled in MainActivity directly
     }
 
     fun checkAuthState() {

@@ -46,16 +46,27 @@ class PinPromptViewModel(
             }
 
             is PinPromptUiAction.OnPinButtonClick -> {
+                Timber.d("OnPinButtonClick: attempting to add digit ${action.pin}, current state: isExceededFailedAttempts=${_state.value.isExceededFailedAttempts}, current pin='${_state.value.pinCode}'")
+                
                 val pin = _state.value.pinCode
                 if (pin.length < MAX_PIN_LENGTH) {
+                    val newPin = pin + action.pin
+                    Timber.d("Adding digit: current='$pin' + '${action.pin}' = newPin='$newPin'")
+                    
                     _state.update {
                         it.copy(
-                            pinCode = it.pinCode + action.pin,
+                            pinCode = newPin,
                         )
                     }
+                    
+                    Timber.d("PIN digit added, expected new pin='$newPin', actual pin='${_state.value.pinCode}', new length: ${_state.value.pinCode.length}")
                 }
+                
                 val updatedPin = _state.value.pinCode
+                Timber.d("After update, pin='$updatedPin', length=${updatedPin.length}")
+                
                 if (updatedPin.length == MAX_PIN_LENGTH) {
+                    Timber.d("PIN complete, validating...")
                     validatePin(updatedPin)
                 }
             }
@@ -63,6 +74,7 @@ class PinPromptViewModel(
     }
 
     init {
+        Timber.d("PinPromptViewModel initialized, default state: isExceededFailedAttempts=${_state.value.isExceededFailedAttempts}")
         getUserSettings()
     }
 
